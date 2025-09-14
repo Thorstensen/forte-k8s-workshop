@@ -21,7 +21,7 @@ public class TeamsController : ControllerBase
     /// </summary>
     /// <param name="teamName">The name for the generated team (optional, defaults to "Generated Team")</param>
     /// <returns>A complete soccer team with starting lineup and bench</returns>
-    [HttpGet("generate")]
+    [HttpGet]
     public async Task<IActionResult> GenerateTeam([FromQuery] string? teamName = null)
     {
         try
