@@ -1,3 +1,3 @@
-# Stats Aggregator
+# Kubernetes for Developers
 
-This service collects and aggregates match statistics, player performance data, and other relevant metrics for analytics.
+This repository contains a collection of **example services** designed to teach developers the most important factors of Kubernetes and how it supports them in daily work.
