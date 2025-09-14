@@ -1,0 +1,14 @@
+bin/
+obj/
+*.user
+*.suo
+.vs/
+.vscode/
+**/.git
+**/.gitignore
+**/.gitattributes
+**/*.md
+**/Dockerfile*
+**/docker-compose*
+tests/
+published_app/
