@@ -1,3 +1,3 @@
-# Betting Service
+# Match Scheduler
 
-This service provides betting functionalities for users to place bets on soccer matches, manage odds, and process payouts.
+This service is responsible for scheduling soccer matches, managing fixtures, and handling rescheduling or cancellations.
