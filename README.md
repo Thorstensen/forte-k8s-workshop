@@ -1,3 +1,3 @@
-# Match Scheduler
+# Stats Aggregator
 
-This service is responsible for scheduling soccer matches, managing fixtures, and handling rescheduling or cancellations.
+This service collects and aggregates match statistics, player performance data, and other relevant metrics for analytics.
