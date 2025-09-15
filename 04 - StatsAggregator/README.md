@@ -61,17 +61,22 @@ cargo run
 
 ### Docker Deployment
 
-1. Build the container:
+1. Build the Rust binary first:
+```bash
+cargo build --release
+```
+
+2. Build the container:
 ```bash
 docker build -t soccer-stats-aggregator .
 ```
 
-2. Run the container:
+3. Run the container:
 ```bash
 docker run -p 8080:8080 soccer-stats-aggregator
 ```
 
-3. Access the API at http://localhost:8080/swagger-ui
+4. Access the API at http://localhost:8080/swagger-ui
 
 ## API Documentation
 

@@ -1,32 +1,4 @@
-# Build stage
-FROM rust:1.89-slim AS builder
-
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set working directory
-WORKDIR /app
-
-# Copy manifest files first to cache dependencies
-COPY Cargo.toml Cargo.lock ./
-
-# Create dummy main file to cache dependencies
-RUN mkdir src && echo "fn main() {}" > src/main.rs
-
-# Build dependencies
-RUN cargo build --release && rm -rf src
-
-# Copy real source code
-COPY src ./src
-
-# Build the application in release mode
-RUN cargo build --release
-
-# Runtime stage
+# Runtime stage only - using pre-built binary
 FROM debian:bookworm-slim
 
 # Install runtime dependencies
@@ -42,8 +14,8 @@ RUN groupadd -r statsaggregator && useradd -r -g statsaggregator statsaggregator
 # Set working directory
 WORKDIR /app
 
-# Copy the binary from builder stage
-COPY --from=builder /app/target/release/stats-aggregator /app/stats-aggregator
+# Copy the pre-built binary
+COPY target/release/stats-aggregator /app/stats-aggregator
 
 # Change ownership to non-root user
 RUN chown -R statsaggregator:statsaggregator /app
