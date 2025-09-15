@@ -23,7 +23,7 @@ const options = {
             {
                 url: process.env.NODE_ENV === 'production'
                     ? '/api'
-                    : 'http://localhost:3000',
+                    : 'http://localhost:3000/api',
                 description: process.env.NODE_ENV === 'production'
                     ? 'Production server'
                     : 'Development server',
@@ -216,7 +216,7 @@ const options = {
                     },
                 },
             },
-            '/api/matches': {
+            '/matches': {
                 get: {
                     tags: ['Matches'],
                     summary: 'Get all matches',
@@ -352,7 +352,7 @@ const options = {
                     },
                 },
             },
-            '/api/matches/{id}': {
+            '/matches/{id}': {
                 get: {
                     tags: ['Matches'],
                     summary: 'Get a specific match by ID',
