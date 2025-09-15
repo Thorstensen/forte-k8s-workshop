@@ -7,11 +7,22 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
+const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 const matches_1 = __importDefault(require("./routes/matches"));
+const swagger_1 = require("./swagger");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 // Security middleware
-app.use((0, helmet_1.default)());
+app.use((0, helmet_1.default)({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'"],
+            imgSrc: ["'self'", 'data:', 'https:'],
+        },
+    },
+}));
 // CORS configuration
 app.use((0, cors_1.default)({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
@@ -49,22 +60,22 @@ app.get('/health', (_req, res) => {
         version: '1.0.0',
     });
 });
-// API documentation endpoint
-app.get('/', (_req, res) => {
-    res.json({
-        service: 'Match Scheduler API',
-        version: '1.0.0',
-        description: 'A TypeScript/Express API service for scheduling football matches between teams',
-        endpoints: {
-            health: 'GET /health - Health check',
-            matches: {
-                'GET /api/matches': 'Get all matches (supports query params: ?upcoming=true&teamName=TeamName)',
-                'GET /api/matches/:id': 'Get a specific match by ID',
-                'POST /api/matches': 'Schedule a new match',
-                'DELETE /api/matches/:id': 'Cancel a scheduled match',
-            },
-        },
-    });
+// Swagger UI setup
+const swaggerOptions = {
+    customCss: '.swagger-ui .topbar { display: none }',
+    customSiteTitle: 'Match Scheduler API Documentation',
+    customfavIcon: '/assets/favicon.ico',
+    swaggerOptions: {
+        persistAuthorization: true,
+    },
+};
+// Serve Swagger UI at root
+app.use('/', swagger_ui_express_1.default.serve);
+app.get('/', swagger_ui_express_1.default.setup(swagger_1.swaggerSpec, swaggerOptions));
+// Alternative endpoint for the OpenAPI JSON spec
+app.get('/openapi.json', (_req, res) => {
+    res.setHeader('Content-Type', 'application/json');
+    res.send(swagger_1.swaggerSpec);
 });
 // API routes
 app.use('/api/matches', matches_1.default);
@@ -95,7 +106,9 @@ const server = app.listen(PORT, () => {
     // eslint-disable-next-line no-console
     console.log(`🚀 Match Scheduler Service running on port ${PORT}`);
     // eslint-disable-next-line no-console
-    console.log(`📚 API Documentation available at http://localhost:${PORT}/`);
+    console.log(`📚 OpenAPI Documentation (Swagger UI) available at http://localhost:${PORT}/`);
+    // eslint-disable-next-line no-console
+    console.log(`📄 OpenAPI JSON specification available at http://localhost:${PORT}/openapi.json`);
     // eslint-disable-next-line no-console
     console.log(`❤️  Health check available at http://localhost:${PORT}/health`);
 });
