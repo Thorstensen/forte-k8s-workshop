@@ -3,7 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import matchesRouter from './routes/matches';
-import { matchSchedulerService } from '../services/MatchSchedulerService';
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
@@ -66,79 +65,16 @@ app.get('/', (_req: Request, res: Response): void => {
     endpoints: {
       health: 'GET /health - Health check',
       matches: {
-        'GET /api/matches':
-          'Get all matches (supports ?upcoming=true and ?teamId=<id> filters)',
-        'GET /api/matches/:id': 'Get a specific match by ID',
+        'POST /api/matches/list':
+          'Get all matches (supports filter body: { upcoming?: boolean, teamId?: string })',
+        'POST /api/matches/details':
+          'Get a specific match by ID (body: { id: string })',
         'POST /api/matches': 'Schedule a new match',
-        'DELETE /api/matches/:id': 'Cancel a scheduled match',
+        'POST /api/matches/cancel':
+          'Cancel a scheduled match (body: { id: string })',
       },
-      teams: {
-        'GET /api/teams': 'Get all teams',
-        'GET /api/teams/:id': 'Get a specific team by ID',
-      },
-    },
-    sampleData: {
-      teams: matchSchedulerService.getAllTeams().map(team => ({
-        id: team.id,
-        name: team.name,
-        playerCount: team.players.length,
-      })),
     },
   });
-});
-
-// Teams endpoint (for reference data)
-app.get('/api/teams', (_req: Request, res: Response): void => {
-  try {
-    const teams = matchSchedulerService.getAllTeams();
-    res.json({
-      success: true,
-      message: 'Teams retrieved successfully',
-      data: teams,
-      count: teams.length,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve teams',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
-});
-
-app.get('/api/teams/:id', (req: Request, res: Response): void => {
-  try {
-    const { id } = req.params;
-    if (!id) {
-      res.status(400).json({
-        success: false,
-        message: 'Team ID is required',
-      });
-      return;
-    }
-
-    const team = matchSchedulerService.getTeamById(id);
-
-    if (!team) {
-      res.status(404).json({
-        success: false,
-        message: `Team with ID "${id}" not found`,
-      });
-      return;
-    }
-
-    res.json({
-      success: true,
-      message: 'Team retrieved successfully',
-      data: team,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: 'Failed to retrieve team',
-      error: error instanceof Error ? error.message : 'Unknown error',
-    });
-  }
 });
 
 // API routes

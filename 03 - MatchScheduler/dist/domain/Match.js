@@ -15,9 +15,9 @@ var MatchStatus;
 /**
  * Factory function to create a new Match
  */
-const createMatch = (id, homeTeam, awayTeam, scheduledDate, venue, notes) => {
+const createMatch = (id, homeTeamId, awayTeamId, scheduledDate, venue, notes) => {
     // Validate that teams are different
-    if (homeTeam.id === awayTeam.id) {
+    if (homeTeamId === awayTeamId) {
         throw new Error('A team cannot play against itself');
     }
     // Validate that the scheduled date is in the future
@@ -29,17 +29,17 @@ const createMatch = (id, homeTeam, awayTeam, scheduledDate, venue, notes) => {
     if (!venue.trim()) {
         throw new Error('Venue cannot be empty');
     }
-    // Validate that both teams are active
-    if (!homeTeam.isActive) {
-        throw new Error(`Home team "${homeTeam.name}" is not active`);
+    // Validate team IDs
+    if (!homeTeamId.trim()) {
+        throw new Error('Home team ID cannot be empty');
     }
-    if (!awayTeam.isActive) {
-        throw new Error(`Away team "${awayTeam.name}" is not active`);
+    if (!awayTeamId.trim()) {
+        throw new Error('Away team ID cannot be empty');
     }
     return {
         id,
-        homeTeam,
-        awayTeam,
+        homeTeamId: homeTeamId.trim(),
+        awayTeamId: awayTeamId.trim(),
         scheduledDate,
         venue: venue.trim(),
         status: MatchStatus.SCHEDULED,
@@ -59,7 +59,7 @@ exports.isUpcomingMatch = isUpcomingMatch;
  * Check if a match involves a specific team
  */
 const matchInvolvestTeam = (match, teamId) => {
-    return match.homeTeam.id === teamId || match.awayTeam.id === teamId;
+    return match.homeTeamId === teamId || match.awayTeamId === teamId;
 };
 exports.matchInvolvestTeam = matchInvolvestTeam;
 /**
@@ -71,7 +71,7 @@ const getMatchDescription = (match) => {
         hour: '2-digit',
         minute: '2-digit',
     });
-    return `${match.homeTeam.name} vs ${match.awayTeam.name} on ${dateStr} at ${timeStr} (${match.venue})`;
+    return `Team ${match.homeTeamId} vs Team ${match.awayTeamId} on ${dateStr} at ${timeStr} (${match.venue})`;
 };
 exports.getMatchDescription = getMatchDescription;
 //# sourceMappingURL=Match.js.map

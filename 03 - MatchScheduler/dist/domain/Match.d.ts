@@ -1,14 +1,13 @@
-import { Team } from './Team';
 /**
  * Represents a scheduled match between two teams
  */
 export interface Match {
     /** Unique identifier for the match */
     readonly id: string;
-    /** Home team */
-    readonly homeTeam: Team;
-    /** Away team */
-    readonly awayTeam: Team;
+    /** Home team ID */
+    readonly homeTeamId: string;
+    /** Away team ID */
+    readonly awayTeamId: string;
     /** Scheduled date and time for the match */
     readonly scheduledDate: Date;
     /** Venue where the match will be played */
@@ -48,7 +47,7 @@ export interface ScheduleMatchRequest {
 /**
  * Factory function to create a new Match
  */
-export declare const createMatch: (id: string, homeTeam: Team, awayTeam: Team, scheduledDate: Date, venue: string, notes?: string | undefined) => Match;
+export declare const createMatch: (id: string, homeTeamId: string, awayTeamId: string, scheduledDate: Date, venue: string, notes?: string | undefined) => Match;
 /**
  * Check if a match is upcoming (scheduled and in the future)
  */

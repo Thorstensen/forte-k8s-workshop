@@ -8,7 +8,6 @@ const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const matches_1 = __importDefault(require("./routes/matches"));
-const MatchSchedulerService_1 = require("../services/MatchSchedulerService");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3000;
 // Security middleware
@@ -59,75 +58,13 @@ app.get('/', (_req, res) => {
         endpoints: {
             health: 'GET /health - Health check',
             matches: {
-                'GET /api/matches': 'Get all matches (supports ?upcoming=true and ?teamId=<id> filters)',
-                'GET /api/matches/:id': 'Get a specific match by ID',
+                'POST /api/matches/list': 'Get all matches (supports filter body: { upcoming?: boolean, teamId?: string })',
+                'POST /api/matches/details': 'Get a specific match by ID (body: { id: string })',
                 'POST /api/matches': 'Schedule a new match',
-                'DELETE /api/matches/:id': 'Cancel a scheduled match',
+                'POST /api/matches/cancel': 'Cancel a scheduled match (body: { id: string })',
             },
-            teams: {
-                'GET /api/teams': 'Get all teams',
-                'GET /api/teams/:id': 'Get a specific team by ID',
-            },
-        },
-        sampleData: {
-            teams: MatchSchedulerService_1.matchSchedulerService.getAllTeams().map(team => ({
-                id: team.id,
-                name: team.name,
-                playerCount: team.players.length,
-            })),
         },
     });
-});
-// Teams endpoint (for reference data)
-app.get('/api/teams', (_req, res) => {
-    try {
-        const teams = MatchSchedulerService_1.matchSchedulerService.getAllTeams();
-        res.json({
-            success: true,
-            message: 'Teams retrieved successfully',
-            data: teams,
-            count: teams.length,
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to retrieve teams',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        });
-    }
-});
-app.get('/api/teams/:id', (req, res) => {
-    try {
-        const { id } = req.params;
-        if (!id) {
-            res.status(400).json({
-                success: false,
-                message: 'Team ID is required',
-            });
-            return;
-        }
-        const team = MatchSchedulerService_1.matchSchedulerService.getTeamById(id);
-        if (!team) {
-            res.status(404).json({
-                success: false,
-                message: `Team with ID "${id}" not found`,
-            });
-            return;
-        }
-        res.json({
-            success: true,
-            message: 'Team retrieved successfully',
-            data: team,
-        });
-    }
-    catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Failed to retrieve team',
-            error: error instanceof Error ? error.message : 'Unknown error',
-        });
-    }
 });
 // API routes
 app.use('/api/matches', matches_1.default);

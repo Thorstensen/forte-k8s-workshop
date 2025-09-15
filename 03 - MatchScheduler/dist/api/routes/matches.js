@@ -20,17 +20,20 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 /**
- * GET /matches
+ * POST /matches/list
  * Get all matches with optional filtering
  */
-router.get('/', (req, res) => {
+router.post('/list', [
+    (0, express_validator_1.body)('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
+    (0, express_validator_1.body)('teamId').optional().isString().notEmpty().withMessage('Team ID must be a non-empty string'),
+], handleValidationErrors, (req, res) => {
     try {
-        const { upcoming, teamId } = req.query;
+        const { upcoming, teamId } = req.body;
         let matches;
-        if (upcoming === 'true') {
+        if (upcoming === true) {
             matches = MatchSchedulerService_1.matchSchedulerService.getUpcomingMatches();
         }
-        else if (typeof teamId === 'string' && teamId) {
+        else if (teamId && typeof teamId === 'string') {
             matches = MatchSchedulerService_1.matchSchedulerService.getMatchesForTeam(teamId);
         }
         else {
@@ -52,14 +55,14 @@ router.get('/', (req, res) => {
     }
 });
 /**
- * GET /matches/:id
+ * POST /matches/details
  * Get a specific match by ID
  */
-router.get('/:id', [
-    (0, express_validator_1.param)('id').isString().notEmpty().withMessage('Match ID is required'),
+router.post('/details', [
+    (0, express_validator_1.body)('id').isString().notEmpty().withMessage('Match ID is required'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
         if (!id) {
             res.status(400).json({
                 success: false,
@@ -157,14 +160,14 @@ router.post('/', [
     }
 });
 /**
- * DELETE /matches/:id
+ * POST /matches/cancel
  * Cancel a scheduled match
  */
-router.delete('/:id', [
-    (0, express_validator_1.param)('id').isString().notEmpty().withMessage('Match ID is required'),
+router.post('/cancel', [
+    (0, express_validator_1.body)('id').isString().notEmpty().withMessage('Match ID is required'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
         if (!id) {
             res.status(400).json({
                 success: false,
