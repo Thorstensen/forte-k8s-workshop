@@ -1,4 +1,3 @@
-target/
 .git
 .gitignore
 README.md
@@ -9,3 +8,5 @@ README.md
 coverage/
 *.tmp
 *.temp
+# Allow the release binary to be copied
+!target/release/stats-aggregator
