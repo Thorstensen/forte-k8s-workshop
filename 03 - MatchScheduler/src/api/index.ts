@@ -2,13 +2,26 @@ import express, { Application, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import swaggerUi from 'swagger-ui-express';
 import matchesRouter from './routes/matches';
+import { swaggerSpec } from './swagger';
 
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
 // Security middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
+    },
+  })
+);
 
 // CORS configuration
 app.use(
@@ -55,24 +68,24 @@ app.get('/health', (_req: Request, res: Response): void => {
   });
 });
 
-// API documentation endpoint
-app.get('/', (_req: Request, res: Response): void => {
-  res.json({
-    service: 'Match Scheduler API',
-    version: '1.0.0',
-    description:
-      'A TypeScript/Express API service for scheduling football matches between teams',
-    endpoints: {
-      health: 'GET /health - Health check',
-      matches: {
-        'GET /api/matches':
-          'Get all matches (supports query params: ?upcoming=true&teamName=TeamName)',
-        'GET /api/matches/:id': 'Get a specific match by ID',
-        'POST /api/matches': 'Schedule a new match',
-        'DELETE /api/matches/:id': 'Cancel a scheduled match',
-      },
-    },
-  });
+// Swagger UI setup
+const swaggerOptions = {
+  customCss: '.swagger-ui .topbar { display: none }',
+  customSiteTitle: 'Match Scheduler API Documentation',
+  customfavIcon: '/assets/favicon.ico',
+  swaggerOptions: {
+    persistAuthorization: true,
+  },
+};
+
+// Serve Swagger UI at root
+app.use('/', swaggerUi.serve);
+app.get('/', swaggerUi.setup(swaggerSpec, swaggerOptions));
+
+// Alternative endpoint for the OpenAPI JSON spec
+app.get('/openapi.json', (_req: Request, res: Response): void => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
 
 // API routes
@@ -109,7 +122,13 @@ const server = app.listen(PORT, (): void => {
   // eslint-disable-next-line no-console
   console.log(`🚀 Match Scheduler Service running on port ${PORT}`);
   // eslint-disable-next-line no-console
-  console.log(`📚 API Documentation available at http://localhost:${PORT}/`);
+  console.log(
+    `📚 OpenAPI Documentation (Swagger UI) available at http://localhost:${PORT}/`
+  );
+  // eslint-disable-next-line no-console
+  console.log(
+    `📄 OpenAPI JSON specification available at http://localhost:${PORT}/openapi.json`
+  );
   // eslint-disable-next-line no-console
   console.log(`❤️  Health check available at http://localhost:${PORT}/health`);
 });
