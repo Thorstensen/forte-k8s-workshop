@@ -20,21 +20,21 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 /**
- * POST /matches/list
- * Get all matches with optional filtering
+ * GET /matches
+ * Get all matches with optional filtering via query parameters
  */
-router.post('/list', [
-    (0, express_validator_1.body)('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
-    (0, express_validator_1.body)('teamId').optional().isString().notEmpty().withMessage('Team ID must be a non-empty string'),
+router.get('/', [
+    (0, express_validator_1.query)('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
+    (0, express_validator_1.query)('teamName').optional().isString().notEmpty().withMessage('Team name must be a non-empty string'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { upcoming, teamId } = req.body;
+        const { upcoming, teamName } = req.query;
         let matches;
-        if (upcoming === true) {
+        if (upcoming === 'true') {
             matches = MatchSchedulerService_1.matchSchedulerService.getUpcomingMatches();
         }
-        else if (teamId && typeof teamId === 'string') {
-            matches = MatchSchedulerService_1.matchSchedulerService.getMatchesForTeam(teamId);
+        else if (teamName && typeof teamName === 'string') {
+            matches = MatchSchedulerService_1.matchSchedulerService.getMatchesForTeam(teamName);
         }
         else {
             matches = MatchSchedulerService_1.matchSchedulerService.getAllMatches();
@@ -55,14 +55,14 @@ router.post('/list', [
     }
 });
 /**
- * POST /matches/details
+ * GET /matches/:id
  * Get a specific match by ID
  */
-router.post('/details', [
-    (0, express_validator_1.body)('id').isString().notEmpty().withMessage('Match ID is required'),
+router.get('/:id', [
+    (0, express_validator_1.param)('id').isString().notEmpty().withMessage('Match ID is required'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         if (!id) {
             res.status(400).json({
                 success: false,
@@ -97,14 +97,14 @@ router.post('/details', [
  * Schedule a new match
  */
 router.post('/', [
-    (0, express_validator_1.body)('homeTeamId')
+    (0, express_validator_1.body)('homeTeamName')
         .isString()
         .notEmpty()
-        .withMessage('Home team ID is required'),
-    (0, express_validator_1.body)('awayTeamId')
+        .withMessage('Home team name is required'),
+    (0, express_validator_1.body)('awayTeamName')
         .isString()
         .notEmpty()
-        .withMessage('Away team ID is required'),
+        .withMessage('Away team name is required'),
     (0, express_validator_1.body)('scheduledDate')
         .isISO8601()
         .withMessage('Scheduled date must be a valid ISO 8601 date')
@@ -128,10 +128,10 @@ router.post('/', [
         .withMessage('Notes must be a string if provided'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { homeTeamId, awayTeamId, scheduledDate, venue, notes } = req.body;
+        const { homeTeamName, awayTeamName, scheduledDate, venue, notes } = req.body;
         const request = {
-            homeTeamId,
-            awayTeamId,
+            homeTeamName,
+            awayTeamName,
             scheduledDate: new Date(scheduledDate),
             venue,
             notes: notes || undefined,
@@ -160,14 +160,14 @@ router.post('/', [
     }
 });
 /**
- * POST /matches/cancel
+ * DELETE /matches/:id
  * Cancel a scheduled match
  */
-router.post('/cancel', [
-    (0, express_validator_1.body)('id').isString().notEmpty().withMessage('Match ID is required'),
+router.delete('/:id', [
+    (0, express_validator_1.param)('id').isString().notEmpty().withMessage('Match ID is required'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.params;
         if (!id) {
             res.status(400).json({
                 success: false,

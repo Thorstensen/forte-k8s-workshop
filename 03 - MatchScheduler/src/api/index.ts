@@ -65,13 +65,11 @@ app.get('/', (_req: Request, res: Response): void => {
     endpoints: {
       health: 'GET /health - Health check',
       matches: {
-        'POST /api/matches/list':
-          'Get all matches (supports filter body: { upcoming?: boolean, teamId?: string })',
-        'POST /api/matches/details':
-          'Get a specific match by ID (body: { id: string })',
+        'GET /api/matches':
+          'Get all matches (supports query params: ?upcoming=true&teamName=TeamName)',
+        'GET /api/matches/:id': 'Get a specific match by ID',
         'POST /api/matches': 'Schedule a new match',
-        'POST /api/matches/cancel':
-          'Cancel a scheduled match (body: { id: string })',
+        'DELETE /api/matches/:id': 'Cancel a scheduled match',
       },
     },
   });

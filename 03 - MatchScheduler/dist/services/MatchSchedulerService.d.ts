@@ -32,7 +32,7 @@ export declare class MatchSchedulerService {
     /**
      * Get all matches for a specific team
      */
-    getMatchesForTeam(teamId: string): readonly Match[];
+    getMatchesForTeam(teamName: string): readonly Match[];
     /**
      * Cancel a scheduled match
      */
