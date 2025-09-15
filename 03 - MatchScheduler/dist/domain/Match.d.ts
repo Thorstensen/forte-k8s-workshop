@@ -4,10 +4,10 @@
 export interface Match {
     /** Unique identifier for the match */
     readonly id: string;
-    /** Home team ID */
-    readonly homeTeamId: string;
-    /** Away team ID */
-    readonly awayTeamId: string;
+    /** Home team name */
+    readonly homeTeamName: string;
+    /** Away team name */
+    readonly awayTeamName: string;
     /** Scheduled date and time for the match */
     readonly scheduledDate: Date;
     /** Venue where the match will be played */
@@ -33,10 +33,10 @@ export declare enum MatchStatus {
  * Optional notes about the match
  */
 export interface ScheduleMatchRequest {
-    /** ID of the home team */
-    readonly homeTeamId: string;
-    /** ID of the away team */
-    readonly awayTeamId: string;
+    /** Name of the home team */
+    readonly homeTeamName: string;
+    /** Name of the away team */
+    readonly awayTeamName: string;
     /** Scheduled date and time for the match */
     readonly scheduledDate: Date;
     /** Venue where the match will be played */
@@ -47,7 +47,7 @@ export interface ScheduleMatchRequest {
 /**
  * Factory function to create a new Match
  */
-export declare const createMatch: (id: string, homeTeamId: string, awayTeamId: string, scheduledDate: Date, venue: string, notes?: string | undefined) => Match;
+export declare const createMatch: (id: string, homeTeamName: string, awayTeamName: string, scheduledDate: Date, venue: string, notes?: string | undefined) => Match;
 /**
  * Check if a match is upcoming (scheduled and in the future)
  */
@@ -55,7 +55,7 @@ export declare const isUpcomingMatch: (match: Match) => boolean;
 /**
  * Check if a match involves a specific team
  */
-export declare const matchInvolvestTeam: (match: Match, teamId: string) => boolean;
+export declare const matchInvolvestTeam: (match: Match, teamName: string) => boolean;
 /**
  * Get a user-friendly match description
  */

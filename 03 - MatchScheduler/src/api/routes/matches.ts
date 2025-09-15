@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body, query, param, validationResult } from 'express-validator';
 import { matchSchedulerService } from '../../services/MatchSchedulerService';
 import { ScheduleMatchRequest } from '../../domain/Match';
 
@@ -22,25 +22,25 @@ const handleValidationErrors = (req: Request, res: Response, next: Function): vo
 };
 
 /**
- * POST /matches/list
- * Get all matches with optional filtering
+ * GET /matches
+ * Get all matches with optional filtering via query parameters
  */
-router.post('/list', [
-  body('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
-  body('teamId').optional().isString().notEmpty().withMessage('Team ID must be a non-empty string'),
+router.get('/', [
+  query('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
+  query('teamName').optional().isString().notEmpty().withMessage('Team name must be a non-empty string'),
 ], handleValidationErrors, (req: Request, res: Response): void => {
   try {
-    const { upcoming, teamId } = req.body as {
-      upcoming?: boolean;
-      teamId?: string;
+    const { upcoming, teamName } = req.query as {
+      upcoming?: string;
+      teamName?: string;
     };
 
     let matches;
     
-    if (upcoming === true) {
+    if (upcoming === 'true') {
       matches = matchSchedulerService.getUpcomingMatches();
-    } else if (teamId && typeof teamId === 'string') {
-      matches = matchSchedulerService.getMatchesForTeam(teamId);
+    } else if (teamName && typeof teamName === 'string') {
+      matches = matchSchedulerService.getMatchesForTeam(teamName);
     } else {
       matches = matchSchedulerService.getAllMatches();
     }
@@ -61,14 +61,14 @@ router.post('/list', [
 });
 
 /**
- * POST /matches/details
+ * GET /matches/:id
  * Get a specific match by ID
  */
-router.post('/details', [
-  body('id').isString().notEmpty().withMessage('Match ID is required'),
+router.get('/:id', [
+  param('id').isString().notEmpty().withMessage('Match ID is required'),
 ], handleValidationErrors, (req: Request, res: Response): void => {
   try {
-    const { id } = req.body as { id: string };
+    const { id } = req.params;
     
     if (!id) {
       res.status(400).json({
@@ -107,14 +107,14 @@ router.post('/details', [
  * Schedule a new match
  */
 router.post('/', [
-  body('homeTeamId')
+  body('homeTeamName')
     .isString()
     .notEmpty()
-    .withMessage('Home team ID is required'),
-  body('awayTeamId')
+    .withMessage('Home team name is required'),
+  body('awayTeamName')
     .isString()
     .notEmpty()
-    .withMessage('Away team ID is required'),
+    .withMessage('Away team name is required'),
   body('scheduledDate')
     .isISO8601()
     .withMessage('Scheduled date must be a valid ISO 8601 date')
@@ -138,17 +138,17 @@ router.post('/', [
     .withMessage('Notes must be a string if provided'),
 ], handleValidationErrors, (req: Request, res: Response): void => {
   try {
-    const { homeTeamId, awayTeamId, scheduledDate, venue, notes } = req.body as {
-      homeTeamId: string;
-      awayTeamId: string;
+    const { homeTeamName, awayTeamName, scheduledDate, venue, notes } = req.body as {
+      homeTeamName: string;
+      awayTeamName: string;
       scheduledDate: string;
       venue: string;
       notes?: string;
     };
 
     const request: ScheduleMatchRequest = {
-      homeTeamId,
-      awayTeamId,
+      homeTeamName,
+      awayTeamName,
       scheduledDate: new Date(scheduledDate),
       venue,
       notes: notes || undefined,
@@ -178,15 +178,15 @@ router.post('/', [
 });
 
 /**
- * POST /matches/cancel
+ * DELETE /matches/:id
  * Cancel a scheduled match
  */
-router.post('/cancel', [
-  body('id').isString().notEmpty().withMessage('Match ID is required'),
+router.delete('/:id', [
+  param('id').isString().notEmpty().withMessage('Match ID is required'),
 ], handleValidationErrors, (req: Request, res: Response): void => {
   try {
-    const { id } = req.body as { id: string };
-    
+    const { id } = req.params;
+
     if (!id) {
       res.status(400).json({
         success: false,

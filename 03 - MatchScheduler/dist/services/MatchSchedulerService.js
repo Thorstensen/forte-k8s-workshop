@@ -17,7 +17,7 @@ class MatchSchedulerService {
     scheduleMatch(request) {
         try {
             // Check for scheduling conflicts
-            const conflictingMatch = this.findTeamConflict(request.homeTeamId, request.awayTeamId, request.scheduledDate);
+            const conflictingMatch = this.findTeamConflict(request.homeTeamName, request.awayTeamName, request.scheduledDate);
             if (conflictingMatch) {
                 return {
                     success: false,
@@ -26,7 +26,7 @@ class MatchSchedulerService {
             }
             // Create the match
             const matchId = (0, uuid_1.v4)();
-            const match = (0, Match_1.createMatch)(matchId, request.homeTeamId, request.awayTeamId, request.scheduledDate, request.venue, request.notes);
+            const match = (0, Match_1.createMatch)(matchId, request.homeTeamName, request.awayTeamName, request.scheduledDate, request.venue, request.notes);
             this.matches.set(matchId, match);
             return {
                 success: true,
@@ -62,8 +62,8 @@ class MatchSchedulerService {
     /**
      * Get all matches for a specific team
      */
-    getMatchesForTeam(teamId) {
-        return Array.from(this.matches.values()).filter(match => (0, Match_1.matchInvolvestTeam)(match, teamId));
+    getMatchesForTeam(teamName) {
+        return Array.from(this.matches.values()).filter(match => (0, Match_1.matchInvolvestTeam)(match, teamName));
     }
     /**
      * Cancel a scheduled match
@@ -98,7 +98,7 @@ class MatchSchedulerService {
      * Check for scheduling conflicts for teams around a specific date
      * Returns conflicting match if found, undefined otherwise
      */
-    findTeamConflict(homeTeamId, awayTeamId, scheduledDate) {
+    findTeamConflict(homeTeamName, awayTeamName, scheduledDate) {
         const conflictWindowHours = 3; // Don't allow matches within 3 hours of each other
         const conflictWindowMs = conflictWindowHours * 60 * 60 * 1000;
         return Array.from(this.matches.values()).find(existingMatch => {
@@ -107,8 +107,8 @@ class MatchSchedulerService {
                 return false;
             }
             // Check if either team is involved
-            const isTeamInvolved = (0, Match_1.matchInvolvestTeam)(existingMatch, homeTeamId) ||
-                (0, Match_1.matchInvolvestTeam)(existingMatch, awayTeamId);
+            const isTeamInvolved = (0, Match_1.matchInvolvestTeam)(existingMatch, homeTeamName) ||
+                (0, Match_1.matchInvolvestTeam)(existingMatch, awayTeamName);
             if (!isTeamInvolved) {
                 return false;
             }

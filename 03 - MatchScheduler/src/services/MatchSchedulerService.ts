@@ -34,8 +34,8 @@ export class MatchSchedulerService {
     try {
       // Check for scheduling conflicts
       const conflictingMatch = this.findTeamConflict(
-        request.homeTeamId,
-        request.awayTeamId,
+        request.homeTeamName,
+        request.awayTeamName,
         request.scheduledDate
       );
 
@@ -50,8 +50,8 @@ export class MatchSchedulerService {
       const matchId = uuidv4();
       const match = createMatch(
         matchId,
-        request.homeTeamId,
-        request.awayTeamId,
+        request.homeTeamName,
+        request.awayTeamName,
         request.scheduledDate,
         request.venue,
         request.notes
@@ -97,9 +97,9 @@ export class MatchSchedulerService {
   /**
    * Get all matches for a specific team
    */
-  public getMatchesForTeam(teamId: string): readonly Match[] {
+  public getMatchesForTeam(teamName: string): readonly Match[] {
     return Array.from(this.matches.values()).filter(match =>
-      matchInvolvestTeam(match, teamId)
+      matchInvolvestTeam(match, teamName)
     );
   }
 
@@ -143,8 +143,8 @@ export class MatchSchedulerService {
    * Returns conflicting match if found, undefined otherwise
    */
   private findTeamConflict(
-    homeTeamId: string,
-    awayTeamId: string,
+    homeTeamName: string,
+    awayTeamName: string,
     scheduledDate: Date
   ): Match | undefined {
     const conflictWindowHours = 3; // Don't allow matches within 3 hours of each other
@@ -158,8 +158,8 @@ export class MatchSchedulerService {
 
       // Check if either team is involved
       const isTeamInvolved =
-        matchInvolvestTeam(existingMatch, homeTeamId) ||
-        matchInvolvestTeam(existingMatch, awayTeamId);
+        matchInvolvestTeam(existingMatch, homeTeamName) ||
+        matchInvolvestTeam(existingMatch, awayTeamName);
 
       if (!isTeamInvolved) {
         return false;
