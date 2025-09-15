@@ -1,4 +1,3 @@
-import { Team } from '../domain/Team';
 import { Match, ScheduleMatchRequest } from '../domain/Match';
 /**
  * Response object for scheduling operations
@@ -13,7 +12,6 @@ export interface ScheduleResponse {
  */
 export declare class MatchSchedulerService {
     private readonly matches;
-    private readonly teams;
     constructor();
     /**
      * Schedule a new match between two teams
@@ -36,14 +34,6 @@ export declare class MatchSchedulerService {
      */
     getMatchesForTeam(teamId: string): readonly Match[];
     /**
-     * Get all teams
-     */
-    getAllTeams(): readonly Team[];
-    /**
-     * Get a specific team by ID
-     */
-    getTeamById(teamId: string): Team | undefined;
-    /**
      * Cancel a scheduled match
      */
     cancelMatch(matchId: string): ScheduleResponse;
@@ -52,10 +42,6 @@ export declare class MatchSchedulerService {
      * Returns conflicting match if found, undefined otherwise
      */
     private findTeamConflict;
-    /**
-     * Initialize sample data for demonstration
-     */
-    private initializeSampleData;
 }
 export declare const matchSchedulerService: MatchSchedulerService;
 //# sourceMappingURL=MatchSchedulerService.d.ts.map
