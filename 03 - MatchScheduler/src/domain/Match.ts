@@ -19,7 +19,7 @@ export interface Match {
   /** When the match was created/scheduled */
   readonly createdAt: Date;
   /** Optional notes about the match */
-  readonly notes?: string;
+  readonly notes?: string | undefined;
 }
 
 /**
@@ -34,7 +34,7 @@ export enum MatchStatus {
 }
 
 /**
- * Request object for scheduling a new match
+ * Optional notes about the match
  */
 export interface ScheduleMatchRequest {
   /** ID of the home team */
@@ -46,7 +46,7 @@ export interface ScheduleMatchRequest {
   /** Venue where the match will be played */
   readonly venue: string;
   /** Optional notes about the match */
-  readonly notes?: string;
+  readonly notes?: string | undefined;
 }
 
 /**
@@ -58,7 +58,7 @@ export const createMatch = (
   awayTeam: Team,
   scheduledDate: Date,
   venue: string,
-  notes?: string
+  notes?: string | undefined
 ): Match => {
   // Validate that teams are different
   if (homeTeam.id === awayTeam.id) {
@@ -101,7 +101,9 @@ export const createMatch = (
  * Check if a match is upcoming (scheduled and in the future)
  */
 export const isUpcomingMatch = (match: Match): boolean => {
-  return match.status === MatchStatus.SCHEDULED && match.scheduledDate > new Date();
+  return (
+    match.status === MatchStatus.SCHEDULED && match.scheduledDate > new Date()
+  );
 };
 
 /**
@@ -116,10 +118,10 @@ export const matchInvolvestTeam = (match: Match, teamId: string): boolean => {
  */
 export const getMatchDescription = (match: Match): string => {
   const dateStr = match.scheduledDate.toLocaleDateString();
-  const timeStr = match.scheduledDate.toLocaleTimeString([], { 
-    hour: '2-digit', 
-    minute: '2-digit' 
+  const timeStr = match.scheduledDate.toLocaleTimeString([], {
+    hour: '2-digit',
+    minute: '2-digit',
   });
-  
+
   return `${match.homeTeam.name} vs ${match.awayTeam.name} on ${dateStr} at ${timeStr} (${match.venue})`;
 };

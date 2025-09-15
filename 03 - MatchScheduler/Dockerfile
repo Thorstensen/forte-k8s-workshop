@@ -1,27 +1,4 @@
-# Multi-stage build for production-ready TypeScript application
-
-# Stage 1: Build stage
-FROM node:18-alpine AS builder
-
-# Set working directory
-WORKDIR /app
-
-# Install build dependencies
-RUN apk add --no-cache python3 make g++
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy source code
-COPY . .
-
-# Build the application
-RUN npm run build
-
-# Stage 2: Production stage
+# Production-ready TypeScript application
 FROM node:18-alpine AS production
 
 # Set environment variables
@@ -39,13 +16,10 @@ RUN addgroup -g 1001 -S nodejs && \
 COPY package*.json ./
 
 # Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Copy built application from builder stage
-COPY --from=builder /app/dist ./dist
-
-# Copy any additional files needed at runtime (if any)
-# COPY --from=builder /app/public ./public
+# Copy built application
+COPY dist ./dist
 
 # Change ownership to non-root user
 RUN chown -R matchscheduler:nodejs /app

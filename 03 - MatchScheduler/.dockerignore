@@ -4,8 +4,8 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Build outputs
-dist/
+# Build outputs (remove dist/ since we need it for Docker)
+# dist/ 
 build/
 
 # Environment files

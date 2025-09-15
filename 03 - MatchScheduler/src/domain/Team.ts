@@ -75,7 +75,10 @@ export const getTeamAverageSkill = (team: Team): number => {
     return 0;
   }
 
-  const totalSkill = activePlayers.reduce((sum, player) => sum + player.skillLevel, 0);
+  const totalSkill = activePlayers.reduce(
+    (sum, player) => sum + player.skillLevel,
+    0
+  );
   return Math.round((totalSkill / activePlayers.length) * 100) / 100; // Round to 2 decimal places
 };
 

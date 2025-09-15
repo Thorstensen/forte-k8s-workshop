@@ -1,12 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Team, createTeam, getActivePlayerCount } from '../domain/Team';
-import { 
-  Match, 
-  ScheduleMatchRequest, 
-  createMatch, 
-  MatchStatus, 
+import {
+  Match,
+  ScheduleMatchRequest,
+  createMatch,
+  MatchStatus,
   isUpcomingMatch,
-  matchInvolvestTeam 
+  matchInvolvestTeam,
 } from '../domain/Match';
 import { Player, createPlayer, PlayerPosition } from '../domain/Player';
 
@@ -107,7 +107,8 @@ export class MatchSchedulerService {
     } catch (error) {
       return {
         success: false,
-        message: error instanceof Error ? error.message : 'Unknown error occurred',
+        message:
+          error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   }
@@ -161,7 +162,7 @@ export class MatchSchedulerService {
    */
   public cancelMatch(matchId: string): ScheduleResponse {
     const match = this.matches.get(matchId);
-    
+
     if (!match) {
       return {
         success: false,
@@ -210,8 +211,8 @@ export class MatchSchedulerService {
       }
 
       // Check if either team is involved
-      const isTeamInvolved = 
-        matchInvolvestTeam(existingMatch, homeTeamId) || 
+      const isTeamInvolved =
+        matchInvolvestTeam(existingMatch, homeTeamId) ||
         matchInvolvestTeam(existingMatch, awayTeamId);
 
       if (!isTeamInvolved) {

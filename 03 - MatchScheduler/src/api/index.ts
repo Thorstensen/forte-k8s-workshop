@@ -12,11 +12,13 @@ const PORT = process.env.PORT || 3000;
 app.use(helmet());
 
 // CORS configuration
-app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-}));
+app.use(
+  cors({
+    origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
@@ -37,7 +39,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // Request logging middleware
-app.use((req: Request, res: Response, next: NextFunction): void => {
+app.use((req: Request, _res: Response, next: NextFunction): void => {
   const timestamp = new Date().toISOString();
   // eslint-disable-next-line no-console
   console.log(`[${timestamp}] ${req.method} ${req.path} - ${req.ip}`);
@@ -45,7 +47,7 @@ app.use((req: Request, res: Response, next: NextFunction): void => {
 });
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response): void => {
+app.get('/health', (_req: Request, res: Response): void => {
   res.json({
     success: true,
     message: 'Match Scheduler Service is healthy',
@@ -55,15 +57,17 @@ app.get('/health', (req: Request, res: Response): void => {
 });
 
 // API documentation endpoint
-app.get('/', (req: Request, res: Response): void => {
+app.get('/', (_req: Request, res: Response): void => {
   res.json({
     service: 'Match Scheduler API',
     version: '1.0.0',
-    description: 'A TypeScript/Express API service for scheduling football matches between teams',
+    description:
+      'A TypeScript/Express API service for scheduling football matches between teams',
     endpoints: {
       health: 'GET /health - Health check',
       matches: {
-        'GET /api/matches': 'Get all matches (supports ?upcoming=true and ?teamId=<id> filters)',
+        'GET /api/matches':
+          'Get all matches (supports ?upcoming=true and ?teamId=<id> filters)',
         'GET /api/matches/:id': 'Get a specific match by ID',
         'POST /api/matches': 'Schedule a new match',
         'DELETE /api/matches/:id': 'Cancel a scheduled match',
@@ -84,7 +88,7 @@ app.get('/', (req: Request, res: Response): void => {
 });
 
 // Teams endpoint (for reference data)
-app.get('/api/teams', (req: Request, res: Response): void => {
+app.get('/api/teams', (_req: Request, res: Response): void => {
   try {
     const teams = matchSchedulerService.getAllTeams();
     res.json({
@@ -105,6 +109,14 @@ app.get('/api/teams', (req: Request, res: Response): void => {
 app.get('/api/teams/:id', (req: Request, res: Response): void => {
   try {
     const { id } = req.params;
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        message: 'Team ID is required',
+      });
+      return;
+    }
+
     const team = matchSchedulerService.getTeamById(id);
 
     if (!team) {
@@ -141,19 +153,22 @@ app.use('*', (req: Request, res: Response): void => {
 });
 
 // Global error handler
-app.use((error: Error, req: Request, res: Response, next: NextFunction): void => {
-  // eslint-disable-next-line no-console
-  console.error('Unhandled error:', error);
-  
-  res.status(500).json({
-    success: false,
-    message: 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { 
-      error: error.message,
-      stack: error.stack,
-    }),
-  });
-});
+app.use(
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  (error: Error, _req: Request, res: Response, _next: NextFunction): void => {
+    // eslint-disable-next-line no-console
+    console.error('Unhandled error:', error);
+
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error',
+      ...(process.env.NODE_ENV === 'development' && {
+        error: error.message,
+        stack: error.stack,
+      }),
+    });
+  }
+);
 
 // Start server
 const server = app.listen(PORT, (): void => {

@@ -67,6 +67,14 @@ router.get(
   (req: Request, res: Response): void => {
     try {
       const { id } = req.params;
+      if (!id) {
+        res.status(400).json({
+          success: false,
+          message: 'Match ID is required',
+        });
+        return;
+      }
+
       const match = matchSchedulerService.getMatchById(id);
 
       if (!match) {
@@ -145,7 +153,7 @@ router.post(
         awayTeamId,
         scheduledDate: new Date(scheduledDate),
         venue,
-        notes,
+        notes: notes || undefined,
       };
 
       const result = matchSchedulerService.scheduleMatch(request);
@@ -185,6 +193,14 @@ router.delete(
   (req: Request, res: Response): void => {
     try {
       const { id } = req.params;
+      if (!id) {
+        res.status(400).json({
+          success: false,
+          message: 'Match ID is required',
+        });
+        return;
+      }
+
       const result = matchSchedulerService.cancelMatch(id);
 
       if (result.success) {
