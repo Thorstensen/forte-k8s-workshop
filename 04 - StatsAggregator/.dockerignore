@@ -1,0 +1,11 @@
+target/
+.git
+.gitignore
+README.md
+.env
+.env.local
+.DS_Store
+*.log
+coverage/
+*.tmp
+*.temp
