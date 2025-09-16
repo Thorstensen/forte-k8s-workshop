@@ -1,0 +1,284 @@
+basePath: /
+definitions:
+  main.ErrorResponse:
+    properties:
+      code:
+        example: 404
+        type: integer
+      error:
+        example: Resource not found
+        type: string
+      message:
+        example: The requested resource was not found
+        type: string
+    type: object
+  main.HealthResponse:
+    properties:
+      status:
+        example: healthy
+        type: string
+      time:
+        example: "2024-01-15T15:00:00Z"
+        type: string
+      version:
+        example: 1.0.0
+        type: string
+    type: object
+  main.Match:
+    properties:
+      away_team:
+        $ref: '#/definitions/main.Team'
+      date_time:
+        example: "2024-01-15T15:00:00Z"
+        type: string
+      home_team:
+        $ref: '#/definitions/main.Team'
+      id:
+        example: match-1
+        type: string
+      status:
+        example: scheduled
+        type: string
+    type: object
+  main.Notification:
+    properties:
+      away_score:
+        example: 0
+        type: integer
+      card_type:
+        example: yellow
+        type: string
+      home_score:
+        example: 1
+        type: integer
+      id:
+        example: notif-1
+        type: string
+      is_important:
+        example: true
+        type: boolean
+      match_id:
+        example: match-1
+        type: string
+      message:
+        example: Bruno Fernandes scores from the penalty spot in the 25th minute
+        type: string
+      minute:
+        example: 25
+        type: integer
+      player_name:
+        example: Bruno Fernandes
+        type: string
+      priority:
+        example: high
+        type: string
+      timestamp:
+        example: "2024-01-15T15:25:00Z"
+        type: string
+      title:
+        example: GOAL! Manchester United 1-0 Liverpool
+        type: string
+      type:
+        example: goal
+        type: string
+    type: object
+  main.Team:
+    properties:
+      id:
+        example: team-1
+        type: string
+      name:
+        example: Manchester United
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A service for soccer match notifications
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: NotificationCenter API
+  version: "1.0"
+paths:
+  /health:
+    get:
+      consumes:
+      - application/json
+      description: Get health status of the service
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.HealthResponse'
+      summary: Health check
+      tags:
+      - Health
+  /matches:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all soccer matches
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Match'
+            type: array
+      summary: Get all matches
+      tags:
+      - Matches
+  /matches/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a specific match by its ID
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Match'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get match by ID
+      tags:
+      - Matches
+  /matches/{id}/notifications:
+    get:
+      consumes:
+      - application/json
+      description: Get all notifications for a specific match
+      parameters:
+      - description: Match ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Filter by notification type
+        in: query
+        name: type
+        type: string
+      - description: Filter by priority
+        in: query
+        name: priority
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Notification'
+            type: array
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get notifications for a match
+      tags:
+      - Notifications
+  /notifications:
+    get:
+      consumes:
+      - application/json
+      description: Get all notifications, optionally filtered by match ID, type, or
+        priority
+      parameters:
+      - description: Filter by match ID
+        in: query
+        name: match_id
+        type: string
+      - description: Filter by notification type
+        in: query
+        name: type
+        type: string
+      - description: Filter by priority
+        in: query
+        name: priority
+        type: string
+      - default: 50
+        description: Limit number of results
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Notification'
+            type: array
+      summary: Get all notifications
+      tags:
+      - Notifications
+  /notifications/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get a specific notification by its ID
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/main.Notification'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/main.ErrorResponse'
+      summary: Get notification by ID
+      tags:
+      - Notifications
+  /notifications/important:
+    get:
+      consumes:
+      - application/json
+      description: Get all notifications marked as important
+      parameters:
+      - default: 20
+        description: Limit number of results
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/main.Notification'
+            type: array
+      summary: Get important notifications
+      tags:
+      - Notifications
+swagger: "2.0"
