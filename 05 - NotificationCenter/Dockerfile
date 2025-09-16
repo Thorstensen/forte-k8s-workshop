@@ -1,4 +1,30 @@
-# Use a minimal Alpine Linux image as the base
+# syntax=docker/dockerfile:1
+
+############################
+# 1) Builder stage         #
+############################
+FROM golang:1.24-alpine AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy go mod files first for better caching
+COPY go.mod go.sum ./
+
+# Download dependencies (skip TLS verification for build environment)
+ENV GOPROXY=direct
+ENV GOSUMDB=off
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o notification-center .
+
+############################
+# 2) Runtime stage         #
+############################
 FROM alpine:latest
 
 # Set working directory
@@ -8,8 +34,8 @@ WORKDIR /app
 RUN addgroup -g 1001 -S app && \
     adduser -u 1001 -S app -G app
 
-# Copy the pre-built binary
-COPY notification-center /app/notification-center
+# Copy binary from builder stage
+COPY --from=builder /app/notification-center /app/notification-center
 
 # Change ownership and make executable
 RUN chown -R app:app /app && \

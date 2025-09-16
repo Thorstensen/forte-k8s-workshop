@@ -18,6 +18,7 @@
 Thumbs.db
 
 # Build artifacts
+notification-center
 *.exe
 
 # Temporary files

@@ -100,6 +100,8 @@ A comprehensive Go-based notification service API for soccer match events. This 
 
 3. **Access the API at**: http://localhost:8080/
 
+> **Note**: The Dockerfile uses a multi-stage build that compiles the Go application inside the container, so you don't need to build the binary locally.
+
 ## API Documentation
 
 The service provides comprehensive API documentation via Swagger/OpenAPI. Visit the root URL (`/`) or `/swagger/index.html` to access the interactive documentation where you can:
