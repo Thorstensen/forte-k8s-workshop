@@ -1,9 +1,13 @@
 name: Build and Push Docker Images
 
+# This workflow builds and pushes Docker images to GitHub Container Registry (ghcr.io)
+# for each of the 5 service folders when changes are detected in their respective directories.
+# It can also be triggered manually to build all services.
+
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Allow manual triggering
   push:
-    paths:
+    paths:            # Trigger on changes to any files in these service folders
       - '01 - TeamGenerator/**'
       - '02 - BettingService/**'
       - '03 - MatchScheduler/**'
