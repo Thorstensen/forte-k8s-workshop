@@ -1,0 +1,89 @@
+# Development environment values
+global:
+  imageTag: "latest"
+  imagePullPolicy: Always
+
+# Team Generator - Development Settings
+team-generator:
+  replicaCount: 1
+  image:
+    tag: "dev"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+  healthCheck:
+    initialDelaySeconds: 10
+    periodSeconds: 5
+
+# Betting Service - Development Settings  
+betting-service:
+  replicaCount: 1
+  image:
+    tag: "dev"
+  resources:
+    limits:
+      cpu: 150m
+      memory: 256Mi
+    requests:
+      cpu: 75m
+      memory: 128Mi
+
+# Match Scheduler - Development Settings
+match-scheduler:
+  replicaCount: 1
+  image:
+    tag: "dev"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Stats Aggregator - Development Settings
+stats-aggregator:
+  replicaCount: 1
+  image:
+    tag: "dev"
+  resources:
+    limits:
+      cpu: 150m
+      memory: 128Mi
+    requests:
+      cpu: 75m
+      memory: 64Mi
+
+# Notification Center - Development Settings
+notification-center:
+  replicaCount: 1
+  image:
+    tag: "dev"
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi
+
+# Frontend - Development Settings
+frontend:
+  replicaCount: 1
+  image:
+    tag: "dev"
+  service:
+    type: NodePort  # Easy access for development
+  ingress:
+    enabled: false  # No ingress needed for dev
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 64Mi

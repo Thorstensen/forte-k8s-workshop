@@ -1,0 +1,143 @@
+# Global configuration for all services
+global:
+  # Image registry settings
+  imageRegistry: ghcr.io/thorstensen/forte-k8s-workshop
+  imagePullPolicy: IfNotPresent
+  imageTag: "latest"
+  
+  # Common labels
+  labels:
+    platform: football-scheduling
+    environment: production
+  
+  # Security settings
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 2000
+
+# Individual service configurations
+team-generator:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/thorstensen/forte-k8s-workshop/team-generator
+  service:
+    port: 5000
+    targetPort: 8080
+  namespace:
+    name: teamgenerator
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+betting-service:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/thorstensen/forte-k8s-workshop/betting-service
+  service:
+    port: 8080
+    targetPort: 8080
+  namespace:
+    name: bettingservice
+  resources:
+    limits:
+      cpu: 300m
+      memory: 512Mi
+    requests:
+      cpu: 150m
+      memory: 256Mi
+
+match-scheduler:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler
+  service:
+    port: 3000
+    targetPort: 3000
+  namespace:
+    name: matchscheduler
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+stats-aggregator:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator
+  service:
+    port: 8081
+    targetPort: 8080
+  namespace:
+    name: statsaggregator
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 128Mi
+
+notification-center:
+  enabled: true
+  replicaCount: 2
+  image:
+    repository: ghcr.io/thorstensen/forte-k8s-workshop/notification-center
+  service:
+    port: 8082
+    targetPort: 8080
+  namespace:
+    name: notificationcenter
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+frontend:
+  enabled: true
+  replicaCount: 3
+  image:
+    repository: ghcr.io/thorstensen/forte-k8s-workshop/frontend
+  service:
+    type: LoadBalancer  # Expose frontend externally
+    port: 3001
+    targetPort: 3001
+  namespace:
+    name: frontend
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: forte-football.local
+        paths:
+          - path: /
+            pathType: Prefix
+  resources:
+    limits:
+      cpu: 200m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+# Monitoring and observability (optional)
+monitoring:
+  enabled: false
+  prometheus:
+    enabled: false
+  grafana:
+    enabled: false
