@@ -431,7 +431,7 @@ Each service includes its own test suite - see individual README files for detai
 
 ## 📚 Learning Resources
 
-- **Architecture**: [C4 Model Diagrams](documentation/diagrams/c4/)
+- **Architecture**: C4 Model Diagrams (embedded above) & [detailed documentation](documentation/diagrams/c4/)
 - **Microservices**: Individual service documentation
 - **Kubernetes**: Workshop exercises (coming soon)
 - **Best Practices**: Code examples across multiple tech stacks
