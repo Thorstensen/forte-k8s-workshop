@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: frontend
+  namespace: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
+        ports:
+        - containerPort: 3001
