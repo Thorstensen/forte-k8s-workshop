@@ -37,9 +37,9 @@ A comprehensive Rust-based soccer statistics API built with Axum and OpenAPI doc
 - `GET /api/match/stats` - Get randomly generated match statistics
 
 ### Utility
-- `GET /health` - Health check endpoint
+- `GET /api/health` - Health check endpoint
 - `GET /` - Redirects to Swagger UI documentation
-- `GET /swagger-ui` - Interactive API documentation
+- `GET /api/docs` - Interactive API documentation
 
 ## Quick Start
 
@@ -55,8 +55,8 @@ cargo run
 ```
 
 2. Access the API:
-- Swagger UI: http://localhost:8080/swagger-ui
-- Health Check: http://localhost:8080/health
+- Swagger UI: http://localhost:8080/api/docs
+- Health Check: http://localhost:8080/api/health
 - Match Stats: http://localhost:8080/api/match/stats
 
 ### Docker Deployment
@@ -76,11 +76,11 @@ docker build -t soccer-stats-aggregator .
 docker run -p 8080:8080 soccer-stats-aggregator
 ```
 
-4. Access the API at http://localhost:8080/swagger-ui
+4. Access the API at http://localhost:8080/api/docs
 
 ## API Documentation
 
-The service provides comprehensive OpenAPI documentation via Swagger UI. Visit the root URL (`/`) or `/swagger-ui` to access the interactive documentation where you can:
+The service provides comprehensive OpenAPI documentation via Swagger UI. Visit `/api/docs` to access the interactive documentation where you can:
 
 - View all available endpoints
 - See detailed request/response schemas

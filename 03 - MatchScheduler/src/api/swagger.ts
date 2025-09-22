@@ -206,7 +206,7 @@ const options: swaggerJSDoc.Options = {
       },
     },
     paths: {
-      '/health': {
+      '/api/health': {
         get: {
           tags: ['Health'],
           summary: 'Health check endpoint',
@@ -225,7 +225,7 @@ const options: swaggerJSDoc.Options = {
           },
         },
       },
-      '/matches': {
+      '/api/matches': {
         get: {
           tags: ['Matches'],
           summary: 'Get all matches',
@@ -362,7 +362,7 @@ const options: swaggerJSDoc.Options = {
           },
         },
       },
-      '/matches/{id}': {
+      '/api/matches/{id}': {
         get: {
           tags: ['Matches'],
           summary: 'Get a specific match by ID',

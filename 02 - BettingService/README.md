@@ -17,18 +17,18 @@ A comprehensive Python-based betting service API built with FastAPI. This servic
 ## API Endpoints
 
 ### Matches
-- `GET /matches` - Get all available matches
-- `GET /matches/{match_id}/odds` - Get all odds for a specific match
-- `GET /matches/{match_id}/odds/{bet_type}` - Get odds for a specific bet type
+- `GET /api/matches` - Get all available matches
+- `GET /api/matches/{match_id}/odds` - Get all odds for a specific match
+- `GET /api/matches/{match_id}/odds/{bet_type}` - Get odds for a specific bet type
 
 ### Betting
-- `POST /bets` - Place a new bet
-- `GET /bets` - Get all placed bets
-- `GET /bets/{bet_id}` - Get a specific bet
-- `GET /matches/{match_id}/bets` - Get all bets for a specific match
+- `POST /api/bets` - Place a new bet
+- `GET /api/bets` - Get all placed bets
+- `GET /api/bets/{bet_id}` - Get a specific bet
+- `GET /api/matches/{match_id}/bets` - Get all bets for a specific match
 
 ### Utility
-- `GET /health` - Health check endpoint
+- `GET /api/health` - Health check endpoint
 - `GET /` - Redirects to Swagger documentation
 
 ## Quick Start
@@ -46,8 +46,8 @@ python main.py
 ```
 
 3. Access the API:
-- Swagger UI: http://localhost:8080/
-- Health Check: http://localhost:8080/health
+- Swagger UI: http://localhost:8080/api/docs
+- Health Check: http://localhost:8080/api/health
 
 ### Docker
 
@@ -61,11 +61,11 @@ docker build -t betting-service .
 docker run -p 8080:8080 betting-service
 ```
 
-3. Access the API at http://localhost:8080/
+3. Access the API at http://localhost:8080/api/docs
 
 ## API Documentation
 
-The service provides comprehensive API documentation via Swagger/OpenAPI. Visit the root URL (`/`) to access the interactive documentation where you can:
+The service provides comprehensive API documentation via Swagger/OpenAPI. Visit `/api/docs` to access the interactive documentation where you can:
 
 - View all available endpoints
 - See request/response schemas
@@ -90,17 +90,17 @@ The service provides comprehensive API documentation via Swagger/OpenAPI. Visit 
 
 ### Get All Matches
 ```bash
-curl http://localhost:8080/matches
+curl http://localhost:8080/api/matches
 ```
 
 ### Get Odds for Match Winner
 ```bash
-curl http://localhost:8080/matches/{match_id}/odds/match_winner
+curl http://localhost:8080/api/matches/{match_id}/odds/match_winner
 ```
 
 ### Place a Bet
 ```bash
-curl -X POST http://localhost:8080/bets \
+curl -X POST http://localhost:8080/api/bets \
   -H "Content-Type: application/json" \
   -d '{
     "match_id": "match-id-here",

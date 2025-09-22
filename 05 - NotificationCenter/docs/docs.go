@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/health": {
+        "/api/health": {
             "get": {
                 "description": "Get health status of the service",
                 "consumes": [
@@ -47,7 +47,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/matches": {
+        "/api/matches": {
             "get": {
                 "description": "Get a list of all soccer matches",
                 "consumes": [
@@ -73,7 +73,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/matches/{id}": {
+        "/api/matches/{id}": {
             "get": {
                 "description": "Get a specific match by its ID",
                 "consumes": [
@@ -111,7 +111,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/matches/{id}/notifications": {
+        "/api/matches/{id}/notifications": {
             "get": {
                 "description": "Get all notifications for a specific match",
                 "consumes": [
@@ -164,7 +164,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/notifications": {
+        "/api/notifications": {
             "get": {
                 "description": "Get all notifications, optionally filtered by match ID, type, or priority",
                 "consumes": [
@@ -217,7 +217,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/notifications/important": {
+        "/api/notifications/important": {
             "get": {
                 "description": "Get all notifications marked as important",
                 "consumes": [
@@ -252,7 +252,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/notifications/{id}": {
+        "/api/notifications/{id}": {
             "get": {
                 "description": "Get a specific notification by its ID",
                 "consumes": [
@@ -426,7 +426,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "localhost:8080",
-	BasePath:         "/",
+	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "NotificationCenter API",
 	Description:      "A service for soccer match notifications",

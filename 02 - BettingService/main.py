@@ -28,7 +28,7 @@ app = FastAPI(
     * **Yellow Cards**: Bet on exact number of yellow cards (0-5)
     * **Red Cards**: Bet on exact number of red cards (0-3)
     
-    This API provides Swagger documentation at the root URL for easy testing and exploration.
+    This API provides Swagger documentation at /api/docs for easy testing and exploration.
     """,
     version="1.0.0",
     contact={
@@ -39,23 +39,26 @@ app = FastAPI(
         "name": "MIT",
         "url": "https://opensource.org/licenses/MIT",
     },
+    docs_url="/api/docs",
+    redoc_url="/api/redoc",
+    openapi_url="/api/openapi.json"
 )
 
 
 @app.get("/", include_in_schema=False)
 async def redirect_to_docs():
     """Redirect root URL to Swagger documentation"""
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/api/docs")
 
 
-@app.get("/health", tags=["Health Check"])
+@app.get("/api/health", tags=["Health Check"])
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "service": "betting-service"}
 
 
 # Match Endpoints
-@app.get("/matches", response_model=List[Match], tags=["Matches"])
+@app.get("/api/matches", response_model=List[Match], tags=["Matches"])
 async def get_matches():
     """
     Get all available matches for betting.
@@ -65,7 +68,7 @@ async def get_matches():
     return betting_service.get_all_matches()
 
 
-@app.get("/matches/{match_id}/odds", response_model=BettingOddsResponse, tags=["Odds"])
+@app.get("/api/matches/{match_id}/odds", response_model=BettingOddsResponse, tags=["Odds"])
 async def get_match_odds(match_id: str):
     """
     Get all betting odds for a specific match.
@@ -81,7 +84,7 @@ async def get_match_odds(match_id: str):
     return odds_response
 
 
-@app.get("/matches/{match_id}/odds/{bet_type}", response_model=List[BettingOdds], tags=["Odds"])
+@app.get("/api/matches/{match_id}/odds/{bet_type}", response_model=List[BettingOdds], tags=["Odds"])
 async def get_odds_by_type(match_id: str, bet_type: BetType):
     """
     Get betting odds for a specific bet type on a match.
@@ -102,7 +105,7 @@ async def get_odds_by_type(match_id: str, bet_type: BetType):
 
 
 # Betting Endpoints
-@app.post("/bets", response_model=BetResponse, tags=["Bets"])
+@app.post("/api/bets", response_model=BetResponse, tags=["Bets"])
 async def place_bet(bet_request: PlaceBetRequest):
     """
     Place a new bet on a match.
@@ -125,7 +128,7 @@ async def place_bet(bet_request: PlaceBetRequest):
     return bet_response
 
 
-@app.get("/bets", response_model=List[Bet], tags=["Bets"])
+@app.get("/api/bets", response_model=List[Bet], tags=["Bets"])
 async def get_all_bets():
     """
     Get all placed bets.
@@ -135,7 +138,7 @@ async def get_all_bets():
     return betting_service.get_all_bets()
 
 
-@app.get("/bets/{bet_id}", response_model=Bet, tags=["Bets"])
+@app.get("/api/bets/{bet_id}", response_model=Bet, tags=["Bets"])
 async def get_bet(bet_id: str):
     """
     Get a specific bet by its ID.
@@ -151,7 +154,7 @@ async def get_bet(bet_id: str):
     return bet
 
 
-@app.get("/matches/{match_id}/bets", response_model=List[Bet], tags=["Bets"])
+@app.get("/api/matches/{match_id}/bets", response_model=List[Bet], tags=["Bets"])
 async def get_bets_for_match(match_id: str):
     """
     Get all bets placed on a specific match.
