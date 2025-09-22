@@ -178,6 +178,47 @@ router.post('/', [
 });
 
 /**
+ * PATCH /matches/:id/start
+ * Start a scheduled match
+ */
+router.patch('/:id/start', [
+  param('id').isString().notEmpty().withMessage('Match ID is required'),
+], handleValidationErrors, (req: Request, res: Response): void => {
+  try {
+    const { id } = req.params;
+
+    if (!id) {
+      res.status(400).json({
+        success: false,
+        message: 'Match ID is required',
+      });
+      return;
+    }
+
+    const result = matchSchedulerService.startMatch(id);
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        data: result.match,
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: result.message,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to start match',
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
+/**
  * DELETE /matches/:id
  * Cancel a scheduled match
  */

@@ -139,6 +139,41 @@ export class MatchSchedulerService {
   }
 
   /**
+   * Start a scheduled match
+   */
+  public startMatch(matchId: string): ScheduleResponse {
+    const match = this.matches.get(matchId);
+
+    if (!match) {
+      return {
+        success: false,
+        message: `Match with ID "${matchId}" not found`,
+      };
+    }
+
+    if (match.status !== MatchStatus.SCHEDULED) {
+      return {
+        success: false,
+        message: `Cannot start match with status "${match.status}". Only scheduled matches can be started.`,
+      };
+    }
+
+    // Create updated match with in-progress status
+    const startedMatch: Match = {
+      ...match,
+      status: MatchStatus.IN_PROGRESS,
+    };
+
+    this.matches.set(matchId, startedMatch);
+
+    return {
+      success: true,
+      message: 'Match started successfully',
+      match: startedMatch,
+    };
+  }
+
+  /**
    * Check for scheduling conflicts for teams around a specific date
    * Returns conflicting match if found, undefined otherwise
    */
