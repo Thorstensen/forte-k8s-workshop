@@ -1,0 +1,22 @@
+@startuml "Forte K8s Workshop - System Context"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_TOP_DOWN()
+
+title Forte K8s Workshop - System Context Diagram
+
+Person(user, "Football Fan", "Wants to view matches, place bets, and receive notifications")
+Person(admin, "System Administrator", "Manages teams, schedules matches, and monitors system")
+
+System(forte_system, "Forte Football Platform", "Microservices-based football management platform with betting, statistics, and notifications")
+
+System_Ext(browser, "Web Browser", "User interface for accessing the platform")
+System_Ext(kubernetes, "Kubernetes Cluster", "Container orchestration platform hosting all microservices")
+
+Rel(user, forte_system, "Views matches, places bets, receives notifications", "HTTPS")
+Rel(admin, forte_system, "Manages teams and matches", "HTTPS")
+Rel(forte_system, browser, "Serves web interface", "HTTPS")
+Rel(forte_system, kubernetes, "Deployed on", "Container Runtime")
+
+SHOW_LEGEND()
+@enduml

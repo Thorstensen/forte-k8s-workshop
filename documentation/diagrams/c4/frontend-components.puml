@@ -1,0 +1,76 @@
+@startuml "Forte K8s Workshop - Frontend Components"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_TOP_DOWN()
+
+title Frontend Service - Component Diagram
+
+Container_Boundary(frontend, "Frontend - React TypeScript") {
+    Component(layout, "Layout Component", "React", "Main application layout with navigation")
+    Component(teams_tab, "Teams Tab", "React", "Team creation and viewing interface")
+    Component(matches_tab, "Matches Tab", "React", "Match scheduling and management")
+    Component(betting_tab, "Betting Tab", "React", "Betting interface with live odds")
+    Component(notifications_tab, "Notifications Tab", "React", "Real-time notification feed")
+    Component(stats_tab, "Stats Tab", "React", "Match statistics display")
+    
+    Component(api_service, "API Service", "Axios", "HTTP client configuration for all services")
+    Component(team_service, "Team Service Client", "TypeScript", "Team Generator API integration")
+    Component(match_service, "Match Service Client", "TypeScript", "Match Scheduler API integration")
+    Component(betting_service, "Betting Service Client", "TypeScript", "Betting Service API integration")
+    Component(notification_service, "Notification Service Client", "TypeScript", "Notification Center API integration")
+    Component(stats_service, "Stats Service Client", "TypeScript", "Stats Aggregator API integration")
+    
+    Component(react_query, "React Query Hooks", "TanStack Query", "Data fetching and caching hooks")
+    Component(types, "TypeScript Types", "TypeScript", "Shared type definitions")
+}
+
+Container_Ext(team_generator, "Team Generator", "C# .NET")
+Container_Ext(match_scheduler, "Match Scheduler", "TypeScript")
+Container_Ext(betting_api, "Betting Service", "Python")
+Container_Ext(notification_api, "Notification Center", "Go")
+Container_Ext(stats_api, "Stats Aggregator", "Rust")
+
+' UI Component relationships
+Rel(layout, teams_tab, "Contains")
+Rel(layout, matches_tab, "Contains")
+Rel(layout, betting_tab, "Contains")
+Rel(layout, notifications_tab, "Contains")
+Rel(layout, stats_tab, "Contains")
+
+' Component to service relationships
+Rel(teams_tab, team_service, "Uses")
+Rel(matches_tab, match_service, "Uses")
+Rel(betting_tab, betting_service, "Uses")
+Rel(notifications_tab, notification_service, "Uses")
+Rel(stats_tab, stats_service, "Uses")
+
+' Service layer relationships
+Rel(team_service, api_service, "Uses")
+Rel(match_service, api_service, "Uses")
+Rel(betting_service, api_service, "Uses")
+Rel(notification_service, api_service, "Uses")
+Rel(stats_service, api_service, "Uses")
+
+' React Query integration
+Rel(team_service, react_query, "Provides hooks")
+Rel(match_service, react_query, "Provides hooks")
+Rel(betting_service, react_query, "Provides hooks")
+Rel(notification_service, react_query, "Provides hooks")
+Rel(stats_service, react_query, "Provides hooks")
+
+' Type usage
+Rel(teams_tab, types, "Uses")
+Rel(matches_tab, types, "Uses")
+Rel(betting_tab, types, "Uses")
+Rel(notifications_tab, types, "Uses")
+Rel(stats_tab, types, "Uses")
+
+' External API calls
+Rel(team_service, team_generator, "HTTP REST", "Get teams, create teams")
+Rel(match_service, match_scheduler, "HTTP REST", "Schedule matches, get matches")
+Rel(betting_service, betting_api, "HTTP REST", "Place bets, get odds")
+Rel(notification_service, notification_api, "HTTP REST", "Get notifications")
+Rel(stats_service, stats_api, "HTTP REST", "Get match statistics")
+
+SHOW_LEGEND()
+@enduml
