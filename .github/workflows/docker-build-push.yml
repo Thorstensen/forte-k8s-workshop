@@ -1,0 +1,256 @@
+name: Build and Push Docker Images
+
+# This workflow builds and pushes Docker images to GitHub Container Registry (ghcr.io)
+# for each of the 5 service folders when changes are detected in their respective directories.
+# It can also be triggered manually to build all services.
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+  push:
+    paths:            # Trigger on changes to any files in these service folders
+      - '01 - TeamGenerator/**'
+      - '02 - BettingService/**'
+      - '03 - MatchScheduler/**'
+      - '04 - StatsAggregator/**'
+      - '05 - NotificationCenter/**'
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      team-generator: ${{ steps.changes.outputs.team-generator }}
+      betting-service: ${{ steps.changes.outputs.betting-service }}
+      match-scheduler: ${{ steps.changes.outputs.match-scheduler }}
+      stats-aggregator: ${{ steps.changes.outputs.stats-aggregator }}
+      notification-center: ${{ steps.changes.outputs.notification-center }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect changes
+        id: changes
+        run: |
+          # For manual workflow dispatch, build all services
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "team-generator=true" >> $GITHUB_OUTPUT
+            echo "betting-service=true" >> $GITHUB_OUTPUT
+            echo "match-scheduler=true" >> $GITHUB_OUTPUT
+            echo "stats-aggregator=true" >> $GITHUB_OUTPUT
+            echo "notification-center=true" >> $GITHUB_OUTPUT
+          else
+            # For push events, detect which folders have changes
+            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^01 - TeamGenerator/"; then
+              echo "team-generator=true" >> $GITHUB_OUTPUT
+            else
+              echo "team-generator=false" >> $GITHUB_OUTPUT
+            fi
+            
+            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^02 - BettingService/"; then
+              echo "betting-service=true" >> $GITHUB_OUTPUT
+            else
+              echo "betting-service=false" >> $GITHUB_OUTPUT
+            fi
+            
+            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^03 - MatchScheduler/"; then
+              echo "match-scheduler=true" >> $GITHUB_OUTPUT
+            else
+              echo "match-scheduler=false" >> $GITHUB_OUTPUT
+            fi
+            
+            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^04 - StatsAggregator/"; then
+              echo "stats-aggregator=true" >> $GITHUB_OUTPUT
+            else
+              echo "stats-aggregator=false" >> $GITHUB_OUTPUT
+            fi
+            
+            if git diff --name-only ${{ github.event.before }} ${{ github.sha }} | grep -q "^05 - NotificationCenter/"; then
+              echo "notification-center=true" >> $GITHUB_OUTPUT
+            else
+              echo "notification-center=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+  build-team-generator:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.team-generator == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/team-generator
+          tags: |
+            type=raw,value=team-generator-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./01 - TeamGenerator
+          file: ./01 - TeamGenerator/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-betting-service:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.betting-service == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/betting-service
+          tags: |
+            type=raw,value=betting-service-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./02 - BettingService
+          file: ./02 - BettingService/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-match-scheduler:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.match-scheduler == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/match-scheduler
+          tags: |
+            type=raw,value=match-scheduler-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./03 - MatchScheduler
+          file: ./03 - MatchScheduler/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-stats-aggregator:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.stats-aggregator == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/stats-aggregator
+          tags: |
+            type=raw,value=stats-aggregator-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./04 - StatsAggregator
+          file: ./04 - StatsAggregator/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  build-notification-center:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.notification-center == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/notification-center
+          tags: |
+            type=raw,value=notification-center-${{ github.sha }}
+            type=raw,value=latest,enable={{is_default_branch}}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./05 - NotificationCenter
+          file: ./05 - NotificationCenter/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
