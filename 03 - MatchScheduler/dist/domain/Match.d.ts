@@ -4,8 +4,12 @@
 export interface Match {
     /** Unique identifier for the match */
     readonly id: string;
+    /** Home team ID (shared across services) */
+    readonly homeTeamId: string;
     /** Home team name */
     readonly homeTeamName: string;
+    /** Away team ID (shared across services) */
+    readonly awayTeamId: string;
     /** Away team name */
     readonly awayTeamName: string;
     /** Scheduled date and time for the match */
@@ -44,6 +48,10 @@ export interface ScheduleMatchRequest {
     /** Optional notes about the match */
     readonly notes?: string | undefined;
 }
+/**
+ * Get team ID for a team name, or generate a default ID if not found
+ */
+export declare const getTeamId: (teamName: string) => string;
 /**
  * Factory function to create a new Match
  */

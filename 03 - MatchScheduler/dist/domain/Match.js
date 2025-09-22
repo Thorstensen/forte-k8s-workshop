@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMatchDescription = exports.matchInvolvestTeam = exports.isUpcomingMatch = exports.createMatch = exports.MatchStatus = void 0;
+exports.getMatchDescription = exports.matchInvolvestTeam = exports.isUpcomingMatch = exports.createMatch = exports.getTeamId = exports.MatchStatus = void 0;
 /**
  * Possible match statuses
  */
@@ -12,6 +12,24 @@ var MatchStatus;
     MatchStatus["CANCELLED"] = "cancelled";
     MatchStatus["POSTPONED"] = "postponed";
 })(MatchStatus || (exports.MatchStatus = MatchStatus = {}));
+/**
+ * Shared team ID mapping - consistent across all services
+ */
+const TEAM_ID_MAP = {
+    'Manchester United': 'team-1',
+    'Liverpool': 'team-2',
+    'Chelsea': 'team-3',
+    'Arsenal': 'team-4',
+    'Manchester City': 'team-5',
+    'Tottenham': 'team-6',
+};
+/**
+ * Get team ID for a team name, or generate a default ID if not found
+ */
+const getTeamId = (teamName) => {
+    return TEAM_ID_MAP[teamName] || `team-${teamName.toLowerCase().replace(/\s+/g, '-')}`;
+};
+exports.getTeamId = getTeamId;
 /**
  * Factory function to create a new Match
  */
@@ -36,10 +54,14 @@ const createMatch = (id, homeTeamName, awayTeamName, scheduledDate, venue, notes
     if (!awayTeamName.trim()) {
         throw new Error('Away team name cannot be empty');
     }
+    const homeTeamNameTrimmed = homeTeamName.trim();
+    const awayTeamNameTrimmed = awayTeamName.trim();
     return {
         id,
-        homeTeamName: homeTeamName.trim(),
-        awayTeamName: awayTeamName.trim(),
+        homeTeamId: (0, exports.getTeamId)(homeTeamNameTrimmed),
+        homeTeamName: homeTeamNameTrimmed,
+        awayTeamId: (0, exports.getTeamId)(awayTeamNameTrimmed),
+        awayTeamName: awayTeamNameTrimmed,
         scheduledDate,
         venue: venue.trim(),
         status: MatchStatus.SCHEDULED,

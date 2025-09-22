@@ -37,17 +37,27 @@ const options = {
                         id: {
                             type: 'string',
                             description: 'Unique identifier for the match',
-                            example: '550e8400-e29b-41d4-a716-446655440000',
+                            example: 'match-1',
+                        },
+                        homeTeamId: {
+                            type: 'string',
+                            description: 'Home team ID (shared across services)',
+                            example: 'team-1',
                         },
                         homeTeamName: {
                             type: 'string',
                             description: 'Home team name',
-                            example: 'Barcelona FC',
+                            example: 'Manchester United',
+                        },
+                        awayTeamId: {
+                            type: 'string',
+                            description: 'Away team ID (shared across services)',
+                            example: 'team-2',
                         },
                         awayTeamName: {
                             type: 'string',
                             description: 'Away team name',
-                            example: 'Real Madrid',
+                            example: 'Liverpool',
                         },
                         scheduledDate: {
                             type: 'string',

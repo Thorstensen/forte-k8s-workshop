@@ -12,20 +12,25 @@ class InMemoryStorage:
         self._initialize_sample_data()
 
     def _initialize_sample_data(self):
-        """Initialize with sample teams, matches, and odds"""
-        # Create sample teams
-        team1 = Team(name="Manchester United")
-        team2 = Team(name="Liverpool")
-        team3 = Team(name="Arsenal")
-        team4 = Team(name="Chelsea")
+        """Initialize with sample teams, matches, and odds using shared IDs"""
+        # Create sample teams with shared IDs (from shared-ids.md)
+        team1 = Team(id="team-1", name="Manchester United")
+        team2 = Team(id="team-2", name="Liverpool")
+        team3 = Team(id="team-3", name="Chelsea")
+        team4 = Team(id="team-4", name="Arsenal")
+        team5 = Team(id="team-5", name="Manchester City")
+        team6 = Team(id="team-6", name="Tottenham")
         
         self.teams[team1.id] = team1
         self.teams[team2.id] = team2
         self.teams[team3.id] = team3
         self.teams[team4.id] = team4
+        self.teams[team5.id] = team5
+        self.teams[team6.id] = team6
 
-        # Create sample matches
+        # Create sample matches with shared ID format
         match1 = Match(
+            id="match-1",
             home_team=team1,
             away_team=team2,
             match_date=datetime.utcnow() + timedelta(days=1),
@@ -33,18 +38,29 @@ class InMemoryStorage:
         )
         
         match2 = Match(
+            id="match-2",
             home_team=team3,
             away_team=team4,
             match_date=datetime.utcnow() + timedelta(days=2),
             status="scheduled"
         )
 
+        match3 = Match(
+            id="match-3",
+            home_team=team5,
+            away_team=team6,
+            match_date=datetime.utcnow() + timedelta(days=3),
+            status="scheduled"
+        )
+
         self.matches[match1.id] = match1
         self.matches[match2.id] = match2
+        self.matches[match3.id] = match3
 
         # Create sample odds
         self._create_odds_for_match(match1)
         self._create_odds_for_match(match2)
+        self._create_odds_for_match(match3)
 
     def _create_odds_for_match(self, match: Match):
         """Create comprehensive odds for a match"""
