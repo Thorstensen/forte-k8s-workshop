@@ -1,6 +1,6 @@
 # Converting Kubernetes YAML to Helm Charts
 
-This directory demonstrates how to convert the existing Kubernetes YAML files in the `deploy/` folders to Helm charts. Helm provides powerful templating, configuration management, and packaging capabilities for Kubernetes applications.
+This directory demonstrates how to convert the existing Kubernetes YAML files in the `deploy/` folders to Helm charts. Each service now has its own Helm chart located in its respective service directory under `helm-chart/`.
 
 ## Current Structure vs Helm Approach
 
@@ -21,6 +21,33 @@ Each service currently has individual YAML files:
 # ... similar structure for other services
 ```
 
+### New Helm Structure
+
+Each service now has its own Helm chart:
+```
+01 - TeamGenerator/helm-chart/
+├── Chart.yaml              # Chart metadata
+├── values.yaml             # Default configuration
+└── templates/
+    ├── _helpers.tpl         # Template helpers
+    ├── namespace.yaml       # Templated namespace
+    ├── deployment.yaml      # Templated deployment (not ReplicaSet)
+    ├── service.yaml         # Templated service
+    └── serviceaccount.yaml  # Service account for security
+
+02 - BettingService/helm-chart/
+├── Chart.yaml
+├── values.yaml
+└── templates/
+    ├── _helpers.tpl
+    ├── namespace.yaml
+    ├── deployment.yaml
+    ├── service.yaml
+    └── serviceaccount.yaml
+
+# ... and so on for all 6 services
+```
+
 ### Issues with Current Approach
 
 1. **Duplication**: Each service repeats similar YAML structure
@@ -34,10 +61,10 @@ Each service currently has individual YAML files:
 
 ### 1. Individual Service Charts
 
-Each microservice gets its own Helm chart with templated values:
+Each microservice gets its own Helm chart with templated values in its service directory:
 
 ```
-helm-charts/team-generator/
+01 - TeamGenerator/helm-chart/
 ├── Chart.yaml              # Chart metadata
 ├── values.yaml             # Default configuration
 └── templates/
@@ -60,7 +87,7 @@ helm-charts/team-generator/
 A single chart that manages all microservices:
 
 ```
-helm-charts/forte-platform/
+helm-charts/football-scheduling-platform/
 ├── Chart.yaml              # Main chart with dependencies
 ├── values.yaml             # Configuration for all services
 └── charts/                 # Sub-charts or dependencies
@@ -165,10 +192,10 @@ helm rollback team-generator 1
 
 ```bash
 # Install team-generator service
-helm install team-generator ./helm-charts/team-generator
+helm install team-generator ./01\ -\ TeamGenerator/helm-chart
 
 # Install with custom values
-helm install team-generator ./helm-charts/team-generator \
+helm install team-generator ./01\ -\ TeamGenerator/helm-chart \
   --set replicaCount=3 \
   --set image.tag=v1.2.0 \
   --set resources.limits.cpu=500m
@@ -178,10 +205,10 @@ helm install team-generator ./helm-charts/team-generator \
 
 ```bash
 # Install entire platform
-helm install forte-platform ./helm-charts/forte-platform
+helm install football-platform ./helm-charts/football-scheduling-platform
 
 # Install with specific services disabled
-helm install forte-platform ./helm-charts/forte-platform \
+helm install football-platform ./helm-charts/football-scheduling-platform \
   --set betting-service.enabled=false \
   --set notification-center.enabled=false
 ```
@@ -221,8 +248,9 @@ helm create team-generator
 helm create betting-service
 # ... etc
 
-# Or use the provided templates
-cp -r helm-charts/team-generator my-charts/
+# Or use the provided charts in service directories
+cd "01 - TeamGenerator/helm-chart"
+helm lint .
 ```
 
 ### 2. Extract Values from Existing YAML

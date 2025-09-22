@@ -7,7 +7,7 @@ global:
   
   # Common labels
   labels:
-    platform: forte-football
+    platform: football-scheduling
     environment: production
   
   # Security settings

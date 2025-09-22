@@ -1,16 +1,16 @@
 apiVersion: v2
-name: team-generator
-description: A Helm chart for Team Generator microservice
+name: betting-service
+description: A Helm chart for Betting Service microservice
 version: 0.1.0
 appVersion: "1.0.0"
 keywords:
   - microservice
-  - team-generator
+  - betting-service
   - football
   - forte
 home: https://github.com/Thorstensen/forte-k8s-workshop
 sources:
   - https://github.com/Thorstensen/forte-k8s-workshop
 maintainers:
-  - name: Forte Team
-    email: forte@example.com
+  - name: Tobias Thorstensen
+    email: tobias.thorstensen@fortedigital.com
