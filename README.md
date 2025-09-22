@@ -418,6 +418,24 @@ This workshop demonstrates key Kubernetes concepts:
 - **📈 Scaling**: Horizontal pod autoscaling based on demand
 - **🛡️ Security**: RBAC, network policies, and secret management
 
+## ⚙️ Kubernetes Deployment
+
+**Note**: Kubernetes deployment manifests are maintained on a separate branch to keep the main branch focused on application code.
+
+- **Deployment Branch**: `k8s-deployment`
+- **Manifests**: Each service includes namespace, deployment, and service configurations
+- **Access**: Switch to the `k8s-deployment` branch to find all Kubernetes YAML files
+
+```bash
+# Switch to deployment branch to access Kubernetes manifests
+git checkout k8s-deployment
+
+# Each service has a deploy/ directory with:
+# - 01-namespace.yaml
+# - 02-deployment.yaml  
+# - 03-service.yaml
+```
+
 ## 🧪 Testing
 
 ### Integration Testing
