@@ -1,0 +1,71 @@
+@startuml "Forte K8s Workshop - Team Generator Components"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_TOP_DOWN()
+
+title Team Generator Service - Component Diagram (Clean Architecture)
+
+Container_Boundary(team_generator, "Team Generator - C# .NET Core") {
+    
+    Component_Boundary(api_layer, "API Layer") {
+        Component(controllers, "Team Controller", "ASP.NET Core", "REST API endpoints for team operations")
+        Component(swagger, "Swagger Config", "Swashbuckle", "API documentation generation")
+        Component(health_check, "Health Check", "ASP.NET Core", "Health monitoring endpoint")
+    }
+    
+    Component_Boundary(application_layer, "Application Layer") {
+        Component(team_service, "Team Service", "C#", "Business logic for team operations")
+        Component(create_team_usecase, "Create Team Use Case", "C#", "Team creation business rules")
+        Component(get_team_usecase, "Get Team Use Case", "C#", "Team retrieval logic")
+        Component(update_team_usecase, "Update Team Use Case", "C#", "Team update operations")
+        Component(delete_team_usecase, "Delete Team Use Case", "C#", "Team deletion logic")
+    }
+    
+    Component_Boundary(domain_layer, "Domain Layer") {
+        Component(team_entity, "Team Entity", "C#", "Core team business entity with shared ID mapping")
+        Component(team_repository_interface, "ITeam Repository", "C#", "Repository contract")
+        Component(shared_id_mapper, "Shared ID Mapper", "C#", "Maps team names to shared IDs (team-1 to team-6)")
+    }
+    
+    Component_Boundary(infrastructure_layer, "Infrastructure Layer") {
+        Component(team_repository, "Team Repository", "C#", "In-memory team data storage implementation")
+        Component(dependency_injection, "DI Container", "Microsoft.Extensions.DI", "Dependency injection configuration")
+    }
+}
+
+Container_Ext(frontend, "Frontend", "React TypeScript")
+ContainerDb_Ext(memory_store, "In-Memory Store", "Dictionary<string, Team>", "Runtime team storage")
+
+' API Layer relationships
+Rel(controllers, swagger, "Documented by")
+Rel(controllers, health_check, "Includes")
+
+' API to Application
+Rel(controllers, team_service, "Uses")
+
+' Application Layer relationships
+Rel(team_service, create_team_usecase, "Orchestrates")
+Rel(team_service, get_team_usecase, "Orchestrates")
+Rel(team_service, update_team_usecase, "Orchestrates")
+Rel(team_service, delete_team_usecase, "Orchestrates")
+
+' Application to Domain
+Rel(create_team_usecase, team_entity, "Creates")
+Rel(get_team_usecase, team_repository_interface, "Uses")
+Rel(update_team_usecase, team_repository_interface, "Uses")
+Rel(delete_team_usecase, team_repository_interface, "Uses")
+
+' Domain relationships
+Rel(team_entity, shared_id_mapper, "Uses for ID mapping")
+
+' Infrastructure relationships
+Rel(team_repository, team_repository_interface, "Implements")
+Rel(team_repository, memory_store, "Stores data in")
+Rel(dependency_injection, team_service, "Injects")
+Rel(dependency_injection, team_repository, "Injects")
+
+' External relationships
+Rel(frontend, controllers, "HTTP REST", "CRUD operations")
+
+SHOW_LEGEND()
+@enduml

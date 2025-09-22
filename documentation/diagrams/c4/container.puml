@@ -1,0 +1,44 @@
+@startuml "Forte K8s Workshop - Container Diagram"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_TOP_DOWN()
+
+title Forte K8s Workshop - Container Diagram (Microservices Architecture)
+
+Person(user, "Football Fan", "Views matches, places bets, receives notifications")
+Person(admin, "Administrator", "Manages teams and schedules matches")
+
+System_Boundary(forte_platform, "Forte Football Platform") {
+    Container(frontend, "Frontend", "React TypeScript", "Web interface for users to interact with all services")
+    
+    Container(team_generator, "Team Generator", "C# .NET Core", "Generates and manages football teams with shared IDs")
+    Container(betting_service, "Betting Service", "Python FastAPI", "Manages betting odds and allows users to place bets")
+    Container(match_scheduler, "Match Scheduler", "TypeScript Express", "Schedules matches with conflict detection")
+    Container(stats_aggregator, "Stats Aggregator", "Rust Axum", "Generates realistic match statistics")
+    Container(notification_center, "Notification Center", "Go Gorilla Mux", "Manages real-time match notifications")
+}
+
+System_Ext(kubernetes, "Kubernetes", "Container orchestration platform")
+
+' User interactions
+Rel(user, frontend, "Uses", "HTTPS")
+Rel(admin, frontend, "Uses", "HTTPS")
+
+' Frontend to microservices
+Rel(frontend, team_generator, "Gets teams", "REST API")
+Rel(frontend, betting_service, "Places bets, gets odds", "REST API")
+Rel(frontend, match_scheduler, "Schedules/views matches", "REST API")
+Rel(frontend, stats_aggregator, "Gets match statistics", "REST API")
+Rel(frontend, notification_center, "Gets notifications", "REST API")
+
+' Service interactions (via shared IDs - no direct calls)
+Rel_Back(team_generator, match_scheduler, "Shares team IDs", "Consistent Data")
+Rel_Back(match_scheduler, betting_service, "Shares match IDs", "Consistent Data")
+Rel_Back(match_scheduler, notification_center, "Shares match/team IDs", "Consistent Data")
+Rel_Back(team_generator, stats_aggregator, "Shares team IDs", "Consistent Data")
+
+' Deployment
+Rel(forte_platform, kubernetes, "Deployed on", "Docker Containers")
+
+SHOW_LEGEND()
+@enduml
