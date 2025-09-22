@@ -1,0 +1,42 @@
+apiVersion: v2
+name: forte-platform
+description: Umbrella Helm chart for Forte Football Microservices Platform
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - microservices
+  - football
+  - forte
+  - platform
+home: https://github.com/Thorstensen/forte-k8s-workshop
+sources:
+  - https://github.com/Thorstensen/forte-k8s-workshop
+maintainers:
+  - name: Forte Team
+    email: forte@example.com
+
+dependencies:
+  - name: team-generator
+    version: "0.1.0"
+    repository: "file://../team-generator"
+    condition: team-generator.enabled
+  - name: betting-service
+    version: "0.1.0"
+    repository: "file://../betting-service"
+    condition: betting-service.enabled
+  - name: match-scheduler
+    version: "0.1.0"
+    repository: "file://../match-scheduler"
+    condition: match-scheduler.enabled
+  - name: stats-aggregator
+    version: "0.1.0"
+    repository: "file://../stats-aggregator"
+    condition: stats-aggregator.enabled
+  - name: notification-center
+    version: "0.1.0"
+    repository: "file://../notification-center"
+    condition: notification-center.enabled
+  - name: frontend
+    version: "0.1.0"
+    repository: "file://../frontend"
+    condition: frontend.enabled
