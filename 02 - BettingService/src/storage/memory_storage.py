@@ -1,6 +1,7 @@
 from typing import List, Optional, Dict
 from datetime import datetime, timedelta
 from src.models.betting import Team, Match, BettingOdds, Bet, BetType
+from src.clients.team_generator_client import team_generator_client, TeamData, MatchData
 
 
 class InMemoryStorage:
@@ -9,53 +10,83 @@ class InMemoryStorage:
         self.matches: Dict[str, Match] = {}
         self.odds: Dict[str, List[BettingOdds]] = {}  # match_id -> list of odds
         self.bets: Dict[str, Bet] = {}
+        self._teams_cache: Dict[str, TeamData] = {}
+        self._last_cache_update = datetime.min
+        self._cache_duration = timedelta(minutes=5)
         self._initialize_sample_data()
 
     def _initialize_sample_data(self):
-        """Initialize with sample teams, matches, and odds"""
-        # Create sample teams
-        team1 = Team(name="Manchester United")
-        team2 = Team(name="Liverpool")
-        team3 = Team(name="Arsenal")
-        team4 = Team(name="Chelsea")
-        
-        self.teams[team1.id] = team1
-        self.teams[team2.id] = team2
-        self.teams[team3.id] = team3
-        self.teams[team4.id] = team4
-
-        # Create sample matches
-        match1 = Match(
-            home_team=team1,
-            away_team=team2,
-            match_date=datetime.utcnow() + timedelta(days=1),
-            status="scheduled"
-        )
-        
-        match2 = Match(
-            home_team=team3,
-            away_team=team4,
-            match_date=datetime.utcnow() + timedelta(days=2),
-            status="scheduled"
-        )
-
-        self.matches[match1.id] = match1
-        self.matches[match2.id] = match2
-
-        # Create sample odds
-        self._create_odds_for_match(match1)
-        self._create_odds_for_match(match2)
+        """Initialize with data from TeamGenerator service"""
+        try:
+            # Load teams and matches from TeamGenerator
+            self._refresh_teams_cache()
+            self._load_matches_from_team_generator()
+            
+            # Create odds for all matches
+            for match in self.matches.values():
+                self._create_odds_for_match(match)
+                
+            print(f"Initialized BettingService with {len(self.teams)} teams and {len(self.matches)} matches")
+        except Exception as e:
+            print(f"Failed to initialize from TeamGenerator: {e}")
+            # Fall back to empty state if TeamGenerator is not available
+            
+    def _refresh_teams_cache(self):
+        """Refresh teams cache from TeamGenerator"""
+        try:
+            teams_data = team_generator_client.get_all_teams()
+            self._teams_cache.clear()
+            self.teams.clear()
+            
+            for team_data in teams_data:
+                self._teams_cache[team_data.id] = team_data
+                self.teams[team_data.id] = Team(id=team_data.id, name=team_data.name)
+                
+            self._last_cache_update = datetime.now()
+        except Exception as e:
+            print(f"Failed to refresh teams cache: {e}")
+            raise
+            
+    def _load_matches_from_team_generator(self):
+        """Load matches from TeamGenerator"""
+        try:
+            matches_data = team_generator_client.get_all_matches()
+            self.matches.clear()
+            
+            for match_data in matches_data:
+                # Validate that both teams exist in our cache
+                if match_data.home_team_id in self._teams_cache and match_data.away_team_id in self._teams_cache:
+                    match = Match(
+                        id=match_data.id,
+                        home_team_id=match_data.home_team_id,
+                        away_team_id=match_data.away_team_id,
+                        match_date=match_data.scheduled_date,
+                        status="scheduled"  # Map from TeamGenerator status if needed
+                    )
+                    self.matches[match.id] = match
+        except Exception as e:
+            print(f"Failed to load matches from TeamGenerator: {e}")
+            raise
+            
+    def _ensure_teams_cache_fresh(self):
+        """Ensure teams cache is fresh"""
+        if datetime.now() - self._last_cache_update > self._cache_duration:
+            self._refresh_teams_cache()
 
     def _create_odds_for_match(self, match: Match):
         """Create comprehensive odds for a match"""
         match_odds = []
+        
+        # Get team names for descriptions
+        home_team_name = self._teams_cache.get(match.home_team_id, {}).name if match.home_team_id in self._teams_cache else f"Team {match.home_team_id}"
+        away_team_name = self._teams_cache.get(match.away_team_id, {}).name if match.away_team_id in self._teams_cache else f"Team {match.away_team_id}"
         
         # Match winner odds
         match_odds.extend([
             BettingOdds(
                 match_id=match.id,
                 bet_type=BetType.MATCH_WINNER,
-                description=f"{match.home_team.name} to win",
+                description=f"{home_team_name} to win",
                 odds=2.10,
                 option="home_win"
             ),
@@ -69,7 +100,7 @@ class InMemoryStorage:
             BettingOdds(
                 match_id=match.id,
                 bet_type=BetType.MATCH_WINNER,
-                description=f"{match.away_team.name} to win",
+                description=f"{away_team_name} to win",
                 odds=3.50,
                 option="away_win"
             )
@@ -124,6 +155,21 @@ class InMemoryStorage:
 
     def get_match(self, match_id: str) -> Optional[Match]:
         return self.matches.get(match_id)
+    
+    def get_team(self, team_id: str) -> Optional[Team]:
+        """Get team by ID, refresh cache if needed"""
+        self._ensure_teams_cache_fresh()
+        return self.teams.get(team_id)
+    
+    def get_all_teams(self) -> List[Team]:
+        """Get all teams, refresh cache if needed"""
+        self._ensure_teams_cache_fresh()
+        return list(self.teams.values())
+    
+    def get_team_name(self, team_id: str) -> str:
+        """Get team name by ID"""
+        team_data = self._teams_cache.get(team_id)
+        return team_data.name if team_data else f"Team {team_id}"
 
     def get_odds_for_match(self, match_id: str) -> List[BettingOdds]:
         return self.odds.get(match_id, [])

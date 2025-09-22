@@ -19,8 +19,8 @@ class Team(BaseModel):
 
 class Match(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
-    home_team: Team
-    away_team: Team
+    home_team_id: str  # Changed from home_team: Team to team ID reference
+    away_team_id: str  # Changed from away_team: Team to team ID reference
     match_date: datetime
     status: Literal["scheduled", "live", "finished"] = "scheduled"
 

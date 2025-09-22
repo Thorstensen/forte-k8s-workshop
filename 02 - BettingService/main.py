@@ -2,12 +2,24 @@ from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import RedirectResponse
 from typing import List, Optional
 import uvicorn
+from datetime import datetime
 
 from src.models.betting import (
     Match, BettingOdds, Bet, BetType, PlaceBetRequest,
     BettingOddsResponse, BetResponse
 )
 from src.services.betting_service import betting_service
+from pydantic import BaseModel
+
+# Enhanced models for API responses
+class MatchResponse(BaseModel):
+    id: str
+    home_team_id: str
+    away_team_id: str
+    home_team_name: str
+    away_team_name: str
+    match_date: datetime
+    status: str
 
 # Create FastAPI app with metadata for automatic documentation
 app = FastAPI(
@@ -55,14 +67,28 @@ async def health_check():
 
 
 # Match Endpoints
-@app.get("/matches", response_model=List[Match], tags=["Matches"])
+@app.get("/matches", response_model=List[MatchResponse], tags=["Matches"])
 async def get_matches():
     """
     Get all available matches for betting.
     
-    Returns a list of all scheduled and live matches.
+    Returns a list of all scheduled and live matches with team names.
     """
-    return betting_service.get_all_matches()
+    matches = betting_service.get_all_matches()
+    # Enhance matches with team names for better API response
+    enhanced_matches = []
+    for match in matches:
+        enhanced_match = MatchResponse(
+            id=match.id,
+            home_team_id=match.home_team_id,
+            away_team_id=match.away_team_id,
+            home_team_name=betting_service.storage.get_team_name(match.home_team_id),
+            away_team_name=betting_service.storage.get_team_name(match.away_team_id),
+            match_date=match.match_date,
+            status=match.status
+        )
+        enhanced_matches.append(enhanced_match)
+    return enhanced_matches
 
 
 @app.get("/matches/{match_id}/odds", response_model=BettingOddsResponse, tags=["Odds"])
