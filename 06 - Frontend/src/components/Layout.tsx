@@ -1,5 +1,22 @@
 import React from 'react';
-import { Trophy, Users, Calendar, TrendingUp, Bell } from 'lucide-react';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Container,
+  Tabs,
+  Tab,
+  Paper,
+  Chip,
+} from '@mui/material';
+import {
+  EmojiEvents as TrophyIcon,
+  People as UsersIcon,
+  CalendarToday as CalendarIcon,
+  TrendingUp as TrendingUpIcon,
+  Notifications as BellIcon,
+} from '@mui/icons-material';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -9,61 +26,110 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => {
   const tabs = [
-    { id: 'matches', label: 'Matches', icon: Calendar },
-    { id: 'teams', label: 'Teams', icon: Users },
-    { id: 'betting', label: 'Betting', icon: TrendingUp },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
+    { id: 'matches', label: 'Matches', icon: CalendarIcon },
+    { id: 'teams', label: 'Teams', icon: UsersIcon },
+    { id: 'betting', label: 'Betting', icon: TrendingUpIcon },
+    { id: 'notifications', label: 'Notifications', icon: BellIcon },
   ];
 
+  const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
+    onTabChange(newValue);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Header */}
-      <header className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <Trophy className="h-8 w-8 text-blue-600 mr-3" />
-              <h1 className="text-2xl font-bold text-gray-900">
+      <AppBar position="static" elevation={1} sx={{ bgcolor: 'white', color: 'text.primary' }}>
+        <Toolbar sx={{ py: 2 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
+            <Box
+              sx={{
+                background: 'linear-gradient(45deg, #2563eb 30%, #3b82f6 90%)',
+                borderRadius: 2,
+                p: 1,
+                mr: 2,
+              }}
+            >
+              <TrophyIcon sx={{ color: 'white', fontSize: 32 }} />
+            </Box>
+            <Box>
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                  background: 'linear-gradient(45deg, #1f2937 30%, #374151 90%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  fontWeight: 'bold',
+                }}
+              >
                 Forte Football Manager
-              </h1>
-            </div>
-            <div className="text-sm text-gray-500">
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Professional Match Management System
+              </Typography>
+            </Box>
+          </Box>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
+            <Chip
+              label="System Online"
+              color="success"
+              size="small"
+              sx={{ fontWeight: 'medium' }}
+            />
+            <Typography variant="body2" color="text.secondary">
               Microservices Dashboard
-            </div>
-          </div>
-        </div>
-      </header>
+            </Typography>
+          </Box>
+        </Toolbar>
+      </AppBar>
 
       {/* Navigation */}
-      <nav className="bg-white border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-8">
+      <Paper elevation={0} sx={{ borderBottom: 1, borderColor: 'divider', position: 'sticky', top: 0, zIndex: 40 }}>
+        <Container maxWidth="xl">
+          <Tabs
+            value={activeTab}
+            onChange={handleTabChange}
+            variant="scrollable"
+            scrollButtons="auto"
+            sx={{
+              '& .MuiTab-root': {
+                minHeight: 64,
+                textTransform: 'none',
+                fontWeight: 600,
+                fontSize: '0.875rem',
+                '&.Mui-selected': {
+                  color: 'primary.main',
+                  bgcolor: 'primary.50',
+                },
+              },
+            }}
+          >
             {tabs.map((tab) => {
-              const Icon = tab.icon;
+              const IconComponent = tab.icon;
               return (
-                <button
+                <Tab
                   key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  className={`flex items-center px-1 py-4 border-b-2 text-sm font-medium transition-colors ${
-                    activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
-                >
-                  <Icon className="h-5 w-5 mr-2" />
-                  {tab.label}
-                </button>
+                  value={tab.id}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <IconComponent sx={{ fontSize: 20 }} />
+                      {tab.label}
+                    </Box>
+                  }
+                />
               );
             })}
-          </div>
-        </div>
-      </nav>
+          </Tabs>
+        </Container>
+      </Paper>
 
       {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {children}
-      </main>
-    </div>
+      </Container>
+    </Box>
   );
 };
 

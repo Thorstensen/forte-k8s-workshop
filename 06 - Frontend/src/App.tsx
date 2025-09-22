@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import MaterialThemeProvider from './theme/MaterialThemeProvider';
 import Layout from './components/Layout';
 import MatchesTab from './components/MatchesTab';
 import TeamsTab from './components/TeamsTab';
@@ -35,11 +36,13 @@ function App() {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-        {renderActiveTab()}
-      </Layout>
-    </QueryClientProvider>
+    <MaterialThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <Layout activeTab={activeTab} onTabChange={setActiveTab}>
+          {renderActiveTab()}
+        </Layout>
+      </QueryClientProvider>
+    </MaterialThemeProvider>
   );
 }
 
