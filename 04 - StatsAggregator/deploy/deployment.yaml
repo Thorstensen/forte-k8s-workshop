@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: statsaggregator
+  namespace: statsaggregator
+  labels:
+    app: statsaggregator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: statsaggregator
+  template:
+    metadata:
+      labels:
+        app: statsaggregator
+    spec:
+      containers:
+      - name: statsaggregator
+        image: ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest
+        ports:
+        - containerPort: 8080

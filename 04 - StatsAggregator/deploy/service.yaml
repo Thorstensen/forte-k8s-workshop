@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: statsaggregator
+  namespace: statsaggregator
+  labels:
+    app: statsaggregator
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: statsaggregator

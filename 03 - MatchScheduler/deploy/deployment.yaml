@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: matchscheduler
+  namespace: matchscheduler
+  labels:
+    app: matchscheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: matchscheduler
+  template:
+    metadata:
+      labels:
+        app: matchscheduler
+    spec:
+      containers:
+      - name: matchscheduler
+        image: ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler:latest
+        ports:
+        - containerPort: 3000
