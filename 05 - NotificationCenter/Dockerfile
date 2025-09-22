@@ -11,6 +11,9 @@ WORKDIR /app
 # Copy go mod files first for better caching
 COPY go.mod go.sum ./
 
+# Install git required for go mod download
+RUN apk add --no-cache git
+
 # Download dependencies (skip TLS verification for build environment)
 ENV GOPROXY=direct
 ENV GOSUMDB=off
