@@ -1,6 +1,31 @@
-import React, { useEffect, useRef } from 'react';
-import { Loader } from '@googlemaps/js-api-loader';
+import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Stadium } from '../data/stadiums';
+
+// Fix for default markers in Leaflet with React
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+});
+
+// Custom stadium icon
+const stadiumIcon = new L.Icon({
+  iconUrl: 'data:image/svg+xml;base64,' + btoa(`
+    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+      <path d="M8 10h8v6H8z" fill="#ffffff"/>
+      <path d="M6 8h12v2H6z" fill="#ffffff"/>
+      <path d="M9 16h6v1H9z" fill="#ffffff"/>
+    </svg>
+  `),
+  iconSize: [32, 32],
+  iconAnchor: [16, 32],
+  popupAnchor: [0, -32],
+});
 
 interface StadiumMapProps {
   stadium: Stadium;
@@ -8,82 +33,34 @@ interface StadiumMapProps {
 }
 
 const StadiumMap: React.FC<StadiumMapProps> = ({ stadium, className = '' }) => {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-
-  useEffect(() => {
-    const initMap = async () => {
-      // Use a demo API key for development - in production this should be from environment variables
-      const loader = new Loader({
-        apiKey: "AIzaSyBgYST1Y6FwQSuUJ6B7pE8z5r3rY2oF8Y0", // Demo key - replace with actual
-        version: "weekly",
-        libraries: ["places"]
-      });
-
-      try {
-        const google = await loader.load();
-        
-        if (mapRef.current && !mapInstanceRef.current) {
-          const map = new google.maps.Map(mapRef.current, {
-            center: stadium.coordinates,
-            zoom: 16,
-            mapTypeId: google.maps.MapTypeId.SATELLITE,
-            styles: [
-              {
-                featureType: "poi",
-                elementType: "labels",
-                stylers: [{ visibility: "on" }]
-              }
-            ],
-            disableDefaultUI: true,
-            zoomControl: true,
-            scrollwheel: false,
-            draggable: false
-          });
-
-          // Add a marker for the stadium
-          new google.maps.Marker({
-            position: stadium.coordinates,
-            map: map,
-            title: stadium.name,
-            icon: {
-              url: 'data:image/svg+xml;base64,' + btoa(`
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L2 7V10C2 16 6 20.5 12 22C18 20.5 22 16 22 10V7L12 2Z" fill="#dc2626" stroke="#ffffff" stroke-width="2"/>
-                </svg>
-              `),
-              scaledSize: new google.maps.Size(32, 32),
-              anchor: new google.maps.Point(16, 32)
-            }
-          });
-
-          mapInstanceRef.current = map;
-        }
-      } catch (error) {
-        console.error('Error loading Google Maps:', error);
-        // Fallback: show a static message if maps fails to load
-        if (mapRef.current) {
-          mapRef.current.innerHTML = `
-            <div class="flex items-center justify-center h-full bg-gray-100 rounded-lg">
-              <div class="text-center p-4">
-                <p class="text-gray-600 text-sm">Map unavailable</p>
-                <p class="text-gray-500 text-xs">${stadium.address}</p>
-              </div>
-            </div>
-          `;
-        }
-      }
-    };
-
-    initMap();
-  }, [stadium]);
+  const position: [number, number] = [stadium.coordinates.lat, stadium.coordinates.lng];
 
   return (
-    <div 
-      ref={mapRef} 
-      className={`rounded-lg overflow-hidden bg-gray-100 ${className}`}
-      style={{ minHeight: '200px' }}
-    />
+    <div className={`rounded-lg overflow-hidden bg-gray-100 ${className}`} style={{ minHeight: '200px' }}>
+      <MapContainer
+        center={position}
+        zoom={16}
+        style={{ height: '100%', width: '100%', minHeight: '200px' }}
+        zoomControl={true}
+        scrollWheelZoom={false}
+        dragging={true}
+        doubleClickZoom={false}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        <Marker position={position} icon={stadiumIcon}>
+          <Popup>
+            <div className="text-center">
+              <h3 className="font-bold text-lg">{stadium.name}</h3>
+              <p className="text-sm text-gray-600">{stadium.city}, {stadium.country}</p>
+              <p className="text-sm">Capacity: {stadium.capacity.toLocaleString()}</p>
+            </div>
+          </Popup>
+        </Marker>
+      </MapContainer>
+    </div>
   );
 };
 
