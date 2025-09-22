@@ -48,31 +48,56 @@ impl StatsGenerator {
     }
     
     fn generate_random_team(rng: &mut impl Rng, _is_home: bool) -> Team {
-        let teams = vec![
-            ("Manchester United", "MUN", "England"),
+        // Shared teams with consistent IDs across all services
+        let shared_teams = vec![
+            ("team-1", "Manchester United", "MUN", "England"),
+            ("team-2", "Liverpool", "LIV", "England"),
+            ("team-3", "Chelsea", "CHE", "England"),
+            ("team-4", "Arsenal", "ARS", "England"),
+            ("team-5", "Manchester City", "MCI", "England"),
+            ("team-6", "Tottenham", "TOT", "England"),
+        ];
+        
+        // Additional teams for variety (with generated UUIDs for non-shared teams)
+        let other_teams = vec![
             ("Real Madrid", "RMA", "Spain"),
             ("Bayern Munich", "BAY", "Germany"),
             ("Barcelona", "BAR", "Spain"),
-            ("Liverpool", "LIV", "England"),
             ("Paris Saint-Germain", "PSG", "France"),
             ("Juventus", "JUV", "Italy"),
-            ("Arsenal", "ARS", "England"),
-            ("Chelsea", "CHE", "England"),
-            ("Manchester City", "MCI", "England"),
             ("AC Milan", "MIL", "Italy"),
             ("Inter Milan", "INT", "Italy"),
             ("Borussia Dortmund", "BVB", "Germany"),
             ("Atletico Madrid", "ATM", "Spain"),
-            ("Tottenham", "TOT", "England"),
         ];
         
-        let (name, short_name, country) = teams[rng.gen_range(0..teams.len())];
-        
-        Team {
-            id: Uuid::new_v4(),
-            name: name.to_string(),
-            short_name: short_name.to_string(),
-            country: country.to_string(),
+        // 70% chance of using a shared team, 30% chance of other teams
+        if rng.gen_bool(0.7) && !shared_teams.is_empty() {
+            let (id_str, name, short_name, country) = shared_teams[rng.gen_range(0..shared_teams.len())];
+            // Convert string ID to UUID format for compatibility
+            let uuid_str = match id_str {
+                "team-1" => "00000000-0000-0000-0000-000000000001",
+                "team-2" => "00000000-0000-0000-0000-000000000002", 
+                "team-3" => "00000000-0000-0000-0000-000000000003",
+                "team-4" => "00000000-0000-0000-0000-000000000004",
+                "team-5" => "00000000-0000-0000-0000-000000000005",
+                "team-6" => "00000000-0000-0000-0000-000000000006",
+                _ => "00000000-0000-0000-0000-000000000000",
+            };
+            Team {
+                id: Uuid::parse_str(uuid_str).unwrap_or(Uuid::new_v4()),
+                name: name.to_string(),
+                short_name: short_name.to_string(),
+                country: country.to_string(),
+            }
+        } else {
+            let (name, short_name, country) = other_teams[rng.gen_range(0..other_teams.len())];
+            Team {
+                id: Uuid::new_v4(),
+                name: name.to_string(),
+                short_name: short_name.to_string(),
+                country: country.to_string(),
+            }
         }
     }
     

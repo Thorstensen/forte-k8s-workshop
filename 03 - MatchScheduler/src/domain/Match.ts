@@ -4,8 +4,12 @@
 export interface Match {
   /** Unique identifier for the match */
   readonly id: string;
+  /** Home team ID (shared across services) */
+  readonly homeTeamId: string;
   /** Home team name */
   readonly homeTeamName: string;
+  /** Away team ID (shared across services) */
+  readonly awayTeamId: string;
   /** Away team name */
   readonly awayTeamName: string;
   /** Scheduled date and time for the match */
@@ -48,6 +52,25 @@ export interface ScheduleMatchRequest {
 }
 
 /**
+ * Shared team ID mapping - consistent across all services
+ */
+const TEAM_ID_MAP: Record<string, string> = {
+  'Manchester United': 'team-1',
+  'Liverpool': 'team-2', 
+  'Chelsea': 'team-3',
+  'Arsenal': 'team-4',
+  'Manchester City': 'team-5',
+  'Tottenham': 'team-6',
+};
+
+/**
+ * Get team ID for a team name, or generate a default ID if not found
+ */
+export const getTeamId = (teamName: string): string => {
+  return TEAM_ID_MAP[teamName] || `team-${teamName.toLowerCase().replace(/\s+/g, '-')}`;
+};
+
+/**
  * Factory function to create a new Match
  */
 export const createMatch = (
@@ -83,10 +106,15 @@ export const createMatch = (
     throw new Error('Away team name cannot be empty');
   }
 
+  const homeTeamNameTrimmed = homeTeamName.trim();
+  const awayTeamNameTrimmed = awayTeamName.trim();
+
   return {
     id,
-    homeTeamName: homeTeamName.trim(),
-    awayTeamName: awayTeamName.trim(),
+    homeTeamId: getTeamId(homeTeamNameTrimmed),
+    homeTeamName: homeTeamNameTrimmed,
+    awayTeamId: getTeamId(awayTeamNameTrimmed),
+    awayTeamName: awayTeamNameTrimmed,
     scheduledDate,
     venue: venue.trim(),
     status: MatchStatus.SCHEDULED,

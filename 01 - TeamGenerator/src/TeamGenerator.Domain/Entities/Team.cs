@@ -5,17 +5,39 @@ public class Team
     private readonly List<Player> _startingPlayers = new();
     private readonly List<Player> _benchPlayers = new();
 
+    public string Id { get; private set; }
     public string Name { get; private set; }
     public IReadOnlyList<Player> StartingPlayers => _startingPlayers.AsReadOnly();
     public IReadOnlyList<Player> BenchPlayers => _benchPlayers.AsReadOnly();
     public IReadOnlyList<Player> AllPlayers => _startingPlayers.Concat(_benchPlayers).ToList().AsReadOnly();
 
-    public Team(string name)
+    public Team(string name, string? id = null)
     {
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Team name cannot be null or empty.", nameof(name));
         
         Name = name.Trim();
+        Id = id ?? GetSharedTeamId(Name);
+    }
+
+    /// <summary>
+    /// Gets the shared team ID for known teams, or generates a default ID
+    /// </summary>
+    private static string GetSharedTeamId(string teamName)
+    {
+        var sharedTeamIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["Manchester United"] = "team-1",
+            ["Liverpool"] = "team-2",
+            ["Chelsea"] = "team-3",
+            ["Arsenal"] = "team-4",
+            ["Manchester City"] = "team-5",
+            ["Tottenham"] = "team-6"
+        };
+
+        return sharedTeamIds.TryGetValue(teamName, out var id) 
+            ? id 
+            : $"team-{teamName.ToLowerInvariant().Replace(" ", "-")}";
     }
 
     public void AddStartingPlayer(Player player)

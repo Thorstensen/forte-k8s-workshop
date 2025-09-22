@@ -13,12 +13,12 @@ class BetType(str, Enum):
 
 
 class Team(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str
     name: str
     
 
 class Match(BaseModel):
-    id: str = Field(default_factory=lambda: str(uuid.uuid4()))
+    id: str
     home_team: Team
     away_team: Team
     match_date: datetime
