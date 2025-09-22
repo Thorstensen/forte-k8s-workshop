@@ -27,7 +27,7 @@ import (
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
 
 // @host localhost:8080
-// @BasePath /
+// @BasePath /api
 
 // Team represents a soccer team
 type Team struct {
@@ -217,7 +217,7 @@ func getRandomPlayerName() string {
 // @Accept json
 // @Produce json
 // @Success 200 {object} HealthResponse
-// @Router /health [get]
+// @Router /api/health [get]
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	response := HealthResponse{
 		Status:  "healthy",
@@ -235,7 +235,7 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Success 200 {array} Match
-// @Router /matches [get]
+// @Router /api/matches [get]
 func getMatchesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(matches)
@@ -249,7 +249,7 @@ func getMatchesHandler(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Match ID"
 // @Success 200 {object} Match
 // @Failure 404 {object} ErrorResponse
-// @Router /matches/{id} [get]
+// @Router /api/matches/{id} [get]
 func getMatchHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	matchID := vars["id"]
@@ -281,7 +281,7 @@ func getMatchHandler(w http.ResponseWriter, r *http.Request) {
 // @Param priority query string false "Filter by priority"
 // @Param limit query int false "Limit number of results" default(50)
 // @Success 200 {array} Notification
-// @Router /notifications [get]
+// @Router /api/notifications [get]
 func getNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 	matchID := r.URL.Query().Get("match_id")
 	notifType := r.URL.Query().Get("type")
@@ -325,7 +325,7 @@ func getNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 // @Param id path string true "Notification ID"
 // @Success 200 {object} Notification
 // @Failure 404 {object} ErrorResponse
-// @Router /notifications/{id} [get]
+// @Router /api/notifications/{id} [get]
 func getNotificationHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	notificationID := vars["id"]
@@ -357,7 +357,7 @@ func getNotificationHandler(w http.ResponseWriter, r *http.Request) {
 // @Param priority query string false "Filter by priority"
 // @Success 200 {array} Notification
 // @Failure 404 {object} ErrorResponse
-// @Router /matches/{id}/notifications [get]
+// @Router /api/matches/{id}/notifications [get]
 func getMatchNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	matchID := vars["id"]
@@ -409,7 +409,7 @@ func getMatchNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param limit query int false "Limit number of results" default(20)
 // @Success 200 {array} Notification
-// @Router /notifications/important [get]
+// @Router /api/notifications/important [get]
 func getImportantNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 	limitStr := r.URL.Query().Get("limit")
 	limit := 20 // default limit
@@ -435,7 +435,7 @@ func getImportantNotificationsHandler(w http.ResponseWriter, r *http.Request) {
 
 // Redirect root to swagger documentation
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
+	http.Redirect(w, r, "/api/docs", http.StatusMovedPermanently)
 }
 
 func main() {
@@ -443,24 +443,29 @@ func main() {
 
 	// API routes
 	r.HandleFunc("/", rootHandler).Methods("GET")
-	r.HandleFunc("/health", healthHandler).Methods("GET")
+	r.HandleFunc("/api/health", healthHandler).Methods("GET")
 	
 	// Match routes
-	r.HandleFunc("/matches", getMatchesHandler).Methods("GET")
-	r.HandleFunc("/matches/{id}", getMatchHandler).Methods("GET")
-	r.HandleFunc("/matches/{id}/notifications", getMatchNotificationsHandler).Methods("GET")
+	r.HandleFunc("/api/matches", getMatchesHandler).Methods("GET")
+	r.HandleFunc("/api/matches/{id}", getMatchHandler).Methods("GET")
+	r.HandleFunc("/api/matches/{id}/notifications", getMatchNotificationsHandler).Methods("GET")
 	
 	// Notification routes
-	r.HandleFunc("/notifications", getNotificationsHandler).Methods("GET")
-	r.HandleFunc("/notifications/{id}", getNotificationHandler).Methods("GET")
-	r.HandleFunc("/notifications/important", getImportantNotificationsHandler).Methods("GET")
+	r.HandleFunc("/api/notifications", getNotificationsHandler).Methods("GET")
+	r.HandleFunc("/api/notifications/{id}", getNotificationHandler).Methods("GET")
+	r.HandleFunc("/api/notifications/important", getImportantNotificationsHandler).Methods("GET")
+
+	// Add redirect for /api/docs to /api/docs/index.html
+	r.HandleFunc("/api/docs", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/api/docs/index.html", http.StatusMovedPermanently)
+	}).Methods("GET")
 
 	// Swagger documentation
-	r.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
+	r.PathPrefix("/api/docs/").Handler(httpSwagger.WrapHandler)
 
 	fmt.Println("🚀 NotificationCenter service starting on port 8080")
-	fmt.Println("📖 Swagger documentation available at: http://localhost:8080/swagger/index.html")
-	fmt.Println("❤️  Health check available at: http://localhost:8080/health")
+	fmt.Println("📖 Swagger documentation available at: http://localhost:8080/api/docs")
+	fmt.Println("❤️  Health check available at: http://localhost:8080/api/health")
 	
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

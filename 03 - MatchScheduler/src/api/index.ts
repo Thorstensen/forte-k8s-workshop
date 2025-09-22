@@ -59,7 +59,7 @@ app.use((req: Request, _res: Response, next: NextFunction): void => {
 });
 
 // Health check endpoint
-app.get('/health', (_req: Request, res: Response): void => {
+app.get('/api/health', (_req: Request, res: Response): void => {
   res.json({
     success: true,
     message: 'Match Scheduler Service is healthy',
@@ -78,12 +78,17 @@ const swaggerOptions = {
   },
 };
 
-// Serve Swagger UI at root
-app.use('/', swaggerUi.serve);
-app.get('/', swaggerUi.setup(swaggerSpec, swaggerOptions));
+// Serve Swagger UI at /api/docs
+app.use('/api/docs', swaggerUi.serve);
+app.get('/api/docs', swaggerUi.setup(swaggerSpec, swaggerOptions));
+
+// Root redirect to swagger documentation
+app.get('/', (_req: Request, res: Response): void => {
+  res.redirect('/api/docs');
+});
 
 // Alternative endpoint for the OpenAPI JSON spec
-app.get('/openapi.json', (_req: Request, res: Response): void => {
+app.get('/api/openapi.json', (_req: Request, res: Response): void => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
@@ -123,14 +128,14 @@ const server = app.listen(PORT, (): void => {
   console.log(`🚀 Match Scheduler Service running on port ${PORT}`);
   // eslint-disable-next-line no-console
   console.log(
-    `📚 OpenAPI Documentation (Swagger UI) available at http://localhost:${PORT}/`
+    `📚 OpenAPI Documentation (Swagger UI) available at http://localhost:${PORT}/api/docs`
   );
   // eslint-disable-next-line no-console
   console.log(
-    `📄 OpenAPI JSON specification available at http://localhost:${PORT}/openapi.json`
+    `📄 OpenAPI JSON specification available at http://localhost:${PORT}/api/openapi.json`
   );
   // eslint-disable-next-line no-console
-  console.log(`❤️  Health check available at http://localhost:${PORT}/health`);
+  console.log(`❤️  Health check available at http://localhost:${PORT}/api/health`);
 });
 
 // Graceful shutdown

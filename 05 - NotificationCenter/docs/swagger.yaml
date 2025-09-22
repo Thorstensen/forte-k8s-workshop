@@ -1,4 +1,4 @@
-basePath: /
+basePath: /api
 definitions:
   main.ErrorResponse:
     properties:
@@ -105,7 +105,7 @@ info:
   title: NotificationCenter API
   version: "1.0"
 paths:
-  /health:
+  /api/health:
     get:
       consumes:
       - application/json
@@ -120,7 +120,7 @@ paths:
       summary: Health check
       tags:
       - Health
-  /matches:
+  /api/matches:
     get:
       consumes:
       - application/json
@@ -137,7 +137,7 @@ paths:
       summary: Get all matches
       tags:
       - Matches
-  /matches/{id}:
+  /api/matches/{id}:
     get:
       consumes:
       - application/json
@@ -162,7 +162,7 @@ paths:
       summary: Get match by ID
       tags:
       - Matches
-  /matches/{id}/notifications:
+  /api/matches/{id}/notifications:
     get:
       consumes:
       - application/json
@@ -197,7 +197,7 @@ paths:
       summary: Get notifications for a match
       tags:
       - Notifications
-  /notifications:
+  /api/notifications:
     get:
       consumes:
       - application/json
@@ -233,7 +233,7 @@ paths:
       summary: Get all notifications
       tags:
       - Notifications
-  /notifications/{id}:
+  /api/notifications/{id}:
     get:
       consumes:
       - application/json
@@ -258,7 +258,7 @@ paths:
       summary: Get notification by ID
       tags:
       - Notifications
-  /notifications/important:
+  /api/notifications/important:
     get:
       consumes:
       - application/json

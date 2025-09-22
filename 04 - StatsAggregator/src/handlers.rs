@@ -27,7 +27,7 @@ pub async fn get_match_stats() -> ResponseJson<MatchStatistics> {
 /// Returns the health status of the service along with timestamp and version information.
 #[utoipa::path(
     get,
-    path = "/health",
+    path = "/api/health",
     responses(
         (status = 200, description = "Service is healthy", body = HealthResponse)
     ),

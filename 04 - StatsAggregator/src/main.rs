@@ -49,17 +49,17 @@ async fn main() {
 
     let app = Router::new()
         .route("/api/match/stats", get(handlers::get_match_stats))
-        .route("/health", get(handlers::health_check))
-        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
+        .route("/api/health", get(handlers::health_check))
+        .merge(SwaggerUi::new("/api/docs").url("/api/openapi.json", ApiDoc::openapi()))
         .route("/", get(|| async { 
-            axum::response::Redirect::permanent("/swagger-ui") 
+            axum::response::Redirect::permanent("/api/docs") 
         }))
         .layer(CorsLayer::permissive());
 
     let addr = SocketAddr::from(([0, 0, 0, 0], 8080));
     println!("📊 Soccer Stats Aggregator Service running on http://{}", addr);
-    println!("📖 Swagger UI available at: http://{}/swagger-ui", addr);
-    println!("🏥 Health check available at: http://{}/health", addr);
+    println!("📖 Swagger UI available at: http://{}/api/docs", addr);
+    println!("🏥 Health check available at: http://{}/api/health", addr);
     println!("⚽ Match stats available at: http://{}/api/match/stats", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();

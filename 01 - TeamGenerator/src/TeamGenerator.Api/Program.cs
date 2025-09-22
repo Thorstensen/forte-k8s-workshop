@@ -12,14 +12,30 @@ builder.Services.AddTeamGeneratorServices();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
-{
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamGenerator API v1");
-    c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-});
+app.UseRouting();
 
 app.UseHttpsRedirection();
+
+// Configure the HTTP request pipeline
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "TeamGenerator API v1");
+        c.RoutePrefix = string.Empty; // Set Swagger UI at root
+    });
+}
+
+// Add root redirect to swagger docs - leave at root for now
+app.MapGet("/", () => Results.Redirect("/"));
+
+// Add redirect from api/docs to root swagger
+app.MapGet("/api/docs", () => Results.Redirect("/"));
+
+// Add health endpoint
+app.MapGet("/api/health", () => new { status = "healthy", service = "team-generator" });
+
 app.MapControllers();
 
 app.Run();

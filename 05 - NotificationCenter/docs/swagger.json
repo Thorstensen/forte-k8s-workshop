@@ -16,9 +16,9 @@
         "version": "1.0"
     },
     "host": "localhost:8080",
-    "basePath": "/",
+    "basePath": "/api",
     "paths": {
-        "/health": {
+        "/api/health": {
             "get": {
                 "description": "Get health status of the service",
                 "consumes": [
@@ -41,7 +41,7 @@
                 }
             }
         },
-        "/matches": {
+        "/api/matches": {
             "get": {
                 "description": "Get a list of all soccer matches",
                 "consumes": [
@@ -67,7 +67,7 @@
                 }
             }
         },
-        "/matches/{id}": {
+        "/api/matches/{id}": {
             "get": {
                 "description": "Get a specific match by its ID",
                 "consumes": [
@@ -105,7 +105,7 @@
                 }
             }
         },
-        "/matches/{id}/notifications": {
+        "/api/matches/{id}/notifications": {
             "get": {
                 "description": "Get all notifications for a specific match",
                 "consumes": [
@@ -158,7 +158,7 @@
                 }
             }
         },
-        "/notifications": {
+        "/api/notifications": {
             "get": {
                 "description": "Get all notifications, optionally filtered by match ID, type, or priority",
                 "consumes": [
@@ -211,7 +211,7 @@
                 }
             }
         },
-        "/notifications/important": {
+        "/api/notifications/important": {
             "get": {
                 "description": "Get all notifications marked as important",
                 "consumes": [
@@ -246,7 +246,7 @@
                 }
             }
         },
-        "/notifications/{id}": {
+        "/api/notifications/{id}": {
             "get": {
                 "description": "Get a specific notification by its ID",
                 "consumes": [
