@@ -27,20 +27,20 @@ const handleValidationErrors = (req: Request, res: Response, next: Function): vo
  */
 router.get('/', [
   query('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
-  query('teamName').optional().isString().notEmpty().withMessage('Team name must be a non-empty string'),
+  query('teamId').optional().isString().notEmpty().withMessage('Team ID must be a non-empty string'),
 ], handleValidationErrors, (req: Request, res: Response): void => {
   try {
-    const { upcoming, teamName } = req.query as {
+    const { upcoming, teamId } = req.query as {
       upcoming?: string;
-      teamName?: string;
+      teamId?: string;
     };
 
     let matches;
     
     if (upcoming === 'true') {
       matches = matchSchedulerService.getUpcomingMatches();
-    } else if (teamName && typeof teamName === 'string') {
-      matches = matchSchedulerService.getMatchesForTeam(teamName);
+    } else if (teamId && typeof teamId === 'string') {
+      matches = matchSchedulerService.getMatchesForTeam(teamId);
     } else {
       matches = matchSchedulerService.getAllMatches();
     }
@@ -107,14 +107,14 @@ router.get('/:id', [
  * Schedule a new match
  */
 router.post('/', [
-  body('homeTeamName')
+  body('homeTeamId')
     .isString()
     .notEmpty()
-    .withMessage('Home team name is required'),
-  body('awayTeamName')
+    .withMessage('Home team ID is required'),
+  body('awayTeamId')
     .isString()
     .notEmpty()
-    .withMessage('Away team name is required'),
+    .withMessage('Away team ID is required'),
   body('scheduledDate')
     .isISO8601()
     .withMessage('Scheduled date must be a valid ISO 8601 date')
@@ -136,25 +136,25 @@ router.post('/', [
     .isString()
     .trim()
     .withMessage('Notes must be a string if provided'),
-], handleValidationErrors, (req: Request, res: Response): void => {
+], handleValidationErrors, async (req: Request, res: Response): Promise<void> => {
   try {
-    const { homeTeamName, awayTeamName, scheduledDate, venue, notes } = req.body as {
-      homeTeamName: string;
-      awayTeamName: string;
+    const { homeTeamId, awayTeamId, scheduledDate, venue, notes } = req.body as {
+      homeTeamId: string;
+      awayTeamId: string;
       scheduledDate: string;
       venue: string;
       notes?: string;
     };
 
     const request: ScheduleMatchRequest = {
-      homeTeamName,
-      awayTeamName,
+      homeTeamId,
+      awayTeamId,
       scheduledDate: new Date(scheduledDate),
       venue,
       notes: notes || undefined,
     };
 
-    const result = matchSchedulerService.scheduleMatch(request);
+    const result = await matchSchedulerService.scheduleMatch(request);
 
     if (result.success) {
       res.status(201).json({

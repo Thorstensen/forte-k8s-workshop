@@ -25,16 +25,16 @@ const handleValidationErrors = (req, res, next) => {
  */
 router.get('/', [
     (0, express_validator_1.query)('upcoming').optional().isBoolean().withMessage('Upcoming filter must be a boolean'),
-    (0, express_validator_1.query)('teamName').optional().isString().notEmpty().withMessage('Team name must be a non-empty string'),
+    (0, express_validator_1.query)('teamId').optional().isString().notEmpty().withMessage('Team ID must be a non-empty string'),
 ], handleValidationErrors, (req, res) => {
     try {
-        const { upcoming, teamName } = req.query;
+        const { upcoming, teamId } = req.query;
         let matches;
         if (upcoming === 'true') {
             matches = MatchSchedulerService_1.matchSchedulerService.getUpcomingMatches();
         }
-        else if (teamName && typeof teamName === 'string') {
-            matches = MatchSchedulerService_1.matchSchedulerService.getMatchesForTeam(teamName);
+        else if (teamId && typeof teamId === 'string') {
+            matches = MatchSchedulerService_1.matchSchedulerService.getMatchesForTeam(teamId);
         }
         else {
             matches = MatchSchedulerService_1.matchSchedulerService.getAllMatches();
@@ -97,14 +97,14 @@ router.get('/:id', [
  * Schedule a new match
  */
 router.post('/', [
-    (0, express_validator_1.body)('homeTeamName')
+    (0, express_validator_1.body)('homeTeamId')
         .isString()
         .notEmpty()
-        .withMessage('Home team name is required'),
-    (0, express_validator_1.body)('awayTeamName')
+        .withMessage('Home team ID is required'),
+    (0, express_validator_1.body)('awayTeamId')
         .isString()
         .notEmpty()
-        .withMessage('Away team name is required'),
+        .withMessage('Away team ID is required'),
     (0, express_validator_1.body)('scheduledDate')
         .isISO8601()
         .withMessage('Scheduled date must be a valid ISO 8601 date')
@@ -126,17 +126,17 @@ router.post('/', [
         .isString()
         .trim()
         .withMessage('Notes must be a string if provided'),
-], handleValidationErrors, (req, res) => {
+], handleValidationErrors, async (req, res) => {
     try {
-        const { homeTeamName, awayTeamName, scheduledDate, venue, notes } = req.body;
+        const { homeTeamId, awayTeamId, scheduledDate, venue, notes } = req.body;
         const request = {
-            homeTeamName,
-            awayTeamName,
+            homeTeamId,
+            awayTeamId,
             scheduledDate: new Date(scheduledDate),
             venue,
             notes: notes || undefined,
         };
-        const result = MatchSchedulerService_1.matchSchedulerService.scheduleMatch(request);
+        const result = await MatchSchedulerService_1.matchSchedulerService.scheduleMatch(request);
         if (result.success) {
             res.status(201).json({
                 success: true,

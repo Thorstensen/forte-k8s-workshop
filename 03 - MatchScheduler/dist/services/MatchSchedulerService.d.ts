@@ -12,11 +12,30 @@ export interface ScheduleResponse {
  */
 export declare class MatchSchedulerService {
     private readonly matches;
+    private teamsCache;
+    private lastTeamCacheUpdate;
+    private readonly CACHE_DURATION_MS;
     constructor();
+    /**
+     * Initialize service by loading data from TeamGenerator
+     */
+    private initializeFromTeamGenerator;
+    /**
+     * Refresh teams cache from TeamGenerator
+     */
+    private refreshTeamsCache;
+    /**
+     * Ensure teams cache is fresh
+     */
+    private ensureTeamsCacheIsFresh;
+    /**
+     * Validate that team IDs exist in TeamGenerator
+     */
+    private validateTeamIds;
     /**
      * Schedule a new match between two teams
      */
-    scheduleMatch(request: ScheduleMatchRequest): ScheduleResponse;
+    scheduleMatch(request: ScheduleMatchRequest): Promise<ScheduleResponse>;
     /**
      * Get all scheduled matches
      */
@@ -32,7 +51,7 @@ export declare class MatchSchedulerService {
     /**
      * Get all matches for a specific team
      */
-    getMatchesForTeam(teamName: string): readonly Match[];
+    getMatchesForTeam(teamId: string): readonly Match[];
     /**
      * Cancel a scheduled match
      */

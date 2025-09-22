@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getMatchDescription = exports.matchInvolvestTeam = exports.isUpcomingMatch = exports.createMatch = exports.MatchStatus = void 0;
+exports.matchInvolvestTeam = exports.isUpcomingMatch = exports.createMatch = exports.MatchStatus = void 0;
 /**
  * Possible match statuses
  */
@@ -15,9 +15,9 @@ var MatchStatus;
 /**
  * Factory function to create a new Match
  */
-const createMatch = (id, homeTeamName, awayTeamName, scheduledDate, venue, notes) => {
+const createMatch = (id, homeTeamId, awayTeamId, scheduledDate, venue, notes) => {
     // Validate that teams are different
-    if (homeTeamName === awayTeamName) {
+    if (homeTeamId === awayTeamId) {
         throw new Error('A team cannot play against itself');
     }
     // Validate that the scheduled date is in the future
@@ -29,17 +29,17 @@ const createMatch = (id, homeTeamName, awayTeamName, scheduledDate, venue, notes
     if (!venue.trim()) {
         throw new Error('Venue cannot be empty');
     }
-    // Validate team names
-    if (!homeTeamName.trim()) {
-        throw new Error('Home team name cannot be empty');
+    // Validate team IDs
+    if (!homeTeamId.trim()) {
+        throw new Error('Home team ID cannot be empty');
     }
-    if (!awayTeamName.trim()) {
-        throw new Error('Away team name cannot be empty');
+    if (!awayTeamId.trim()) {
+        throw new Error('Away team ID cannot be empty');
     }
     return {
         id,
-        homeTeamName: homeTeamName.trim(),
-        awayTeamName: awayTeamName.trim(),
+        homeTeamId: homeTeamId.trim(),
+        awayTeamId: awayTeamId.trim(),
         scheduledDate,
         venue: venue.trim(),
         status: MatchStatus.SCHEDULED,
@@ -58,20 +58,20 @@ exports.isUpcomingMatch = isUpcomingMatch;
 /**
  * Check if a match involves a specific team
  */
-const matchInvolvestTeam = (match, teamName) => {
-    return match.homeTeamName === teamName || match.awayTeamName === teamName;
+const matchInvolvestTeam = (match, teamId) => {
+    return match.homeTeamId === teamId || match.awayTeamId === teamId;
 };
 exports.matchInvolvestTeam = matchInvolvestTeam;
 /**
- * Get a user-friendly match description
+ * Get a user-friendly match description (requires team data from TeamGenerator)
+ * Note: This function is commented out as it needs team names from TeamGenerator service
  */
-const getMatchDescription = (match) => {
-    const dateStr = match.scheduledDate.toLocaleDateString();
-    const timeStr = match.scheduledDate.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-    return `${match.homeTeamName} vs ${match.awayTeamName} on ${dateStr} at ${timeStr} (${match.venue})`;
-};
-exports.getMatchDescription = getMatchDescription;
+// export const getMatchDescription = (match: Match): string => {
+//   const dateStr = match.scheduledDate.toLocaleDateString();
+//   const timeStr = match.scheduledDate.toLocaleTimeString([], {
+//     hour: '2-digit',
+//     minute: '2-digit',
+//   });
+//   return `${match.homeTeamId} vs ${match.awayTeamId} on ${dateStr} at ${timeStr} (${match.venue})`;
+// };
 //# sourceMappingURL=Match.js.map

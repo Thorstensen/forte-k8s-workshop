@@ -7,6 +7,7 @@ import {
   isUpcomingMatch,
   matchInvolvestTeam,
 } from '../domain/Match';
+import { teamGeneratorClient, TeamData } from '../clients/TeamGeneratorClient';
 
 /**
  * Response object for scheduling operations
@@ -22,20 +23,111 @@ export interface ScheduleResponse {
  */
 export class MatchSchedulerService {
   private readonly matches: Map<string, Match> = new Map();
+  private teamsCache: Map<string, TeamData> = new Map();
+  private lastTeamCacheUpdate: Date = new Date(0);
+  private readonly CACHE_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
   constructor() {
-    // No initialization of team/player data - this should come from TeamGenerator service
+    // Initialize by loading existing matches from TeamGenerator
+    this.initializeFromTeamGenerator();
+  }
+
+  /**
+   * Initialize service by loading data from TeamGenerator
+   */
+  private async initializeFromTeamGenerator(): Promise<void> {
+    try {
+      // Load existing matches from TeamGenerator
+      const existingMatches = await teamGeneratorClient.getAllMatches();
+      for (const matchData of existingMatches) {
+        const match: Match = {
+          id: matchData.id,
+          homeTeamId: matchData.homeTeamId,
+          awayTeamId: matchData.awayTeamId,
+          scheduledDate: new Date(matchData.scheduledDate),
+          venue: matchData.venue,
+          status: matchData.status as MatchStatus,
+          createdAt: new Date(matchData.createdAt),
+          notes: matchData.notes,
+        };
+        this.matches.set(match.id, match);
+      }
+      
+      // Load teams for validation
+      await this.refreshTeamsCache();
+      
+      console.log(`Initialized MatchScheduler with ${this.matches.size} existing matches`);
+    } catch (error) {
+      console.error('Failed to initialize from TeamGenerator:', error);
+      // Continue with empty state if TeamGenerator is not available
+    }
+  }
+
+  /**
+   * Refresh teams cache from TeamGenerator
+   */
+  private async refreshTeamsCache(): Promise<void> {
+    try {
+      const teams = await teamGeneratorClient.getAllTeams();
+      this.teamsCache.clear();
+      for (const team of teams) {
+        this.teamsCache.set(team.id, team);
+      }
+      this.lastTeamCacheUpdate = new Date();
+    } catch (error) {
+      console.error('Failed to refresh teams cache:', error);
+      throw new Error('Unable to fetch teams from TeamGenerator service');
+    }
+  }
+
+  /**
+   * Ensure teams cache is fresh
+   */
+  private async ensureTeamsCacheIsFresh(): Promise<void> {
+    const now = new Date();
+    if (now.getTime() - this.lastTeamCacheUpdate.getTime() > this.CACHE_DURATION_MS) {
+      await this.refreshTeamsCache();
+    }
+  }
+
+  /**
+   * Validate that team IDs exist in TeamGenerator
+   */
+  private async validateTeamIds(homeTeamId: string, awayTeamId: string): Promise<{ valid: boolean; message?: string }> {
+    await this.ensureTeamsCacheIsFresh();
+    
+    const homeTeam = this.teamsCache.get(homeTeamId);
+    const awayTeam = this.teamsCache.get(awayTeamId);
+    
+    if (!homeTeam) {
+      return { valid: false, message: `Home team with ID '${homeTeamId}' not found in TeamGenerator` };
+    }
+    
+    if (!awayTeam) {
+      return { valid: false, message: `Away team with ID '${awayTeamId}' not found in TeamGenerator` };
+    }
+    
+    return { valid: true };
   }
 
   /**
    * Schedule a new match between two teams
    */
-  public scheduleMatch(request: ScheduleMatchRequest): ScheduleResponse {
+  public async scheduleMatch(request: ScheduleMatchRequest): Promise<ScheduleResponse> {
     try {
+      // Validate team IDs exist in TeamGenerator
+      const teamValidation = await this.validateTeamIds(request.homeTeamId, request.awayTeamId);
+      if (!teamValidation.valid) {
+        return {
+          success: false,
+          message: teamValidation.message!,
+        };
+      }
+
       // Check for scheduling conflicts
       const conflictingMatch = this.findTeamConflict(
-        request.homeTeamName,
-        request.awayTeamName,
+        request.homeTeamId,
+        request.awayTeamId,
         request.scheduledDate
       );
 
@@ -50,14 +142,15 @@ export class MatchSchedulerService {
       const matchId = uuidv4();
       const match = createMatch(
         matchId,
-        request.homeTeamName,
-        request.awayTeamName,
+        request.homeTeamId,
+        request.awayTeamId,
         request.scheduledDate,
         request.venue,
         request.notes
       );
 
-      this.matches.set(matchId, match);
+      // Store the match
+      this.matches.set(match.id, match);
 
       return {
         success: true,
@@ -65,10 +158,10 @@ export class MatchSchedulerService {
         match,
       };
     } catch (error) {
+      console.error('Error scheduling match:', error);
       return {
         success: false,
-        message:
-          error instanceof Error ? error.message : 'Unknown error occurred',
+        message: error instanceof Error ? error.message : 'Unknown error occurred',
       };
     }
   }
@@ -97,9 +190,9 @@ export class MatchSchedulerService {
   /**
    * Get all matches for a specific team
    */
-  public getMatchesForTeam(teamName: string): readonly Match[] {
+  public getMatchesForTeam(teamId: string): readonly Match[] {
     return Array.from(this.matches.values()).filter(match =>
-      matchInvolvestTeam(match, teamName)
+      matchInvolvestTeam(match, teamId)
     );
   }
 
@@ -143,8 +236,8 @@ export class MatchSchedulerService {
    * Returns conflicting match if found, undefined otherwise
    */
   private findTeamConflict(
-    homeTeamName: string,
-    awayTeamName: string,
+    homeTeamId: string,
+    awayTeamId: string,
     scheduledDate: Date
   ): Match | undefined {
     const conflictWindowHours = 3; // Don't allow matches within 3 hours of each other
@@ -158,8 +251,8 @@ export class MatchSchedulerService {
 
       // Check if either team is involved
       const isTeamInvolved =
-        matchInvolvestTeam(existingMatch, homeTeamName) ||
-        matchInvolvestTeam(existingMatch, awayTeamName);
+        matchInvolvestTeam(existingMatch, homeTeamId) ||
+        matchInvolvestTeam(existingMatch, awayTeamId);
 
       if (!isTeamInvolved) {
         return false;

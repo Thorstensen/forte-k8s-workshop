@@ -4,10 +4,10 @@
 export interface Match {
   /** Unique identifier for the match */
   readonly id: string;
-  /** Home team name */
-  readonly homeTeamName: string;
-  /** Away team name */
-  readonly awayTeamName: string;
+  /** Home team ID */
+  readonly homeTeamId: string;
+  /** Away team ID */
+  readonly awayTeamId: string;
   /** Scheduled date and time for the match */
   readonly scheduledDate: Date;
   /** Venue where the match will be played */
@@ -35,10 +35,10 @@ export enum MatchStatus {
  * Optional notes about the match
  */
 export interface ScheduleMatchRequest {
-  /** Name of the home team */
-  readonly homeTeamName: string;
-  /** Name of the away team */
-  readonly awayTeamName: string;
+  /** ID of the home team */
+  readonly homeTeamId: string;
+  /** ID of the away team */
+  readonly awayTeamId: string;
   /** Scheduled date and time for the match */
   readonly scheduledDate: Date;
   /** Venue where the match will be played */
@@ -52,14 +52,14 @@ export interface ScheduleMatchRequest {
  */
 export const createMatch = (
   id: string,
-  homeTeamName: string,
-  awayTeamName: string,
+  homeTeamId: string,
+  awayTeamId: string,
   scheduledDate: Date,
   venue: string,
   notes?: string | undefined
 ): Match => {
   // Validate that teams are different
-  if (homeTeamName === awayTeamName) {
+  if (homeTeamId === awayTeamId) {
     throw new Error('A team cannot play against itself');
   }
 
@@ -74,19 +74,19 @@ export const createMatch = (
     throw new Error('Venue cannot be empty');
   }
 
-  // Validate team names
-  if (!homeTeamName.trim()) {
-    throw new Error('Home team name cannot be empty');
+  // Validate team IDs
+  if (!homeTeamId.trim()) {
+    throw new Error('Home team ID cannot be empty');
   }
 
-  if (!awayTeamName.trim()) {
-    throw new Error('Away team name cannot be empty');
+  if (!awayTeamId.trim()) {
+    throw new Error('Away team ID cannot be empty');
   }
 
   return {
     id,
-    homeTeamName: homeTeamName.trim(),
-    awayTeamName: awayTeamName.trim(),
+    homeTeamId: homeTeamId.trim(),
+    awayTeamId: awayTeamId.trim(),
     scheduledDate,
     venue: venue.trim(),
     status: MatchStatus.SCHEDULED,
@@ -107,19 +107,20 @@ export const isUpcomingMatch = (match: Match): boolean => {
 /**
  * Check if a match involves a specific team
  */
-export const matchInvolvestTeam = (match: Match, teamName: string): boolean => {
-  return match.homeTeamName === teamName || match.awayTeamName === teamName;
+export const matchInvolvestTeam = (match: Match, teamId: string): boolean => {
+  return match.homeTeamId === teamId || match.awayTeamId === teamId;
 };
 
 /**
- * Get a user-friendly match description
+ * Get a user-friendly match description (requires team data from TeamGenerator)
+ * Note: This function is commented out as it needs team names from TeamGenerator service
  */
-export const getMatchDescription = (match: Match): string => {
-  const dateStr = match.scheduledDate.toLocaleDateString();
-  const timeStr = match.scheduledDate.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
+// export const getMatchDescription = (match: Match): string => {
+//   const dateStr = match.scheduledDate.toLocaleDateString();
+//   const timeStr = match.scheduledDate.toLocaleTimeString([], {
+//     hour: '2-digit',
+//     minute: '2-digit',
+//   });
 
-  return `${match.homeTeamName} vs ${match.awayTeamName} on ${dateStr} at ${timeStr} (${match.venue})`;
-};
+//   return `${match.homeTeamId} vs ${match.awayTeamId} on ${dateStr} at ${timeStr} (${match.venue})`;
+// };
