@@ -34,15 +34,21 @@ public class TeamsController : ControllerBase
             
             var response = new
             {
-                TeamName = team.Name,
+                Team = new
+                {
+                    team.Id,
+                    team.Name
+                },
                 StartingLineup = team.StartingPlayers.Select(p => new
                 {
+                    p.Id,
                     p.Name,
                     Position = p.Position.ToString(),
                     p.SkillLevel
                 }),
                 Bench = team.BenchPlayers.Select(p => new
                 {
+                    p.Id,
                     p.Name,
                     Position = p.Position.ToString(),
                     p.SkillLevel

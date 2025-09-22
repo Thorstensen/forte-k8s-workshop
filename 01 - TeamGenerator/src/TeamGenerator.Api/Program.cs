@@ -10,6 +10,17 @@ builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new() { Title = "TeamGe
 // Add TeamGenerator services
 builder.Services.AddTeamGeneratorServices();
 
+// Add CORS for cross-origin requests from other services
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 var app = builder.Build();
 
 app.UseSwagger();
@@ -19,6 +30,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
 });
 
+app.UseCors();
 app.UseHttpsRedirection();
 app.MapControllers();
 

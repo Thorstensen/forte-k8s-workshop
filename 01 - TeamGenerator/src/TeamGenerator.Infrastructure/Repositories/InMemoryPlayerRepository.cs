@@ -16,6 +16,7 @@ public class InMemoryPlayerRepository : IPlayerRepository
     {
         var players = new List<Player>();
         var random = new Random(42); // Fixed seed for consistent results
+        var playerIdCounter = 1;
 
         // Goalkeepers
         var goalkeepers = new[]
@@ -24,7 +25,7 @@ public class InMemoryPlayerRepository : IPlayerRepository
         };
         foreach (var name in goalkeepers)
         {
-            players.Add(new Player(name, Position.Goalkeeper, random.Next(75, 95)));
+            players.Add(new Player($"player-{playerIdCounter++}", name, Position.Goalkeeper, random.Next(75, 95)));
         }
 
         // Defenders
@@ -36,7 +37,7 @@ public class InMemoryPlayerRepository : IPlayerRepository
         };
         foreach (var name in defenders)
         {
-            players.Add(new Player(name, Position.Defender, random.Next(70, 92)));
+            players.Add(new Player($"player-{playerIdCounter++}", name, Position.Defender, random.Next(70, 92)));
         }
 
         // Midfielders
@@ -49,7 +50,7 @@ public class InMemoryPlayerRepository : IPlayerRepository
         };
         foreach (var name in midfielders)
         {
-            players.Add(new Player(name, Position.Midfielder, random.Next(72, 94)));
+            players.Add(new Player($"player-{playerIdCounter++}", name, Position.Midfielder, random.Next(72, 94)));
         }
 
         // Forwards
@@ -62,7 +63,7 @@ public class InMemoryPlayerRepository : IPlayerRepository
         };
         foreach (var name in forwards)
         {
-            players.Add(new Player(name, Position.Forward, random.Next(75, 96)));
+            players.Add(new Player($"player-{playerIdCounter++}", name, Position.Forward, random.Next(75, 96)));
         }
 
         return players;

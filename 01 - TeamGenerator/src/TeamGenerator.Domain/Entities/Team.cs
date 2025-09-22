@@ -5,16 +5,24 @@ public class Team
     private readonly List<Player> _startingPlayers = new();
     private readonly List<Player> _benchPlayers = new();
 
+    public string Id { get; private set; }
     public string Name { get; private set; }
     public IReadOnlyList<Player> StartingPlayers => _startingPlayers.AsReadOnly();
     public IReadOnlyList<Player> BenchPlayers => _benchPlayers.AsReadOnly();
     public IReadOnlyList<Player> AllPlayers => _startingPlayers.Concat(_benchPlayers).ToList().AsReadOnly();
 
-    public Team(string name)
+    public Team(string name) : this(Guid.NewGuid().ToString(), name)
     {
+    }
+
+    public Team(string id, string name)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            throw new ArgumentException("Team ID cannot be null or empty.", nameof(id));
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentException("Team name cannot be null or empty.", nameof(name));
         
+        Id = id.Trim();
         Name = name.Trim();
     }
 

@@ -80,7 +80,7 @@ public class TeamGeneratorServiceTests
         for (int i = 0; i < count; i++)
         {
             var position = i == 0 ? Position.Goalkeeper : positions[i % positions.Length];
-            players.Add(new Player($"Player {i}", position, 70 + (i % 30)));
+            players.Add(new Player($"player-{i}", $"Player {i}", position, 70 + (i % 30)));
         }
 
         return players;
