@@ -104,3 +104,6 @@ MANIFEST
 *.temp
 .DS_Store
 Thumbs.db
+
+# Note: Kubernetes deployment manifests are maintained on k8s-deployment branch
+# Avoid adding deploy/ directories or k8s manifests to main branch
