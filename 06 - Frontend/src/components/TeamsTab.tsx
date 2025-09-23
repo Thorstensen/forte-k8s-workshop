@@ -14,27 +14,59 @@ import {
   Avatar,
   Chip,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import {
   Add as PlusIcon,
   EmojiEvents as TrophyIcon,
 } from '@mui/icons-material';
 import { TEAMS } from '../types';
+import { teamService } from '../services/teamService';
 
 const TeamsTab: React.FC = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newTeamName, setNewTeamName] = useState('');
+  const [isCreating, setIsCreating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleCreateTeam = (e: React.FormEvent) => {
+  const handleCreateTeam = async (e: React.FormEvent) => {
     e.preventDefault();
-    // For now, we'll just show an alert since team creation would require backend implementation
-    alert(`Team "${newTeamName}" would be created via TeamGenerator service`);
-    setNewTeamName('');
-    setShowCreateForm(false);
+    setIsCreating(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const teamData = await teamService.generateTeam(newTeamName);
+      console.log('Team created successfully:', teamData);
+      
+      setSuccessMessage(`Team "${newTeamName}" created successfully with ${teamData.TotalPlayers} players!`);
+      setNewTeamName('');
+      setShowCreateForm(false);
+    } catch (err) {
+      console.error('Failed to create team:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create team. Please try again.');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
     <Box sx={{ p: 3 }}>
+      {/* Success Message */}
+      {successMessage && (
+        <Alert severity="success" sx={{ mb: 3, borderRadius: 3 }} onClose={() => setSuccessMessage(null)}>
+          {successMessage}
+        </Alert>
+      )}
+
+      {/* Error Message */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 3, borderRadius: 3 }} onClose={() => setError(null)}>
+          {error}
+        </Alert>
+      )}
+
       {/* Header */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
         <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
@@ -51,7 +83,7 @@ const TeamsTab: React.FC = () => {
       </Box>
 
       {/* Create Team Dialog */}
-      <Dialog open={showCreateForm} onClose={() => setShowCreateForm(false)} maxWidth="sm" fullWidth>
+      <Dialog open={showCreateForm} onClose={() => !isCreating && setShowCreateForm(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Create New Team</DialogTitle>
         <form onSubmit={handleCreateTeam}>
           <DialogContent>
@@ -65,14 +97,24 @@ const TeamsTab: React.FC = () => {
               onChange={(e) => setNewTeamName(e.target.value)}
               variant="outlined"
               sx={{ mt: 1 }}
+              disabled={isCreating}
             />
           </DialogContent>
           <DialogActions sx={{ p: 3 }}>
-            <Button onClick={() => setShowCreateForm(false)} color="inherit">
+            <Button 
+              onClick={() => setShowCreateForm(false)} 
+              color="inherit"
+              disabled={isCreating}
+            >
               Cancel
             </Button>
-            <Button type="submit" variant="contained">
-              Create Team
+            <Button 
+              type="submit" 
+              variant="contained"
+              disabled={isCreating || !newTeamName.trim()}
+              startIcon={isCreating ? <CircularProgress size={20} /> : undefined}
+            >
+              {isCreating ? 'Creating...' : 'Create Team'}
             </Button>
           </DialogActions>
         </form>
