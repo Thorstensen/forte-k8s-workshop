@@ -1,14 +1,14 @@
-@startuml "Forte K8s Workshop - System Context"
+@startuml "Crossbar Conspiracy - System Context"
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
 LAYOUT_TOP_DOWN()
 
-title Forte K8s Workshop - System Context Diagram
+title Crossbar Conspiracy - System Context Diagram
 
 Person(user, "Football Fan", "Wants to view matches, place bets, and receive notifications")
 Person(admin, "System Administrator", "Manages teams, schedules matches, and monitors system")
 
-System(forte_system, "Forte Football Platform", "Microservices-based football management platform with betting, statistics, and notifications")
+System(forte_system, "Crossbar Conspiracy", "Microservices-based football management platform with betting, statistics, and notifications")
 
 System_Ext(browser, "Web Browser", "User interface for accessing the platform")
 System_Ext(kubernetes, "Kubernetes Cluster", "Container orchestration platform hosting all microservices")

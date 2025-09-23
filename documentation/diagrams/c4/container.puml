@@ -1,14 +1,14 @@
-@startuml "Forte K8s Workshop - Container Diagram"
+@startuml "Crossbar Conspiracy - Container Diagram"
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 LAYOUT_TOP_DOWN()
 
-title Forte K8s Workshop - Container Diagram (Microservices Architecture)
+title Crossbar Conspiracy - Container Diagram (Microservices Architecture)
 
 Person(user, "Football Fan", "Views matches, places bets, receives notifications")
 Person(admin, "Administrator", "Manages teams and schedules matches")
 
-System_Boundary(forte_platform, "Forte Football Platform") {
+System_Boundary(crossbar_conspiracy, "Crossbar Conspiracy") {
     Container(frontend, "Frontend", "React TypeScript", "Web interface for users to interact with all services")
     
     Container(team_generator, "Team Generator", "C# .NET Core", "Generates and manages football teams with shared IDs")
@@ -38,7 +38,7 @@ Rel_Back(match_scheduler, notification_center, "Shares match/team IDs", "Consist
 Rel_Back(team_generator, stats_aggregator, "Shares team IDs", "Consistent Data")
 
 ' Deployment
-Rel(forte_platform, kubernetes, "Deployed on", "Docker Containers")
+Rel(crossbar_conspiracy, kubernetes, "Deployed on", "Docker Containers")
 
 SHOW_LEGEND()
 @enduml
