@@ -190,7 +190,7 @@ const TeamsTab: React.FC = () => {
           Available Teams
         </Typography>
         <Typography variant="body2">
-          These are the pre-configured teams available across all microservices. 
+          These are the pre-configured teams available. 
           Team creation would integrate with the TeamGenerator service to add new teams with generated players.
         </Typography>
       </Alert>
