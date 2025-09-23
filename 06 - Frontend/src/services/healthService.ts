@@ -1,8 +1,4 @@
-import { teamService } from './teamService';
-import { bettingService } from './bettingService';
-import { matchService } from './matchService';
-import { statsService } from './statsService';
-import { notificationService } from './notificationService';
+import axios from 'axios';
 
 export interface ServiceHealthStatus {
   name: string;
@@ -19,11 +15,9 @@ export interface SystemHealth {
   totalCount: number;
 }
 
-// Helper function to get the actual endpoint being used
+// Helper function to get the actual endpoint being used for health checks
 const getServiceEndpoint = (serviceName: string): string => {
-  const isDevelopment = import.meta.env.DEV;
-  
-  // Check if environment variable override is set
+  // Check if environment variable override is set first
   const envOverride = (() => {
     switch (serviceName) {
       case 'team-generator':
@@ -45,12 +39,42 @@ const getServiceEndpoint = (serviceName: string): string => {
     return envOverride;
   }
 
-  // Show the proxy path with context about how it's handled
-  const proxyPath = `/api/proxy/${serviceName.replace('-', '')}`;
-  if (isDevelopment) {
-    return `${proxyPath} (Vite dev proxy)`;
-  } else {
-    return `${proxyPath} (NGINX cluster proxy)`;
+  // Use localhost with unique port numbers for health checks
+  // This allows port-forwarding each service to a specific localhost port
+  const portMapping = {
+    'team-generator': 6001,
+    'betting-service': 6002,
+    'match-scheduler': 6003,
+    'stats-aggregator': 6004,
+    'notification-center': 6005,
+  };
+
+  const port = portMapping[serviceName as keyof typeof portMapping];
+  if (port) {
+    return `http://localhost:${port}`;
+  }
+
+  // Fallback to proxy path (shouldn't happen with the defined services)
+  return `/api/proxy/${serviceName.replace('-', '')}`;
+};
+
+// Helper function to perform health check to a specific endpoint
+const performHealthCheck = async (serviceName: string): Promise<boolean> => {
+  try {
+    const endpoint = getServiceEndpoint(serviceName);
+    const healthUrl = `${endpoint}/api/health`;
+    
+    console.log(`Performing health check for ${serviceName} at ${healthUrl}`);
+    
+    const response = await axios.get(healthUrl, {
+      timeout: 5000, // 5 second timeout for health checks
+      validateStatus: (status) => status === 200,
+    });
+    
+    return response.status === 200;
+  } catch (error) {
+    console.error(`Health check failed for ${serviceName}:`, error);
+    return false;
   }
 };
 
@@ -58,7 +82,7 @@ export const healthService = {
   // Individual service health checks
   checkTeamGeneratorHealth: async (): Promise<ServiceHealthStatus> => {
     try {
-      const isHealthy = await teamService.healthCheck();
+      const isHealthy = await performHealthCheck('team-generator');
       return {
         name: 'team-generator',
         displayName: 'Team Generator',
@@ -79,7 +103,7 @@ export const healthService = {
 
   checkBettingServiceHealth: async (): Promise<ServiceHealthStatus> => {
     try {
-      const isHealthy = await bettingService.healthCheck();
+      const isHealthy = await performHealthCheck('betting-service');
       return {
         name: 'betting-service',
         displayName: 'Betting Service',
@@ -100,7 +124,7 @@ export const healthService = {
 
   checkMatchSchedulerHealth: async (): Promise<ServiceHealthStatus> => {
     try {
-      const isHealthy = await matchService.healthCheck();
+      const isHealthy = await performHealthCheck('match-scheduler');
       return {
         name: 'match-scheduler',
         displayName: 'Match Scheduler',
@@ -121,7 +145,7 @@ export const healthService = {
 
   checkStatsAggregatorHealth: async (): Promise<ServiceHealthStatus> => {
     try {
-      const isHealthy = await statsService.healthCheck();
+      const isHealthy = await performHealthCheck('stats-aggregator');
       return {
         name: 'stats-aggregator',
         displayName: 'Stats Aggregator',
@@ -142,7 +166,7 @@ export const healthService = {
 
   checkNotificationCenterHealth: async (): Promise<ServiceHealthStatus> => {
     try {
-      const isHealthy = await notificationService.healthCheck();
+      const isHealthy = await performHealthCheck('notification-center');
       return {
         name: 'notification-center',
         displayName: 'Notification Center',
