@@ -3,17 +3,20 @@ import { Team, ApiResponse } from '../types';
 
 export const teamService = {
   // Generate a new team - this would call the TeamGenerator service
-  generateTeam: async (teamName: string): Promise<Team> => {
+  generateTeam: async (teamName: string): Promise<any> => {
     try {
-      const response = await teamGeneratorApi.post<ApiResponse<Team>>('/api/teams', {
-        teamName,
+      const response = await teamGeneratorApi.get('/api/teams', {
+        params: {
+          teamName,
+        },
       });
       
-      if (response.data.success && response.data.data) {
-        return response.data.data;
+      // The TeamGenerator API returns the team data directly, not wrapped in ApiResponse
+      if (response.data) {
+        return response.data;
       }
       
-      throw new Error(response.data.message || 'Failed to generate team');
+      throw new Error('Failed to generate team');
     } catch (error) {
       console.error('Error generating team:', error);
       throw error;
