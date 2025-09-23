@@ -64,18 +64,15 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => 
                   fontWeight: 'bold',
                 }}
               >
-                Crossbar Conspiracy by Nutmeg Labs
+                Crossbar Conspiracy
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Crossbar Conspiracy by Nutmeg Labs
+                by Nutmeg Labs
               </Typography>
             </Box>
           </Box>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
             <HealthStatusChip />
-            <Typography variant="body2" color="text.secondary">
-              Microservices Dashboard
-            </Typography>
           </Box>
         </Toolbar>
       </AppBar>
