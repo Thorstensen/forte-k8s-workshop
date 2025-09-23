@@ -1,12 +1,20 @@
 import axios from 'axios';
 
-// Service base URLs - using Kubernetes Core DNS for cluster communication
+// Determine if we're in development mode
+const isDevelopment = import.meta.env.DEV;
+
+// Service base URLs - using proxy for development, Kubernetes DNS for production
 const SERVICES = {
-  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://teamgenerator.teamgenerator.svc.cluster.local:8080',
-  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://bettingservice.bettingservice.svc.cluster.local:8080',
-  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://matchscheduler.matchscheduler.svc.cluster.local:3000',
-  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://statsaggregator.statsaggregator.svc.cluster.local:8080',
-  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://notificationcenter.notificationcenter.svc.cluster.local:8080',
+  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 
+    (isDevelopment ? '/api/proxy/teamgenerator' : 'http://teamgenerator.teamgenerator.svc.cluster.local:8080'),
+  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 
+    (isDevelopment ? '/api/proxy/bettingservice' : 'http://bettingservice.bettingservice.svc.cluster.local:8080'),
+  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 
+    (isDevelopment ? '/api/proxy/matchscheduler' : 'http://matchscheduler.matchscheduler.svc.cluster.local:3000'),
+  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 
+    (isDevelopment ? '/api/proxy/statsaggregator' : 'http://statsaggregator.statsaggregator.svc.cluster.local:8080'),
+  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 
+    (isDevelopment ? '/api/proxy/notificationcenter' : 'http://notificationcenter.notificationcenter.svc.cluster.local:8080'),
 };
 
 // Create axios instances for each service

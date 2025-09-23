@@ -19,6 +19,43 @@ export interface SystemHealth {
   totalCount: number;
 }
 
+// Helper function to get the actual endpoint being used
+const getServiceEndpoint = (serviceName: string): string => {
+  const isDevelopment = import.meta.env.DEV;
+  
+  if (isDevelopment) {
+    // In development, show the actual localhost endpoints
+    switch (serviceName) {
+      case 'team-generator':
+        return import.meta.env.VITE_TEAM_GENERATOR_URL || 'localhost:5000 (via proxy)';
+      case 'betting-service':
+        return import.meta.env.VITE_BETTING_SERVICE_URL || 'localhost:8080 (via proxy)';
+      case 'match-scheduler':
+        return import.meta.env.VITE_MATCH_SCHEDULER_URL || 'localhost:3000 (via proxy)';
+      case 'stats-aggregator':
+        return import.meta.env.VITE_STATS_AGGREGATOR_URL || 'localhost:8081 (via proxy)';
+      case 'notification-center':
+        return import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'localhost:8082 (via proxy)';
+    }
+  }
+  
+  // In production, show the Kubernetes DNS names
+  switch (serviceName) {
+    case 'team-generator':
+      return 'teamgenerator.teamgenerator.svc.cluster.local:8080';
+    case 'betting-service':
+      return 'bettingservice.bettingservice.svc.cluster.local:8080';
+    case 'match-scheduler':
+      return 'matchscheduler.matchscheduler.svc.cluster.local:3000';
+    case 'stats-aggregator':
+      return 'statsaggregator.statsaggregator.svc.cluster.local:8080';
+    case 'notification-center':
+      return 'notificationcenter.notificationcenter.svc.cluster.local:8080';
+    default:
+      return 'unknown';
+  }
+};
+
 export const healthService = {
   // Individual service health checks
   checkTeamGeneratorHealth: async (): Promise<ServiceHealthStatus> => {
@@ -29,7 +66,7 @@ export const healthService = {
         displayName: 'Team Generator',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('team-generator'),
       };
     } catch (error) {
       return {
@@ -37,7 +74,7 @@ export const healthService = {
         displayName: 'Team Generator',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('team-generator'),
       };
     }
   },
@@ -50,7 +87,7 @@ export const healthService = {
         displayName: 'Betting Service',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('betting-service'),
       };
     } catch (error) {
       return {
@@ -58,7 +95,7 @@ export const healthService = {
         displayName: 'Betting Service',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('betting-service'),
       };
     }
   },
@@ -71,7 +108,7 @@ export const healthService = {
         displayName: 'Match Scheduler',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+        endpoint: getServiceEndpoint('match-scheduler'),
       };
     } catch (error) {
       return {
@@ -79,7 +116,7 @@ export const healthService = {
         displayName: 'Match Scheduler',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+        endpoint: getServiceEndpoint('match-scheduler'),
       };
     }
   },
@@ -92,7 +129,7 @@ export const healthService = {
         displayName: 'Stats Aggregator',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('stats-aggregator'),
       };
     } catch (error) {
       return {
@@ -100,7 +137,7 @@ export const healthService = {
         displayName: 'Stats Aggregator',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('stats-aggregator'),
       };
     }
   },
@@ -113,7 +150,7 @@ export const healthService = {
         displayName: 'Notification Center',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('notification-center'),
       };
     } catch (error) {
       return {
@@ -121,7 +158,7 @@ export const healthService = {
         displayName: 'Notification Center',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+        endpoint: getServiceEndpoint('notification-center'),
       };
     }
   },
@@ -153,35 +190,35 @@ export const healthService = {
           displayName: 'Team Generator',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+          endpoint: getServiceEndpoint('team-generator'),
         },
         bettingService.status === 'fulfilled' ? bettingService.value : {
           name: 'betting-service',
           displayName: 'Betting Service',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+          endpoint: getServiceEndpoint('betting-service'),
         },
         matchScheduler.status === 'fulfilled' ? matchScheduler.value : {
           name: 'match-scheduler',
           displayName: 'Match Scheduler',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+          endpoint: getServiceEndpoint('match-scheduler'),
         },
         statsAggregator.status === 'fulfilled' ? statsAggregator.value : {
           name: 'stats-aggregator',
           displayName: 'Stats Aggregator',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+          endpoint: getServiceEndpoint('stats-aggregator'),
         },
         notificationCenter.status === 'fulfilled' ? notificationCenter.value : {
           name: 'notification-center',
           displayName: 'Notification Center',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+          endpoint: getServiceEndpoint('notification-center'),
         },
       ];
 
@@ -218,35 +255,35 @@ export const healthService = {
             displayName: 'Team Generator',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+            endpoint: getServiceEndpoint('team-generator'),
           },
           {
             name: 'betting-service',
             displayName: 'Betting Service',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+            endpoint: getServiceEndpoint('betting-service'),
           },
           {
             name: 'match-scheduler',
             displayName: 'Match Scheduler',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+            endpoint: getServiceEndpoint('match-scheduler'),
           },
           {
             name: 'stats-aggregator',
             displayName: 'Stats Aggregator',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+            endpoint: getServiceEndpoint('stats-aggregator'),
           },
           {
             name: 'notification-center',
             displayName: 'Notification Center',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+            endpoint: getServiceEndpoint('notification-center'),
           },
         ],
         healthyCount: 0,
