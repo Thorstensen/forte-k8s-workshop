@@ -64,10 +64,10 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => 
                   fontWeight: 'bold',
                 }}
               >
-                Forte Football Manager
+                Crossbar Conspiracy by Nutmeg Labs
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Professional Match Management System
+                Crossbar Conspiracy by Nutmeg Labs
               </Typography>
             </Box>
           </Box>
