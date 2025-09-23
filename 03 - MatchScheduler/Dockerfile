@@ -1,34 +1,39 @@
-# Production-ready TypeScript application
+# ---- Build stage: compile TypeScript to dist/ ----
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Install build deps (dev deps included for TypeScript, etc.)
+COPY package*.json ./
+RUN npm ci
+
+# Copy source and build
+COPY . .
+RUN npm run build
+
+# ---- Production stage: only runtime deps + compiled output ----
 FROM node:18-alpine AS production
 
-# Set environment variables
 ENV NODE_ENV=production
 ENV PORT=3000
 
-# Create app directory
 WORKDIR /app
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S matchscheduler -u 1001
+# Create non-root user and group
+RUN addgroup -g 1001 -S nodejs \
+ && adduser -S matchscheduler -u 1001 -G nodejs
 
-# Copy package files
+# Install only production deps
 COPY package*.json ./
-
-# Install only production dependencies
 RUN npm ci --omit=dev && npm cache clean --force
 
-# Copy built application
-COPY dist ./dist
+# Bring in compiled JS from builder
+COPY --from=builder --chown=matchscheduler:nodejs /app/dist ./dist
 
-# Change ownership to non-root user
-RUN chown -R matchscheduler:nodejs /app
 USER matchscheduler
 
-# Expose port
 EXPOSE 3000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD node -e "const http = require('http'); \
     const options = { hostname: 'localhost', port: 3000, path: '/health', timeout: 2000 }; \
@@ -40,5 +45,4 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     req.on('timeout', () => process.exit(1)); \
     req.end();"
 
-# Start the application
 CMD ["node", "dist/api/index.js"]
