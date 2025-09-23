@@ -143,6 +143,7 @@ const TeamsTab: React.FC = () => {
       </Box>
 
       {/* Info Section */}
+<<<<<<< Updated upstream
       <Alert severity="info" sx={{ borderRadius: 3 }}>
         <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
           Available Teams
@@ -153,6 +154,21 @@ const TeamsTab: React.FC = () => {
         </Typography>
       </Alert>
     </Box>
+=======
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <div className="flex items-start">
+          <Users className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
+          <div>
+            <h4 className="text-sm font-medium text-blue-900">Available Teams</h4>
+            <p className="text-sm text-blue-700 mt-1">
+              These are the pre-configured teams available. 
+              Team creation would integrate with the TeamGenerator service to add new teams with generated players.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+>>>>>>> Stashed changes
   );
 };
 
