@@ -1,27 +1,12 @@
 import axios from 'axios';
 
-// Determine the runtime environment
-const isDevelopment = import.meta.env.DEV;
-
-console.log('Environment detection:', { 
-  isDevelopment, 
-  hostname: window.location.hostname,
-  port: window.location.port
-});
-
-// Service base URLs using direct localhost port forwarding
-// Each service is available on localhost with specific ports:
-// - Team Generator: localhost:6001
-// - Betting Service: localhost:6002
-// - Match Scheduler: localhost:6003
-// - Stats Aggregator: localhost:6004
-// - Notification Center: localhost:6005
+// Service base URLs - using Kubernetes Core DNS for cluster communication
 const SERVICES = {
-  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://localhost:6001',
-  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://localhost:6002', 
-  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://localhost:6003',
-  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://localhost:6004',
-  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://localhost:6005',
+  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://teamgenerator.teamgenerator.svc.cluster.local:8080',
+  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://bettingservice.bettingservice.svc.cluster.local:8080',
+  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://matchscheduler.matchscheduler.svc.cluster.local:3000',
+  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://statsaggregator.statsaggregator.svc.cluster.local:8080',
+  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://notificationcenter.notificationcenter.svc.cluster.local:8080',
 };
 
 // Create axios instances for each service
