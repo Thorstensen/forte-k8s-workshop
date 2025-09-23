@@ -9,16 +9,19 @@ console.log('Environment detection:', {
   port: window.location.port
 });
 
-// Service base URLs
-// - Development (npm run dev): Use Vite proxy
-// - Production (deployed to cluster): Use NGINX proxy paths
-// Both scenarios use the same proxy paths, but handled by different servers
+// Service base URLs using direct localhost port forwarding
+// Each service is available on localhost with specific ports:
+// - Team Generator: localhost:6001
+// - Betting Service: localhost:6002
+// - Match Scheduler: localhost:6003
+// - Stats Aggregator: localhost:6004
+// - Notification Center: localhost:6005
 const SERVICES = {
-  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || '/api/proxy/teamgenerator',
-  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || '/api/proxy/bettingservice', 
-  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || '/api/proxy/matchscheduler',
-  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || '/api/proxy/statsaggregator',
-  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || '/api/proxy/notificationcenter',
+  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://localhost:6001',
+  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://localhost:6002', 
+  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://localhost:6003',
+  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://localhost:6004',
+  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://localhost:6005',
 };
 
 // Create axios instances for each service

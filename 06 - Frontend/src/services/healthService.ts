@@ -54,8 +54,8 @@ const getServiceEndpoint = (serviceName: string): string => {
     return `http://localhost:${port}`;
   }
 
-  // Fallback to proxy path (shouldn't happen with the defined services)
-  return `/api/proxy/${serviceName.replace('-', '')}`;
+  // This shouldn't happen with the defined services, but fallback to a default port
+  throw new Error(`Unknown service: ${serviceName}`);
 };
 
 // Helper function to perform health check to a specific endpoint
