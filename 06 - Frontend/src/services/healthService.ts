@@ -29,7 +29,7 @@ export const healthService = {
         displayName: 'Team Generator',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+        endpoint: 'localhost:6001',
       };
     } catch (error) {
       return {
@@ -37,7 +37,7 @@ export const healthService = {
         displayName: 'Team Generator',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+        endpoint: 'localhost:6001',
       };
     }
   },
@@ -50,7 +50,7 @@ export const healthService = {
         displayName: 'Betting Service',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+        endpoint: 'localhost:6002',
       };
     } catch (error) {
       return {
@@ -58,7 +58,7 @@ export const healthService = {
         displayName: 'Betting Service',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+        endpoint: 'localhost:6002',
       };
     }
   },
@@ -71,7 +71,7 @@ export const healthService = {
         displayName: 'Match Scheduler',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+        endpoint: 'localhost:6003',
       };
     } catch (error) {
       return {
@@ -79,7 +79,7 @@ export const healthService = {
         displayName: 'Match Scheduler',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+        endpoint: 'localhost:6003',
       };
     }
   },
@@ -92,7 +92,7 @@ export const healthService = {
         displayName: 'Stats Aggregator',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+        endpoint: 'localhost:6004',
       };
     } catch (error) {
       return {
@@ -100,7 +100,7 @@ export const healthService = {
         displayName: 'Stats Aggregator',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+        endpoint: 'localhost:6004',
       };
     }
   },
@@ -113,7 +113,7 @@ export const healthService = {
         displayName: 'Notification Center',
         isHealthy,
         lastChecked: new Date(),
-        endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+        endpoint: 'localhost:6005',
       };
     } catch (error) {
       return {
@@ -121,7 +121,7 @@ export const healthService = {
         displayName: 'Notification Center',
         isHealthy: false,
         lastChecked: new Date(),
-        endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+        endpoint: 'localhost:6005',
       };
     }
   },
@@ -153,35 +153,35 @@ export const healthService = {
           displayName: 'Team Generator',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+          endpoint: 'localhost:6001',
         },
         bettingService.status === 'fulfilled' ? bettingService.value : {
           name: 'betting-service',
           displayName: 'Betting Service',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+          endpoint: 'localhost:6002',
         },
         matchScheduler.status === 'fulfilled' ? matchScheduler.value : {
           name: 'match-scheduler',
           displayName: 'Match Scheduler',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+          endpoint: 'localhost:6003',
         },
         statsAggregator.status === 'fulfilled' ? statsAggregator.value : {
           name: 'stats-aggregator',
           displayName: 'Stats Aggregator',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+          endpoint: 'localhost:6004',
         },
         notificationCenter.status === 'fulfilled' ? notificationCenter.value : {
           name: 'notification-center',
           displayName: 'Notification Center',
           isHealthy: false,
           lastChecked: new Date(),
-          endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+          endpoint: 'localhost:6005',
         },
       ];
 
@@ -218,35 +218,35 @@ export const healthService = {
             displayName: 'Team Generator',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'teamgenerator.teamgenerator.svc.cluster.local:8080',
+            endpoint: 'localhost:6001',
           },
           {
             name: 'betting-service',
             displayName: 'Betting Service',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'bettingservice.bettingservice.svc.cluster.local:8080',
+            endpoint: 'localhost:6002',
           },
           {
             name: 'match-scheduler',
             displayName: 'Match Scheduler',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'matchscheduler.matchscheduler.svc.cluster.local:3000',
+            endpoint: 'localhost:6003',
           },
           {
             name: 'stats-aggregator',
             displayName: 'Stats Aggregator',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'statsaggregator.statsaggregator.svc.cluster.local:8080',
+            endpoint: 'localhost:6004',
           },
           {
             name: 'notification-center',
             displayName: 'Notification Center',
             isHealthy: false,
             lastChecked: new Date(),
-            endpoint: 'notificationcenter.notificationcenter.svc.cluster.local:8080',
+            endpoint: 'localhost:6005',
           },
         ],
         healthyCount: 0,
