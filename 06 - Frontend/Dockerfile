@@ -1,46 +1,38 @@
-# Multi-stage build for production-ready React application
+# ---- Build stage ----
 FROM node:18-alpine AS build
 
-# Set working directory
 WORKDIR /app
-
-# Set environment variables
+# Keep prod env while explicitly including dev deps for the build
 ENV NODE_ENV=production
 
-# Copy package files
+# Install deps (incl. dev) for Vite build
 COPY package*.json ./
+RUN npm ci --include=dev
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci && npm cache clean --force
-
-# Copy source code
+# Build
 COPY . .
+RUN npm run build \
+  && npm prune --omit=dev \
+  && npm cache clean --force
 
-# Build the application
-RUN npm run build
+# ---- Runtime stage (unprivileged NGINX) ----
+# Runs as non-root by default and listens on 8080
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
-# Production stage
-FROM nginx:alpine AS production
+# Optional: quiet some entrypoint logs
+ENV NGINX_ENTRYPOINT_QUIET_LOGS=1
 
-# Create non-root user for security
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S frontend -u 1001
-
-# Copy built application from build stage
+# Static site
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# Copy nginx configuration
+# Your config should listen on 8080 (e.g., `listen 8080;`)
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Change ownership to non-root user
-RUN chown -R frontend:nodejs /usr/share/nginx/html
+EXPOSE 8080
 
-# Expose port
-EXPOSE 3001
-
-# Health check
+# Use busybox wget for healthcheck (already in the image)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:3001/health || exit 1
+  CMD wget -q -O - http://localhost:8080/health >/dev/null 2>&1 || exit 1
 
-# Start nginx
+# Already non-root (USER 101) and correct NGINX entrypoint
 CMD ["nginx", "-g", "daemon off;"]
