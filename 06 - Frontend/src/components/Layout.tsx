@@ -8,7 +8,6 @@ import {
   Tabs,
   Tab,
   Paper,
-  Chip,
 } from '@mui/material';
 import {
   EmojiEvents as TrophyIcon,
@@ -17,6 +16,7 @@ import {
   TrendingUp as TrendingUpIcon,
   Notifications as BellIcon,
 } from '@mui/icons-material';
+import HealthStatusChip from './HealthStatusChip';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -64,20 +64,15 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => 
                   fontWeight: 'bold',
                 }}
               >
-                Forte Football Manager
+                Crossbar Conspiracy by Nutmeg Labs
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Professional Match Management System
+                Crossbar Conspiracy by Nutmeg Labs
               </Typography>
             </Box>
           </Box>
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
-            <Chip
-              label="System Online"
-              color="success"
-              size="small"
-              sx={{ fontWeight: 'medium' }}
-            />
+            <HealthStatusChip />
             <Typography variant="body2" color="text.secondary">
               Microservices Dashboard
             </Typography>

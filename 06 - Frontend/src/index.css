@@ -1,9 +1,28 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Base styles for the application */
+html {
+  font-family: system-ui, sans-serif;
+}
 
-@layer base {
-  html {
-    font-family: system-ui, sans-serif;
-  }
+/* Remove default margin and padding for better Material-UI integration */
+body {
+  margin: 0;
+  padding: 0;
+}
+
+/* Custom scrollbar styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }

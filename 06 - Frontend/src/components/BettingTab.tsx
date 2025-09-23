@@ -1,7 +1,31 @@
 import React, { useState } from 'react';
-import { TrendingUp, DollarSign, Target } from 'lucide-react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  MenuItem,
+  Select,
+  InputLabel,
+  CircularProgress,
+  Alert,
+  Chip,
+  Stack,
+} from '@mui/material';
+import {
+  TrendingUp,
+  AttachMoney as DollarSignIcon,
+  GpsFixed as TargetIcon,
+} from '@mui/icons-material';
 import { useMatchOdds, useBettingMatches, usePlaceBet } from '../hooks/useApi';
-import { formatOdds, calculatePayout, formatDate, cn } from '../utils';
+import { formatOdds, calculatePayout, formatDate } from '../utils';
 
 const BettingTab: React.FC = () => {
   const { data: bettingMatches = [], isLoading: matchesLoading } = useBettingMatches();
@@ -49,190 +73,207 @@ const BettingTab: React.FC = () => {
 
   if (matchesLoading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 400 }}>
+        <CircularProgress size={48} />
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ p: 3 }}>
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-900">Betting</h2>
-        <div className="flex items-center text-sm text-gray-500">
-          <TrendingUp className="h-4 w-4 mr-1" />
-          Live Odds
-        </div>
-      </div>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+          Betting
+        </Typography>
+        <Chip 
+          icon={<TrendingUp />} 
+          label="Live Odds" 
+          color="primary" 
+          variant="outlined"
+        />
+      </Box>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3 }}>
         {/* Available Matches */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-900">Available Matches</h3>
-          
-          {bettingMatches.length === 0 ? (
-            <div className="bg-white p-6 rounded-lg shadow-sm border text-center">
-              <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No matches available</h4>
-              <p className="text-gray-500">Check back later for betting opportunities.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {bettingMatches.map((match) => (
-                <div
-                  key={match.id}
-                  onClick={() => setSelectedMatch(match.id)}
-                  className={cn(
-                    'bg-white p-4 rounded-lg border cursor-pointer transition-all',
-                    selectedMatch === match.id
-                      ? 'border-blue-500 shadow-md bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
-                  )}
-                >
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-semibold text-gray-900">
-                        {match.homeTeamName} vs {match.awayTeamName}
-                      </h4>
-                      <p className="text-sm text-gray-500">
-                        {formatDate(match.scheduledDate)} • {match.venue}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-sm font-medium text-blue-600">
-                        Click to bet
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+        <Box sx={{ flex: 1 }}>
+          <Card sx={{ height: 'fit-content' }}>
+            <CardContent>
+              <Typography variant="h5" component="h3" sx={{ mb: 3, fontWeight: 'bold' }}>
+                Available Matches
+              </Typography>
+              
+              {bettingMatches.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <TargetIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+                    No matches available
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    Check back later for betting opportunities.
+                  </Typography>
+                </Box>
+              ) : (
+                <Stack spacing={2}>
+                  {bettingMatches.map((match) => (
+                    <Card
+                      key={match.id}
+                      variant={selectedMatch === match.id ? "elevation" : "outlined"}
+                      sx={{
+                        cursor: 'pointer',
+                        bgcolor: selectedMatch === match.id ? 'primary.50' : 'background.paper',
+                        border: selectedMatch === match.id ? 2 : 1,
+                        borderColor: selectedMatch === match.id ? 'primary.main' : 'divider',
+                        '&:hover': {
+                          bgcolor: selectedMatch === match.id ? 'primary.100' : 'action.hover',
+                        },
+                      }}
+                      onClick={() => setSelectedMatch(match.id)}
+                    >
+                      <CardContent>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 'bold' }}>
+                              {match.homeTeamName} vs {match.awayTeamName}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {formatDate(match.scheduledDate)} • {match.venue}
+                            </Typography>
+                          </Box>
+                          <Chip 
+                            label="Click to bet" 
+                            color="primary" 
+                            size="small"
+                            variant={selectedMatch === match.id ? "filled" : "outlined"}
+                          />
+                        </Box>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </Stack>
+              )}
+            </CardContent>
+          </Card>
+        </Box>
 
         {/* Betting Form */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-900">Place Bet</h3>
-          
-          {!selectedMatch ? (
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 text-center">
-              <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Select a match to place a bet</p>
-            </div>
-          ) : (
-            <div className="bg-white p-6 rounded-lg shadow-sm border">
-              {oddsLoading ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
+        <Box sx={{ flex: 1 }}>
+          <Card sx={{ height: 'fit-content' }}>
+            <CardContent>
+              <Typography variant="h5" component="h3" sx={{ mb: 3, fontWeight: 'bold' }}>
+                Place Bet
+              </Typography>
+              
+              {!selectedMatch ? (
+                <Box sx={{ textAlign: 'center', py: 4 }}>
+                  <DollarSignIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+                  <Typography variant="body1" color="text.secondary">
+                    Select a match to place a bet
+                  </Typography>
+                </Box>
+              ) : oddsLoading ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress />
+                </Box>
               ) : (
-                <form onSubmit={handlePlaceBet} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Bet Type
-                    </label>
-                    <select
+                <Box component="form" onSubmit={handlePlaceBet} sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <FormControl fullWidth>
+                    <InputLabel>Bet Type</InputLabel>
+                    <Select
                       value={betForm.bet_type}
                       onChange={(e) => setBetForm({ ...betForm, bet_type: e.target.value, option: '' })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      label="Bet Type"
                     >
                       {odds.map((oddItem) => (
-                        <option key={oddItem.bet_type} value={oddItem.bet_type}>
+                        <MenuItem key={oddItem.bet_type} value={oddItem.bet_type}>
                           {oddItem.bet_type.replace('_', ' ').toUpperCase()}
-                        </option>
+                        </MenuItem>
                       ))}
-                    </select>
-                  </div>
+                    </Select>
+                  </FormControl>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Selection
-                    </label>
-                    <div className="space-y-2">
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend" sx={{ mb: 1 }}>Selection</FormLabel>
+                    <RadioGroup
+                      value={betForm.option}
+                      onChange={(e) => setBetForm({ ...betForm, option: e.target.value })}
+                    >
                       {odds
                         .find(o => o.bet_type === betForm.bet_type)
                         ?.options &&
                         Object.entries(odds.find(o => o.bet_type === betForm.bet_type)!.options)
                           .map(([option, oddsValue]) => (
-                            <label key={option} className="flex items-center">
-                              <input
-                                type="radio"
-                                name="option"
+                            <Box key={option} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                              <FormControlLabel
                                 value={option}
-                                checked={betForm.option === option}
-                                onChange={(e) => setBetForm({ ...betForm, option: e.target.value })}
-                                className="mr-3 text-blue-600 focus:ring-blue-500"
+                                control={<Radio />}
+                                label={option.replace('_', ' ').toUpperCase()}
+                                sx={{ flexGrow: 1 }}
                               />
-                              <span className="flex-1">
-                                {option.replace('_', ' ').toUpperCase()}
-                              </span>
-                              <span className="font-semibold text-blue-600">
-                                {formatOdds(oddsValue)} ({oddsValue.toFixed(2)})
-                              </span>
-                            </label>
+                              <Chip
+                                label={`${formatOdds(oddsValue)} (${oddsValue.toFixed(2)})`}
+                                color="primary"
+                                variant="outlined"
+                                size="small"
+                              />
+                            </Box>
                           ))}
-                    </div>
-                  </div>
+                    </RadioGroup>
+                  </FormControl>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Stake ($)
-                    </label>
-                    <input
-                      type="number"
-                      min="1"
-                      max="1000"
-                      value={betForm.stake}
-                      onChange={(e) => setBetForm({ ...betForm, stake: Number(e.target.value) })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
+                  <TextField
+                    type="number"
+                    label="Stake ($)"
+                    inputProps={{ min: 1, max: 1000 }}
+                    value={betForm.stake}
+                    onChange={(e) => setBetForm({ ...betForm, stake: Number(e.target.value) })}
+                    fullWidth
+                  />
 
                   {betForm.option && (
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium text-blue-900">
+                    <Alert severity="info" sx={{ mt: 2 }}>
+                      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                           Potential Payout:
-                        </span>
-                        <span className="text-lg font-bold text-blue-900">
+                        </Typography>
+                        <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                           ${getPayout().toFixed(2)}
-                        </span>
-                      </div>
-                      <div className="text-xs text-blue-700 mt-1">
+                        </Typography>
+                      </Box>
+                      <Typography variant="caption" color="text.secondary">
                         Stake: ${betForm.stake} • Odds: {getSelectedOdds().toFixed(2)}
-                      </div>
-                    </div>
+                      </Typography>
+                    </Alert>
                   )}
 
-                  <button
+                  <Button
                     type="submit"
+                    variant="contained"
+                    size="large"
                     disabled={!betForm.option || placeBetMutation.isPending}
-                    className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                    color="success"
+                    sx={{ mt: 2, fontWeight: 'bold' }}
                   >
                     {placeBetMutation.isPending ? 'Placing Bet...' : 'Place Bet'}
-                  </button>
-                </form>
+                  </Button>
+                </Box>
               )}
-            </div>
-          )}
-        </div>
-      </div>
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
 
       {/* Info */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div className="flex items-start">
-          <TrendingUp className="h-5 w-5 text-yellow-600 mt-0.5 mr-3" />
-          <div>
-            <h4 className="text-sm font-medium text-yellow-900">Betting Integration</h4>
-            <p className="text-sm text-yellow-700 mt-1">
-              Odds are fetched from the BettingService microservice. When a match is scheduled, 
-              odds are automatically generated for various betting markets.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Alert severity="warning" sx={{ mt: 4, borderRadius: 3 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          Betting Integration
+        </Typography>
+        <Typography variant="body2">
+          Odds are fetched from the BettingService microservice. When a match is scheduled, 
+          odds are automatically generated for various betting markets.
+        </Typography>
+      </Alert>
+    </Box>
   );
 };
 
