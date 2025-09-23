@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { matchService } from '../services/matchService';
 import { bettingService } from '../services/bettingService';
 import { notificationService } from '../services/notificationService';
+import { healthService } from '../services/healthService';
 import { ScheduleMatchRequest } from '../types';
 
 // Match hooks
@@ -109,5 +110,16 @@ export const useImportantNotifications = () => {
     queryKey: ['notifications', 'important'],
     queryFn: notificationService.getImportantNotifications,
     staleTime: 10000,
+  });
+};
+
+// Health hooks
+export const useSystemHealth = () => {
+  return useQuery({
+    queryKey: ['system', 'health'],
+    queryFn: healthService.checkSystemHealth,
+    refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 20000, // Consider data stale after 20 seconds
+    retry: 1, // Only retry once for health checks
   });
 };

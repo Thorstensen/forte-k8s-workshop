@@ -1,5 +1,24 @@
 import React, { useState } from 'react';
-import { Users, Plus, Trophy } from 'lucide-react';
+import {
+  Box,
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Alert,
+  Avatar,
+  Chip,
+  Stack,
+} from '@mui/material';
+import {
+  Add as PlusIcon,
+  EmojiEvents as TrophyIcon,
+} from '@mui/icons-material';
 import { TEAMS } from '../types';
 
 const TeamsTab: React.FC = () => {
@@ -15,93 +34,125 @@ const TeamsTab: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ p: 3 }}>
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-900">Teams</h2>
-        <button
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+          Teams
+        </Typography>
+        <Button
           onClick={() => setShowCreateForm(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+          variant="contained"
+          startIcon={<PlusIcon />}
+          sx={{ borderRadius: 3 }}
         >
-          <Plus className="h-5 w-5 mr-2" />
           Create Team
-        </button>
-      </div>
+        </Button>
+      </Box>
 
-      {/* Create Team Form */}
-      {showCreateForm && (
-        <div className="bg-white p-6 rounded-lg shadow-md border">
-          <h3 className="text-lg font-semibold mb-4">Create New Team</h3>
-          <form onSubmit={handleCreateTeam} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Team Name
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="Enter team name"
-                value={newTeamName}
-                onChange={(e) => setNewTeamName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            
-            <div className="flex justify-end space-x-3">
-              <button
-                type="button"
-                onClick={() => setShowCreateForm(false)}
-                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-              >
-                Create Team
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      {/* Create Team Dialog */}
+      <Dialog open={showCreateForm} onClose={() => setShowCreateForm(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Create New Team</DialogTitle>
+        <form onSubmit={handleCreateTeam}>
+          <DialogContent>
+            <TextField
+              autoFocus
+              required
+              fullWidth
+              label="Team Name"
+              placeholder="Enter team name"
+              value={newTeamName}
+              onChange={(e) => setNewTeamName(e.target.value)}
+              variant="outlined"
+              sx={{ mt: 1 }}
+            />
+          </DialogContent>
+          <DialogActions sx={{ p: 3 }}>
+            <Button onClick={() => setShowCreateForm(false)} color="inherit">
+              Cancel
+            </Button>
+            <Button type="submit" variant="contained">
+              Create Team
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
 
       {/* Teams Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <Box 
+        sx={{ 
+          display: 'grid', 
+          gridTemplateColumns: { 
+            xs: '1fr', 
+            md: 'repeat(2, 1fr)', 
+            lg: 'repeat(3, 1fr)' 
+          }, 
+          gap: 3, 
+          mb: 4 
+        }}
+      >
         {TEAMS.map((team) => (
-          <div key={team.id} className="bg-white p-6 rounded-lg shadow-sm border hover:shadow-md transition-shadow">
-            <div className="flex items-center space-x-4">
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Trophy className="h-8 w-8 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">{team.name}</h3>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <span>{team.shortName}</span>
-                  <span>•</span>
-                  <span>{team.country}</span>
-                </div>
-                <div className="text-xs text-blue-600 mt-1">ID: {team.id}</div>
-              </div>
-            </div>
-          </div>
+          <Card 
+            key={team.id}
+            sx={{ 
+              height: '100%',
+              '&:hover': {
+                transform: 'translateY(-2px)',
+                transition: 'transform 0.3s ease',
+              },
+            }}
+          >
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <Avatar 
+                    sx={{ 
+                      bgcolor: 'primary.main', 
+                      mr: 2, 
+                      width: 56, 
+                      height: 56 
+                    }}
+                  >
+                    <TrophyIcon sx={{ fontSize: 32 }} />
+                  </Avatar>
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6" component="h3" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                      {team.name}
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 0.5 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {team.shortName}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        •
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {team.country}
+                      </Typography>
+                    </Stack>
+                    <Chip 
+                      label={`ID: ${team.id}`} 
+                      size="small" 
+                      color="primary" 
+                      variant="outlined"
+                    />
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
         ))}
-      </div>
+      </Box>
 
       {/* Info Section */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="flex items-start">
-          <Users className="h-5 w-5 text-blue-600 mt-0.5 mr-3" />
-          <div>
-            <h4 className="text-sm font-medium text-blue-900">Available Teams</h4>
-            <p className="text-sm text-blue-700 mt-1">
-              These are the pre-configured teams available across all microservices. 
-              Team creation would integrate with the TeamGenerator service to add new teams with generated players.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Alert severity="info" sx={{ borderRadius: 3 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          Available Teams
+        </Typography>
+        <Typography variant="body2">
+          These are the pre-configured teams available across all microservices. 
+          Team creation would integrate with the TeamGenerator service to add new teams with generated players.
+        </Typography>
+      </Alert>
+    </Box>
   );
 };
 

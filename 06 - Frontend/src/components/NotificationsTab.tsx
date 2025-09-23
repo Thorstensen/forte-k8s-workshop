@@ -1,7 +1,23 @@
 import React from 'react';
-import { Bell, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  CircularProgress,
+  Alert,
+  Chip,
+  Stack,
+  Avatar,
+} from '@mui/material';
+import {
+  Notifications as BellIcon,
+  Warning as AlertTriangleIcon,
+  Info as InfoIcon,
+  CheckCircle as CheckCircleIcon,
+} from '@mui/icons-material';
 import { useNotifications, useImportantNotifications } from '../hooks/useApi';
-import { formatDate, getPriorityColor, cn } from '../utils';
+import { formatDate } from '../utils';
 
 const NotificationsTab: React.FC = () => {
   const { data: allNotifications = [], isLoading: allLoading } = useNotifications();
@@ -11,15 +27,31 @@ const NotificationsTab: React.FC = () => {
     switch (type.toLowerCase()) {
       case 'match_start':
       case 'match_end':
-        return CheckCircle;
+        return CheckCircleIcon;
       case 'goal':
       case 'penalty':
-        return AlertTriangle;
+        return AlertTriangleIcon;
       case 'red_card':
       case 'yellow_card':
-        return AlertTriangle;
+        return AlertTriangleIcon;
       default:
-        return Info;
+        return InfoIcon;
+    }
+  };
+
+  const getPriorityChipProps = (priority: string, isImportant: boolean) => {
+    if (isImportant) {
+      return { color: 'error' as const, variant: 'filled' as const };
+    }
+    switch (priority.toLowerCase()) {
+      case 'high':
+        return { color: 'warning' as const, variant: 'filled' as const };
+      case 'medium':
+        return { color: 'info' as const, variant: 'filled' as const };
+      case 'low':
+        return { color: 'success' as const, variant: 'outlined' as const };
+      default:
+        return { color: 'default' as const, variant: 'outlined' as const };
     }
   };
 
@@ -36,140 +68,172 @@ const NotificationsTab: React.FC = () => {
   }) => {
     if (isLoading) {
       return (
-        <div className="flex justify-center items-center h-32">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        </div>
+        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 200 }}>
+          <CircularProgress />
+        </Box>
       );
     }
 
     if (notifications.length === 0) {
       return (
-        <div className="text-center py-8 bg-white rounded-lg shadow-sm border">
-          <Bell className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h4 className="text-lg font-medium text-gray-900 mb-2">{title}</h4>
-          <p className="text-gray-500">{emptyMessage}</p>
-        </div>
+        <Card sx={{ textAlign: 'center', py: 4 }}>
+          <CardContent>
+            <BellIcon sx={{ fontSize: 64, color: 'text.secondary', mb: 2 }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
+              {title}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {emptyMessage}
+            </Typography>
+          </CardContent>
+        </Card>
       );
     }
 
     return (
-      <div className="space-y-3">
+      <Stack spacing={2}>
         {notifications.map((notification) => {
           const Icon = getNotificationIcon(notification.type);
+          const chipProps = getPriorityChipProps(notification.priority, notification.isImportant);
+          
           return (
-            <div
+            <Card
               key={notification.id}
-              className="bg-white p-4 rounded-lg shadow-sm border hover:shadow-md transition-shadow"
+              variant="outlined"
+              sx={{
+                '&:hover': {
+                  bgcolor: 'action.hover',
+                },
+              }}
             >
-              <div className="flex items-start space-x-3">
-                <div className={cn(
-                  'p-2 rounded-full',
-                  notification.isImportant ? 'bg-red-100' : 'bg-blue-100'
-                )}>
-                  <Icon className={cn(
-                    'h-5 w-5',
-                    notification.isImportant ? 'text-red-600' : 'text-blue-600'
-                  )} />
-                </div>
-                
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-semibold text-gray-900 truncate">
-                      {notification.title}
-                    </h4>
-                    <div className="flex items-center space-x-2">
-                      <span className={cn(
-                        'px-2 py-1 rounded-full text-xs font-medium',
-                        getPriorityColor(notification.priority)
-                      )}>
-                        {notification.priority.toUpperCase()}
-                      </span>
-                      {notification.isImportant && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-600">
-                          IMPORTANT
-                        </span>
-                      )}
-                    </div>
-                  </div>
+              <CardContent>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                  <Avatar 
+                    sx={{ 
+                      bgcolor: notification.isImportant ? 'error.light' : 'primary.light',
+                      color: notification.isImportant ? 'error.contrastText' : 'primary.contrastText',
+                    }}
+                  >
+                    <Icon />
+                  </Avatar>
                   
-                  <p className="text-sm text-gray-600 mt-1">
-                    {notification.message}
-                  </p>
-                  
-                  <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                    <span>
-                      Type: {notification.type.replace('_', ' ').toUpperCase()}
-                    </span>
-                    <span>
-                      {formatDate(notification.timestamp)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mr: 2 }}>
+                        {notification.title}
+                      </Typography>
+                      <Stack direction="row" spacing={1}>
+                        <Chip 
+                          label={notification.priority.toUpperCase()} 
+                          size="small"
+                          {...chipProps}
+                        />
+                        {notification.isImportant && (
+                          <Chip 
+                            label="IMPORTANT" 
+                            size="small" 
+                            color="error"
+                            variant="filled"
+                          />
+                        )}
+                      </Stack>
+                    </Box>
+                    
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      {notification.message}
+                    </Typography>
+                    
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <Chip 
+                        label={`Type: ${notification.type.replace('_', ' ').toUpperCase()}`}
+                        size="small"
+                        variant="outlined"
+                        color="default"
+                      />
+                      <Typography variant="caption" color="text.secondary">
+                        {formatDate(notification.timestamp)}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
           );
         })}
-      </div>
+      </Stack>
     );
   };
 
   return (
-    <div className="space-y-6">
+    <Box sx={{ p: 3 }}>
       {/* Header */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-gray-900">Notifications</h2>
-        <div className="flex items-center text-sm text-gray-500">
-          <Bell className="h-4 w-4 mr-1" />
-          Live Updates
-        </div>
-      </div>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+        <Typography variant="h3" component="h2" sx={{ fontWeight: 'bold', color: 'text.primary' }}>
+          Notifications
+        </Typography>
+        <Chip 
+          icon={<BellIcon />} 
+          label="Live Updates" 
+          color="primary" 
+          variant="outlined"
+        />
+      </Box>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', lg: 'row' }, gap: 3 }}>
         {/* Important Notifications */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-900 flex items-center">
-            <AlertTriangle className="h-5 w-5 text-red-600 mr-2" />
-            Important Notifications
-          </h3>
-          
-          <NotificationList
-            notifications={importantNotifications}
-            isLoading={importantLoading}
-            title="No Important Notifications"
-            emptyMessage="All clear! No critical alerts at the moment."
-          />
-        </div>
+        <Box sx={{ flex: 1 }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <AlertTriangleIcon sx={{ color: 'error.main', mr: 1 }} />
+                <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold' }}>
+                  Important Notifications
+                </Typography>
+              </Box>
+              
+              <NotificationList
+                notifications={importantNotifications}
+                isLoading={importantLoading}
+                title="No Important Notifications"
+                emptyMessage="All clear! No critical alerts at the moment."
+              />
+            </CardContent>
+          </Card>
+        </Box>
 
         {/* All Notifications */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-gray-900 flex items-center">
-            <Bell className="h-5 w-5 text-blue-600 mr-2" />
-            All Notifications
-          </h3>
-          
-          <NotificationList
-            notifications={allNotifications}
-            isLoading={allLoading}
-            title="No Notifications"
-            emptyMessage="No notifications available at the moment."
-          />
-        </div>
-      </div>
+        <Box sx={{ flex: 1 }}>
+          <Card>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
+                <BellIcon sx={{ color: 'primary.main', mr: 1 }} />
+                <Typography variant="h5" component="h3" sx={{ fontWeight: 'bold' }}>
+                  All Notifications
+                </Typography>
+              </Box>
+              
+              <NotificationList
+                notifications={allNotifications}
+                isLoading={allLoading}
+                title="No Notifications"
+                emptyMessage="No notifications available at the moment."
+              />
+            </CardContent>
+          </Card>
+        </Box>
+      </Box>
 
       {/* Info Section */}
-      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-        <div className="flex items-start">
-          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 mr-3" />
-          <div>
-            <h4 className="text-sm font-medium text-green-900">Notification System</h4>
-            <p className="text-sm text-green-700 mt-1">
-              When you start a match, the NotificationCenter service will automatically generate 
-              notifications for match events including goals, cards, substitutions, and match status changes.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Alert severity="success" sx={{ mt: 4, borderRadius: 3 }}>
+        <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mb: 1 }}>
+          Notification System
+        </Typography>
+        <Typography variant="body2">
+          When you start a match, the NotificationCenter service will automatically generate 
+          notifications for match events including goals, cards, substitutions, and match status changes.
+        </Typography>
+      </Alert>
+    </Box>
   );
 };
 

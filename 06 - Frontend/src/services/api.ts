@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-// Service base URLs - these would typically come from environment variables
+// Service base URLs - using Kubernetes Core DNS for cluster communication
 const SERVICES = {
-  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://localhost:5000',
-  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://localhost:8080',
-  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://localhost:3000',
-  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://localhost:8081',
-  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://localhost:8082',
+  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://teamgenerator.teamgenerator.svc.cluster.local:8080',
+  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://bettingservice.bettingservice.svc.cluster.local:8080',
+  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://matchscheduler.matchscheduler.svc.cluster.local:3000',
+  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://statsaggregator.statsaggregator.svc.cluster.local:8080',
+  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://notificationcenter.notificationcenter.svc.cluster.local:8080',
 };
 
 // Create axios instances for each service
