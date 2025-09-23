@@ -23,36 +23,34 @@ export interface SystemHealth {
 const getServiceEndpoint = (serviceName: string): string => {
   const isDevelopment = import.meta.env.DEV;
   
-  if (isDevelopment) {
-    // In development, show the actual localhost endpoints
+  // Check if environment variable override is set
+  const envOverride = (() => {
     switch (serviceName) {
       case 'team-generator':
-        return import.meta.env.VITE_TEAM_GENERATOR_URL || 'localhost:5000 (via proxy)';
+        return import.meta.env.VITE_TEAM_GENERATOR_URL;
       case 'betting-service':
-        return import.meta.env.VITE_BETTING_SERVICE_URL || 'localhost:8080 (via proxy)';
+        return import.meta.env.VITE_BETTING_SERVICE_URL;
       case 'match-scheduler':
-        return import.meta.env.VITE_MATCH_SCHEDULER_URL || 'localhost:3000 (via proxy)';
+        return import.meta.env.VITE_MATCH_SCHEDULER_URL;
       case 'stats-aggregator':
-        return import.meta.env.VITE_STATS_AGGREGATOR_URL || 'localhost:8081 (via proxy)';
+        return import.meta.env.VITE_STATS_AGGREGATOR_URL;
       case 'notification-center':
-        return import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'localhost:8082 (via proxy)';
+        return import.meta.env.VITE_NOTIFICATION_CENTER_URL;
+      default:
+        return null;
     }
+  })();
+
+  if (envOverride) {
+    return envOverride;
   }
-  
-  // In production, show the Kubernetes DNS names
-  switch (serviceName) {
-    case 'team-generator':
-      return 'teamgenerator.teamgenerator.svc.cluster.local:8080';
-    case 'betting-service':
-      return 'bettingservice.bettingservice.svc.cluster.local:8080';
-    case 'match-scheduler':
-      return 'matchscheduler.matchscheduler.svc.cluster.local:3000';
-    case 'stats-aggregator':
-      return 'statsaggregator.statsaggregator.svc.cluster.local:8080';
-    case 'notification-center':
-      return 'notificationcenter.notificationcenter.svc.cluster.local:8080';
-    default:
-      return 'unknown';
+
+  // Show the proxy path with context about how it's handled
+  const proxyPath = `/api/proxy/${serviceName.replace('-', '')}`;
+  if (isDevelopment) {
+    return `${proxyPath} (Vite dev proxy)`;
+  } else {
+    return `${proxyPath} (NGINX cluster proxy)`;
   }
 };
 

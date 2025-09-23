@@ -1,20 +1,24 @@
 import axios from 'axios';
 
-// Determine if we're in development mode
+// Determine the runtime environment
 const isDevelopment = import.meta.env.DEV;
 
-// Service base URLs - using proxy for development, Kubernetes DNS for production
+console.log('Environment detection:', { 
+  isDevelopment, 
+  hostname: window.location.hostname,
+  port: window.location.port
+});
+
+// Service base URLs
+// - Development (npm run dev): Use Vite proxy
+// - Production (deployed to cluster): Use NGINX proxy paths
+// Both scenarios use the same proxy paths, but handled by different servers
 const SERVICES = {
-  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 
-    (isDevelopment ? '/api/proxy/teamgenerator' : 'http://teamgenerator.teamgenerator.svc.cluster.local:8080'),
-  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 
-    (isDevelopment ? '/api/proxy/bettingservice' : 'http://bettingservice.bettingservice.svc.cluster.local:8080'),
-  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 
-    (isDevelopment ? '/api/proxy/matchscheduler' : 'http://matchscheduler.matchscheduler.svc.cluster.local:3000'),
-  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 
-    (isDevelopment ? '/api/proxy/statsaggregator' : 'http://statsaggregator.statsaggregator.svc.cluster.local:8080'),
-  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 
-    (isDevelopment ? '/api/proxy/notificationcenter' : 'http://notificationcenter.notificationcenter.svc.cluster.local:8080'),
+  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || '/api/proxy/teamgenerator',
+  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || '/api/proxy/bettingservice', 
+  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || '/api/proxy/matchscheduler',
+  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || '/api/proxy/statsaggregator',
+  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || '/api/proxy/notificationcenter',
 };
 
 // Create axios instances for each service
