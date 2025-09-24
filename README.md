@@ -18,7 +18,6 @@
 
 ## 📋 Table of Contents
 
-- [🎯 What You'll Learn](#-what-youll-learn)
 - [🏗️ Architecture Overview](#%EF%B8%8F-architecture-overview)
 - [🚀 Microservices](#-microservices)
 - [🐳 Docker Images](#-docker-images)
@@ -30,19 +29,6 @@
 - [🤝 Contributing](#-contributing)
 - [📚 Learning Resources](#-learning-resources)
 - [📝 License](#-license)
-
-## 🎯 What You'll Learn
-
-This workshop demonstrates key concepts in modern cloud-native development:
-
-- **🏗️ Microservices Architecture** - Service decomposition and communication patterns
-- **📦 Containerization** - Docker best practices across different technology stacks
-- **☸️ Kubernetes Orchestration** - Deployment, scaling, and service discovery
-- **🔄 Service Integration** - API design and data consistency strategies
-- **📊 Observability** - Health checks, monitoring, and debugging
-- **🛡️ Security** - Container security, RBAC, and secret management
-- **⚖️ Load Balancing** - Traffic distribution and high availability
-- **📈 Scaling** - Horizontal pod autoscaling and resource management
 
 ## 🏗️ Architecture Overview
 
@@ -179,14 +165,14 @@ The platform consists of **6 specialized microservices**, each built with differ
 
 <div align="center">
 
-| Service | Technology | Port | Documentation | API Docs |
-|---------|------------|------|---------------|----------|
-| **Frontend** | React + TypeScript | 3001 | [📖 README](06%20-%20Frontend/README.md) | Web UI |
-| **Team Generator** | C# .NET Core | 5000 | [📖 README](01%20-%20TeamGenerator/README.md) | [🔗 Swagger](http://localhost:5000/swagger) |
-| **Betting Service** | Python FastAPI | 8080 | [📖 README](02%20-%20BettingService/README.md) | [🔗 Docs](http://localhost:8080/api/docs) |
-| **Match Scheduler** | TypeScript Express | 3000 | [📖 README](03%20-%20MatchScheduler/README.md) | [🔗 Swagger](http://localhost:3000/api/docs) |
-| **Stats Aggregator** | Rust Axum | 8080 | [📖 README](04%20-%20StatsAggregator/README.md) | [🔗 Docs](http://localhost:8080/api/docs) |
-| **Notification Center** | Go Gorilla Mux | 8080 | [📖 README](05%20-%20NotificationCenter/README.md) | [🔗 Swagger](http://localhost:8080/swagger/index.html) |
+| Service | Technology | Local Port | Docker Port | Documentation | API Docs |
+|---------|------------|------------|-------------|---------------|----------|
+| **Frontend** | React + TypeScript | 3001 | 8080 | [📖 README](06%20-%20Frontend/README.md) | Web UI |
+| **Team Generator** | C# .NET Core | 5000 | 8080 | [📖 README](01%20-%20TeamGenerator/README.md) | [🔗 Swagger](http://localhost:5000/swagger) |
+| **Betting Service** | Python FastAPI | 8080 | 8080 | [📖 README](02%20-%20BettingService/README.md) | [🔗 Docs](http://localhost:8080/api/docs) |
+| **Match Scheduler** | TypeScript Express | 3000 | 3000 | [📖 README](03%20-%20MatchScheduler/README.md) | [🔗 Swagger](http://localhost:3000/api/docs) |
+| **Stats Aggregator** | Rust Axum | 8080 | 8080 | [📖 README](04%20-%20StatsAggregator/README.md) | [🔗 Docs](http://localhost:8080/api/docs) |
+| **Notification Center** | Go Gorilla Mux | 8080 | 8080 | [📖 README](05%20-%20NotificationCenter/README.md) | [🔗 Swagger](http://localhost:8080/swagger/index.html) |
 
 </div>
 
@@ -367,14 +353,14 @@ docker run -p 3001:8080 ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
 
 ### 🎯 Service Technology Breakdown
 
-| Service | Language | Framework | Port | Database | Key Features |
-|---------|----------|-----------|------|----------|--------------|
-| **Frontend** | TypeScript | React + Vite | 3001 | N/A | SPA, Real-time UI |
-| **Team Generator** | C# | .NET Core 8 | 5000 | In-Memory | Clean Architecture |
-| **Betting Service** | Python | FastAPI | 8080 | In-Memory | Async API |
-| **Match Scheduler** | TypeScript | Express.js | 3000 | In-Memory | Validation & Security |
-| **Stats Aggregator** | Rust | Axum | 8080 | In-Memory | High Performance |
-| **Notification Center** | Go | Gorilla Mux | 8080 | In-Memory | Concurrent Processing |
+| Service | Language | Framework | Local Port | Docker Port | Database | Key Features |
+|---------|----------|-----------|------------|-------------|----------|--------------|
+| **Frontend** | TypeScript | React + Vite | 3001 | 8080 | N/A | SPA, Real-time UI |
+| **Team Generator** | C# | .NET Core 8 | 5000 | 8080 | In-Memory | Clean Architecture |
+| **Betting Service** | Python | FastAPI | 8080 | 8080 | In-Memory | Async API |
+| **Match Scheduler** | TypeScript | Express.js | 3000 | 3000 | In-Memory | Validation & Security |
+| **Stats Aggregator** | Rust | Axum | 8080 | 8080 | In-Memory | High Performance |
+| **Notification Center** | Go | Gorilla Mux | 8080 | 8080 | In-Memory | Concurrent Processing |
 
 ## 🆔 Shared Data Strategy
 
