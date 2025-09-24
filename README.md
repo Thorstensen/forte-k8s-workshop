@@ -1,6 +1,48 @@
-# Forte K8s Workshop - Football Microservices Platform
+<div align="center">
 
-A comprehensive **microservices ecosystem** designed to teach developers the most important aspects of Kubernetes and modern cloud-native development. This project demonstrates a complete football management platform with betting, statistics, notifications, and team management capabilities.
+# ⚽ Forte K8s Workshop
+## Football Microservices Platform
+
+[![Docker Build](https://github.com/Thorstensen/forte-k8s-workshop/actions/workflows/docker-build-push.yml/badge.svg)](https://github.com/Thorstensen/forte-k8s-workshop/actions/workflows/docker-build-push.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28-blue.svg)](https://kubernetes.io/)
+[![Docker](https://img.shields.io/badge/Docker-Container%20Ready-2496ED.svg)](https://www.docker.com/)
+
+**A comprehensive microservices ecosystem showcasing modern cloud-native development patterns**
+
+*Learn Kubernetes, Docker, and microservices architecture through a real-world football management platform with betting, statistics, and notifications.*
+
+[🚀 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🐳 Docker Images](#-docker-images) • [🏗️ Architecture](#%EF%B8%8F-architecture-overview) • [🤝 Contributing](#-contributing)
+
+</div>
+
+## 📋 Table of Contents
+
+- [🎯 What You'll Learn](#-what-youll-learn)
+- [🏗️ Architecture Overview](#%EF%B8%8F-architecture-overview)
+- [🚀 Microservices](#-microservices)
+- [🐳 Docker Images](#-docker-images)
+- [🚀 Quick Start](#-quick-start)
+- [☸️ Kubernetes Deployment](#%EF%B8%8F-kubernetes-deployment)
+- [📊 C4 Architecture Diagrams](#-c4-architecture-diagrams)
+- [🧪 Testing](#-testing)
+- [🛠️ Troubleshooting](#%EF%B8%8F-troubleshooting)
+- [🤝 Contributing](#-contributing)
+- [📚 Learning Resources](#-learning-resources)
+- [📝 License](#-license)
+
+## 🎯 What You'll Learn
+
+This workshop demonstrates key concepts in modern cloud-native development:
+
+- **🏗️ Microservices Architecture** - Service decomposition and communication patterns
+- **📦 Containerization** - Docker best practices across different technology stacks
+- **☸️ Kubernetes Orchestration** - Deployment, scaling, and service discovery
+- **🔄 Service Integration** - API design and data consistency strategies
+- **📊 Observability** - Health checks, monitoring, and debugging
+- **🛡️ Security** - Container security, RBAC, and secret management
+- **⚖️ Load Balancing** - Traffic distribution and high availability
+- **📈 Scaling** - Horizontal pod autoscaling and resource management
 
 ## 🏗️ Architecture Overview
 
@@ -24,10 +66,19 @@ The platform consists of **6 microservices** built with different technology sta
 
 ### 📊 C4 Model Diagrams
 
-Comprehensive architecture documentation using the C4 Model:
+> **📖 View Interactive Diagrams**: The architecture diagrams below use PlantUML format. For the best viewing experience:
+> - **GitHub Users**: View this repository on GitHub - the diagrams render automatically
+> - **Local Development**: Use VS Code with the PlantUML extension
+> - **Online Viewer**: Copy diagram code to [PlantUML Web Server](http://www.plantuml.com/plantuml/uml/)
+> - **Detailed Documentation**: [C4 Model Details](documentation/diagrams/c4/README.md)
 
-#### Level 1: System Context
-High-level view showing how the Forte Football Platform fits into the broader ecosystem:
+#### 🌐 Level 1: System Context
+*How the Forte Football Platform fits into the broader ecosystem*
+
+[![System Context](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/context.puml)](documentation/diagrams/c4/context.puml)
+
+<details>
+<summary>📄 View PlantUML Source</summary>
 
 ```plantuml
 @startuml "Forte K8s Workshop - System Context"
@@ -53,9 +104,15 @@ Rel(forte_system, kubernetes, "Deployed on", "Container Runtime")
 SHOW_LEGEND()
 @enduml
 ```
+</details>
 
-#### Level 2: Container Diagram
-Detailed microservices architecture showing how containers interact:
+#### 🏗️ Level 2: Container Diagram  
+*Detailed microservices architecture showing container interactions*
+
+[![Container Diagram](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/container.puml)](documentation/diagrams/c4/container.puml)
+
+<details>
+<summary>📄 View PlantUML Source</summary>
 
 ```plantuml
 @startuml "Forte K8s Workshop - Container Diagram"
@@ -103,365 +160,905 @@ Rel(forte_platform, kubernetes, "Deployed on", "Docker Containers")
 SHOW_LEGEND()
 @enduml
 ```
+</details>
 
-#### Level 3: Component Diagrams
+#### ⚙️ Level 3: Component Diagrams
+*Internal structure of key services*
 
-**Frontend Components** - Internal structure of the React TypeScript frontend:
+**Frontend Components:**
+[![Frontend Components](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/frontend-components.puml)](documentation/diagrams/c4/frontend-components.puml)
 
-```plantuml
-@startuml "Forte K8s Workshop - Frontend Components"
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+**Team Generator Components (Clean Architecture):**
+[![Team Generator Components](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/team-generator-components.puml)](documentation/diagrams/c4/team-generator-components.puml)
 
-LAYOUT_TOP_DOWN()
-
-title Frontend Service - Component Diagram
-
-Container_Boundary(frontend, "Frontend - React TypeScript") {
-    Component(layout, "Layout Component", "React", "Main application layout with navigation")
-    Component(teams_tab, "Teams Tab", "React", "Team creation and viewing interface")
-    Component(matches_tab, "Matches Tab", "React", "Match scheduling and management")
-    Component(betting_tab, "Betting Tab", "React", "Betting interface with live odds")
-    Component(notifications_tab, "Notifications Tab", "React", "Real-time notification feed")
-    Component(stats_tab, "Stats Tab", "React", "Match statistics display")
-    
-    Component(api_service, "API Service", "Axios", "HTTP client configuration for all services")
-    Component(team_service, "Team Service Client", "TypeScript", "Team Generator API integration")
-    Component(match_service, "Match Service Client", "TypeScript", "Match Scheduler API integration")
-    Component(betting_service, "Betting Service Client", "TypeScript", "Betting Service API integration")
-    Component(notification_service, "Notification Service Client", "TypeScript", "Notification Center API integration")
-    Component(stats_service, "Stats Service Client", "TypeScript", "Stats Aggregator API integration")
-    
-    Component(react_query, "React Query Hooks", "TanStack Query", "Data fetching and caching hooks")
-    Component(types, "TypeScript Types", "TypeScript", "Shared type definitions")
-}
-
-Container_Ext(team_generator, "Team Generator", "C# .NET")
-Container_Ext(match_scheduler, "Match Scheduler", "TypeScript")
-Container_Ext(betting_api, "Betting Service", "Python")
-Container_Ext(notification_api, "Notification Center", "Go")
-Container_Ext(stats_api, "Stats Aggregator", "Rust")
-
-' UI Component relationships
-Rel(layout, teams_tab, "Contains")
-Rel(layout, matches_tab, "Contains")
-Rel(layout, betting_tab, "Contains")
-Rel(layout, notifications_tab, "Contains")
-Rel(layout, stats_tab, "Contains")
-
-' Component to service relationships
-Rel(teams_tab, team_service, "Uses")
-Rel(matches_tab, match_service, "Uses")
-Rel(betting_tab, betting_service, "Uses")
-Rel(notifications_tab, notification_service, "Uses")
-Rel(stats_tab, stats_service, "Uses")
-
-' Service layer relationships
-Rel(team_service, api_service, "Uses")
-Rel(match_service, api_service, "Uses")
-Rel(betting_service, api_service, "Uses")
-Rel(notification_service, api_service, "Uses")
-Rel(stats_service, api_service, "Uses")
-
-' React Query integration
-Rel(team_service, react_query, "Provides hooks")
-Rel(match_service, react_query, "Provides hooks")
-Rel(betting_service, react_query, "Provides hooks")
-Rel(notification_service, react_query, "Provides hooks")
-Rel(stats_service, react_query, "Provides hooks")
-
-' Type usage
-Rel(teams_tab, types, "Uses")
-Rel(matches_tab, types, "Uses")
-Rel(betting_tab, types, "Uses")
-Rel(notifications_tab, types, "Uses")
-Rel(stats_tab, types, "Uses")
-
-' External API calls
-Rel(team_service, team_generator, "HTTP REST", "Get teams, create teams")
-Rel(match_service, match_scheduler, "HTTP REST", "Schedule matches, get matches")
-Rel(betting_service, betting_api, "HTTP REST", "Place bets, get odds")
-Rel(notification_service, notification_api, "HTTP REST", "Get notifications")
-Rel(stats_service, stats_api, "HTTP REST", "Get match statistics")
-
-SHOW_LEGEND()
-@enduml
-```
-
-**Team Generator Components** - Clean Architecture implementation of the C# service:
-
-```plantuml
-@startuml "Forte K8s Workshop - Team Generator Components"
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
-
-LAYOUT_TOP_DOWN()
-
-title Team Generator Service - Component Diagram (Clean Architecture)
-
-Container_Boundary(team_generator, "Team Generator - C# .NET Core") {
-    
-    Component_Boundary(api_layer, "API Layer") {
-        Component(controllers, "Team Controller", "ASP.NET Core", "REST API endpoints for team operations")
-        Component(swagger, "Swagger Config", "Swashbuckle", "API documentation generation")
-        Component(health_check, "Health Check", "ASP.NET Core", "Health monitoring endpoint")
-    }
-    
-    Component_Boundary(application_layer, "Application Layer") {
-        Component(team_service, "Team Service", "C#", "Business logic for team operations")
-        Component(create_team_usecase, "Create Team Use Case", "C#", "Team creation business rules")
-        Component(get_team_usecase, "Get Team Use Case", "C#", "Team retrieval logic")
-        Component(update_team_usecase, "Update Team Use Case", "C#", "Team update operations")
-        Component(delete_team_usecase, "Delete Team Use Case", "C#", "Team deletion logic")
-    }
-    
-    Component_Boundary(domain_layer, "Domain Layer") {
-        Component(team_entity, "Team Entity", "C#", "Core team business entity with shared ID mapping")
-        Component(team_repository_interface, "ITeam Repository", "C#", "Repository contract")
-        Component(shared_id_mapper, "Shared ID Mapper", "C#", "Maps team names to shared IDs (team-1 to team-6)")
-    }
-    
-    Component_Boundary(infrastructure_layer, "Infrastructure Layer") {
-        Component(team_repository, "Team Repository", "C#", "In-memory team data storage implementation")
-        Component(dependency_injection, "DI Container", "Microsoft.Extensions.DI", "Dependency injection configuration")
-    }
-}
-
-Container_Ext(frontend, "Frontend", "React TypeScript")
-ContainerDb_Ext(memory_store, "In-Memory Store", "Dictionary<string, Team>", "Runtime team storage")
-
-' API Layer relationships
-Rel(controllers, swagger, "Documented by")
-Rel(controllers, health_check, "Includes")
-
-' API to Application
-Rel(controllers, team_service, "Uses")
-
-' Application Layer relationships
-Rel(team_service, create_team_usecase, "Orchestrates")
-Rel(team_service, get_team_usecase, "Orchestrates")
-Rel(team_service, update_team_usecase, "Orchestrates")
-Rel(team_service, delete_team_usecase, "Orchestrates")
-
-' Application to Domain
-Rel(create_team_usecase, team_entity, "Creates")
-Rel(get_team_usecase, team_repository_interface, "Uses")
-Rel(update_team_usecase, team_repository_interface, "Uses")
-Rel(delete_team_usecase, team_repository_interface, "Uses")
-
-' Domain relationships
-Rel(team_entity, shared_id_mapper, "Uses for ID mapping")
-
-' Infrastructure relationships
-Rel(team_repository, team_repository_interface, "Implements")
-Rel(team_repository, memory_store, "Stores data in")
-Rel(dependency_injection, team_service, "Injects")
-Rel(dependency_injection, team_repository, "Injects")
-
-' External relationships
-Rel(frontend, controllers, "HTTP REST", "CRUD operations")
-
-SHOW_LEGEND()
-@enduml
-```
-
-📖 **Additional Documentation**: [C4 Model Details](documentation/diagrams/c4/README.md)
+> 💡 **Tip**: Click on any diagram to view the full PlantUML source code and detailed architecture documentation.
 
 ## 🚀 Microservices
 
-### [01 - Team Generator](01%20-%20TeamGenerator/README.md)
-**Technology**: C# .NET Core (Clean Architecture)
+The platform consists of **6 specialized microservices**, each built with different technology stacks to demonstrate polyglot development:
+
+<div align="center">
+
+| Service | Technology | Port | Documentation | API Docs |
+|---------|------------|------|---------------|----------|
+| **Frontend** | React + TypeScript | 3001 | [📖 README](06%20-%20Frontend/README.md) | Web UI |
+| **Team Generator** | C# .NET Core | 5000 | [📖 README](01%20-%20TeamGenerator/README.md) | [🔗 Swagger](http://localhost:5000/swagger) |
+| **Betting Service** | Python FastAPI | 8080 | [📖 README](02%20-%20BettingService/README.md) | [🔗 Docs](http://localhost:8080/api/docs) |
+| **Match Scheduler** | TypeScript Express | 3000 | [📖 README](03%20-%20MatchScheduler/README.md) | [🔗 Swagger](http://localhost:3000/api/docs) |
+| **Stats Aggregator** | Rust Axum | 8080 | [📖 README](04%20-%20StatsAggregator/README.md) | [🔗 Docs](http://localhost:8080/api/docs) |
+| **Notification Center** | Go Gorilla Mux | 8080 | [📖 README](05%20-%20NotificationCenter/README.md) | [🔗 Swagger](http://localhost:8080/swagger/index.html) |
+
+</div>
+
+### 🎯 Service Details
+
+<details>
+<summary><strong>01 - Team Generator (C# .NET Core)</strong></summary>
+
+**🏗️ Architecture**: Clean Architecture with Domain-Driven Design
 - ✅ Generate and manage football teams
 - ✅ Shared team IDs (team-1 to team-6)
-- ✅ RESTful API with Swagger documentation
-- ✅ Health monitoring endpoint
+- ✅ RESTful API with comprehensive Swagger documentation
+- ✅ Health monitoring and dependency injection
+- ✅ In-memory storage with repository pattern
 
-### [02 - Betting Service](02%20-%20BettingService/README.md)
-**Technology**: Python FastAPI
-- ✅ Betting odds and bet placement
+**🔍 Key Features**:
+- Team creation with automatic ID mapping
+- CRUD operations for team management
+- Shared ID consistency across all services
+- Production-ready health checks
+
+</details>
+
+<details>
+<summary><strong>02 - Betting Service (Python FastAPI)</strong></summary>
+
+**🎯 Purpose**: Comprehensive betting platform with realistic odds
 - ✅ Multiple bet types (match winner, goals, cards)
-- ✅ Interactive Swagger UI
-- ✅ In-memory storage with realistic data
+- ✅ Dynamic odds calculation
+- ✅ Interactive Swagger UI with live documentation
+- ✅ In-memory storage with realistic sample data
 
-### [03 - Match Scheduler](03%20-%20MatchScheduler/README.md)
-**Technology**: TypeScript Express
-- ✅ Schedule matches with conflict detection
+**🔍 Key Features**:
+- Real-time betting odds
+- Multiple betting markets
+- Bet placement and tracking
+- Statistical betting analytics
+
+</details>
+
+<details>
+<summary><strong>03 - Match Scheduler (TypeScript Express)</strong></summary>
+
+**⚙️ Purpose**: Intelligent match scheduling with conflict detection
+- ✅ Advanced match scheduling algorithms
+- ✅ Team availability conflict detection
 - ✅ Match management (CRUD operations)
-- ✅ Strict validation rules
-- ✅ Production-ready security features
+- ✅ Production-ready security and validation
 
-### [04 - Stats Aggregator](04%20-%20StatsAggregator/README.md)
-**Technology**: Rust Axum
-- ✅ Generate realistic match statistics
-- ✅ Comprehensive data (possession, shots, cards)
-- ✅ OpenAPI documentation
-- ✅ High-performance async processing
+**🔍 Key Features**:
+- Smart scheduling with conflict resolution
+- Match lifecycle management
+- Team availability tracking
+- Comprehensive API validation
 
-### [05 - Notification Center](05%20-%20NotificationCenter/README.md)
-**Technology**: Go Gorilla Mux
-- ✅ Real-time match notifications
-- ✅ Dynamic event generation
+</details>
+
+<details>
+<summary><strong>04 - Stats Aggregator (Rust Axum)</strong></summary>
+
+**📊 Purpose**: High-performance match statistics generation
+- ✅ Realistic match statistics simulation
+- ✅ Comprehensive data (possession, shots, cards, xG)
+- ✅ OpenAPI 3.0 documentation
+- ✅ Ultra-fast async processing
+
+**🔍 Key Features**:
+- Advanced statistical modeling
+- Real-time match data generation
+- Performance-optimized Rust backend
+- Detailed match analytics
+
+</details>
+
+<details>
+<summary><strong>05 - Notification Center (Go Gorilla Mux)</strong></summary>
+
+**📢 Purpose**: Real-time event notification system
+- ✅ Dynamic match event generation
 - ✅ Team and match correlation
-- ✅ Swagger documentation
+- ✅ Real-time notification delivery
+- ✅ Comprehensive Swagger documentation
 
-### [06 - Frontend](06%20-%20Frontend/README.md)
-**Technology**: React TypeScript with Vite
-- ✅ Modern responsive web interface
+**🔍 Key Features**:
+- Live match event streaming
+- Multi-channel notification delivery
+- Event correlation and filtering
+- High-performance Go backend
+
+</details>
+
+<details>
+<summary><strong>06 - Frontend (React TypeScript)</strong></summary>
+
+**🎨 Purpose**: Modern, responsive web interface
+- ✅ Material-UI design system
 - ✅ Integration with all microservices
 - ✅ Real-time data fetching with React Query
-- ✅ Material-UI components
+- ✅ Full TypeScript type safety
+
+**🔍 Key Features**:
+- Interactive dashboard
+- Real-time data updates
+- Responsive mobile design
+- Comprehensive service integration
+
+</details>
+
+## 🐳 Docker Images
+
+All services are containerized and automatically built using GitHub Actions. Pre-built images are available from GitHub Container Registry (GHCR).
+
+### 📦 Available Images
+
+| Service | Image | Latest | Pull Command |
+|---------|-------|--------|--------------|
+| **Team Generator** | `ghcr.io/thorstensen/forte-k8s-workshop/team-generator` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/team-generator:latest` |
+| **Betting Service** | `ghcr.io/thorstensen/forte-k8s-workshop/betting-service` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/betting-service:latest` |
+| **Match Scheduler** | `ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler:latest` |
+| **Stats Aggregator** | `ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest` |
+| **Notification Center** | `ghcr.io/thorstensen/forte-k8s-workshop/notification-center` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/notification-center:latest` |
+| **Frontend** | `ghcr.io/thorstensen/forte-k8s-workshop/frontend` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest` |
+
+### 🔐 Authentication (for private repositories)
+
+If the repository is private, authenticate with GitHub Container Registry:
+
+```bash
+# Login to GHCR using a Personal Access Token
+echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
+
+# Or use GitHub CLI (recommended)
+gh auth login
+echo $GITHUB_TOKEN | docker login ghcr.io -u $(gh api user --jq .login) --password-stdin
+```
+
+### 🚀 Quick Pull All Images
+
+```bash
+# Pull all latest images
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/team-generator:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/betting-service:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/notification-center:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
+```
+
+### 🏃‍♂️ Run with Docker
+
+```bash
+# Run individual services
+docker run -p 5000:5000 ghcr.io/thorstensen/forte-k8s-workshop/team-generator:latest
+docker run -p 8080:8080 ghcr.io/thorstensen/forte-k8s-workshop/betting-service:latest
+docker run -p 3000:3000 ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler:latest
+docker run -p 8080:8080 ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest
+docker run -p 8080:8080 ghcr.io/thorstensen/forte-k8s-workshop/notification-center:latest
+docker run -p 3001:8080 ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
+```
+
+> 💡 **Note**: The images are automatically built and pushed when changes are made to service directories. See [.github/workflows/docker-build-push.yml](.github/workflows/docker-build-push.yml) for build details.
 
 ## 🔧 Technology Stack
 
-| Service | Language | Framework | Purpose | Port |
-|---------|----------|-----------|---------|------|
-| **Frontend** | TypeScript | React + Vite | User Interface | 3001 |
-| **Team Generator** | C# | .NET Core | Team Management | 5000 |
-| **Betting Service** | Python | FastAPI | Betting Platform | 8080 |
-| **Match Scheduler** | TypeScript | Express | Match Scheduling | 3000 |
-| **Stats Aggregator** | Rust | Axum | Statistics Engine | 8080 |
-| **Notification Center** | Go | Gorilla Mux | Notifications | 8080 |
+<div align="center">
+
+| Layer | Technologies | Purpose |
+|-------|-------------|---------|
+| **Frontend** | React, TypeScript, Vite, Material-UI, React Query | Modern web interface |
+| **API Gateway** | Individual service endpoints | RESTful API design |
+| **Microservices** | C# .NET, Python FastAPI, TypeScript, Rust, Go | Polyglot architecture |
+| **Containerization** | Docker, Multi-stage builds | Container-first deployment |
+| **Orchestration** | Kubernetes, Helm Charts | Cloud-native deployment |
+| **CI/CD** | GitHub Actions, GHCR | Automated build & deploy |
+| **Documentation** | Swagger/OpenAPI, PlantUML C4 | Comprehensive docs |
+
+</div>
+
+### 🎯 Service Technology Breakdown
+
+| Service | Language | Framework | Port | Database | Key Features |
+|---------|----------|-----------|------|----------|--------------|
+| **Frontend** | TypeScript | React + Vite | 3001 | N/A | SPA, Real-time UI |
+| **Team Generator** | C# | .NET Core 8 | 5000 | In-Memory | Clean Architecture |
+| **Betting Service** | Python | FastAPI | 8080 | In-Memory | Async API |
+| **Match Scheduler** | TypeScript | Express.js | 3000 | In-Memory | Validation & Security |
+| **Stats Aggregator** | Rust | Axum | 8080 | In-Memory | High Performance |
+| **Notification Center** | Go | Gorilla Mux | 8080 | In-Memory | Concurrent Processing |
 
 ## 🆔 Shared Data Strategy
 
-Services maintain consistency through **shared entity IDs** without direct communication:
+The platform maintains **data consistency** through shared entity IDs **without direct service communication** - a key microservices pattern:
 
-### Team IDs
-| Team Name | Shared ID | Used By |
-|-----------|-----------|---------|
-| Manchester United | `team-1` | All Services |
-| Liverpool | `team-2` | All Services |
-| Chelsea | `team-3` | All Services |
-| Arsenal | `team-4` | All Services |
-| Manchester City | `team-5` | All Services |
-| Tottenham | `team-6` | All Services |
+### 🏈 Team ID Mapping
+| Team Name | Shared ID | Description |
+|-----------|-----------|-------------|
+| Manchester United | `team-1` | Used across all services |
+| Liverpool | `team-2` | Consistent reference |
+| Chelsea | `team-3` | No direct coupling |
+| Arsenal | `team-4` | Event-driven sync |
+| Manchester City | `team-5` | Loose coupling |
+| Tottenham | `team-6` | Independent scaling |
 
-### Match IDs
-Format: `match-{number}` (e.g., `match-1`, `match-2`)
+### ⚽ Match ID Format
+- **Pattern**: `match-{number}` (e.g., `match-1`, `match-2`)
+- **Usage**: Consistent across betting, statistics, and notifications
+- **Benefits**: No service dependencies, easy debugging, clear traceability
 
-📖 **Details**: [Shared IDs Documentation](shared-ids.md)
+📖 **Deep Dive**: [Shared IDs Documentation](shared-ids.md)
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- **Docker** and **Docker Compose**
-- **Kubernetes** cluster (minikube, kind, or cloud)
-- **Node.js 18+** (for local development)
-- **.NET 8** (for Team Generator)
-- **Python 3.11+** (for Betting Service)
-- **Rust 1.80+** (for Stats Aggregator)
-- **Go 1.24+** (for Notification Center)
+### 🔧 Prerequisites
 
-### Local Development
+<details>
+<summary><strong>Development Environment</strong></summary>
 
-1. **Clone the repository**:
+**Required:**
+- 🐳 **Docker** 20.10+ and **Docker Compose** v2
+- ☸️ **Kubernetes** cluster (minikube, kind, or cloud provider)
+- 🌐 **Git** for repository management
+
+**Optional (for local development):**
+- 📦 **Node.js** 18+ (Frontend & Match Scheduler)
+- 🔷 **.NET 8 SDK** (Team Generator)
+- 🐍 **Python 3.11+** (Betting Service)
+- 🦀 **Rust 1.80+** (Stats Aggregator)
+- 🐹 **Go 1.24+** (Notification Center)
+
+</details>
+
+### ⚡ Option 1: Docker Images (Fastest)
+
+Perfect for **testing** and **Kubernetes deployment**:
+
 ```bash
-git clone https://github.com/Thorstensen/forte-k8s-workshop.git
-cd forte-k8s-workshop
+# 1. Pull all pre-built images
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/team-generator:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/betting-service:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/notification-center:latest
+docker pull ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
+
+# 2. Run services (in separate terminals)
+docker run -p 5000:5000 ghcr.io/thorstensen/forte-k8s-workshop/team-generator:latest
+docker run -p 8001:8080 ghcr.io/thorstensen/forte-k8s-workshop/betting-service:latest
+docker run -p 3000:3000 ghcr.io/thorstensen/forte-k8s-workshop/match-scheduler:latest
+docker run -p 8002:8080 ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest
+docker run -p 8003:8080 ghcr.io/thorstensen/forte-k8s-workshop/notification-center:latest
+docker run -p 3001:8080 ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
+
+# 3. Access services
+echo "🎨 Frontend: http://localhost:3001"
+echo "🏈 Team Generator: http://localhost:5000/swagger"
+echo "💰 Betting Service: http://localhost:8001/api/docs"
+echo "📅 Match Scheduler: http://localhost:3000/api/docs"
+echo "📊 Stats Aggregator: http://localhost:8002/api/docs"
+echo "📢 Notifications: http://localhost:8003/swagger/index.html"
 ```
 
-2. **Start services** (each in separate terminal):
+### 🛠️ Option 2: Local Development
+
+Perfect for **learning** and **contributing**:
+
 ```bash
-# Frontend
+# 1. Clone repository
+git clone https://github.com/Thorstensen/forte-k8s-workshop.git
+cd forte-k8s-workshop
+
+# 2. Start services (each in separate terminal)
+# Terminal 1 - Frontend
 cd "06 - Frontend"
 npm install && npm run dev
 # Access: http://localhost:3001
 
-# Team Generator
+# Terminal 2 - Team Generator
 cd "01 - TeamGenerator"
 dotnet run --project src/TeamGenerator.Api
 # Access: http://localhost:5000/swagger
 
-# Betting Service
+# Terminal 3 - Betting Service
 cd "02 - BettingService"
-pip install -r requirements.txt && python main.py
+pip install -r requirements.txt
+python main.py
 # Access: http://localhost:8080/api/docs
 
-# Match Scheduler
+# Terminal 4 - Match Scheduler
 cd "03 - MatchScheduler"
 npm install && npm run dev
-# Access: http://localhost:3000
+# Access: http://localhost:3000/api/docs
 
-# Stats Aggregator
+# Terminal 5 - Stats Aggregator
 cd "04 - StatsAggregator"
 cargo run
 # Access: http://localhost:8080/api/docs
 
-# Notification Center
+# Terminal 6 - Notification Center
 cd "05 - NotificationCenter"
 go run main.go
 # Access: http://localhost:8080/swagger/index.html
 ```
 
-### Docker Deployment
+### 🏗️ Option 3: Build Your Own Images
 
-Each service includes a `Dockerfile` for containerization:
+Perfect for **customization** and **CI/CD understanding**:
 
 ```bash
-# Build all services
+# Build all services locally
 docker build -t team-generator ./01\ -\ TeamGenerator/
 docker build -t betting-service ./02\ -\ BettingService/
 docker build -t match-scheduler ./03\ -\ MatchScheduler/
 docker build -t stats-aggregator ./04\ -\ StatsAggregator/
 docker build -t notification-center ./05\ -\ NotificationCenter/
 docker build -t forte-frontend ./06\ -\ Frontend/
+
+# Run your custom builds
+docker run -p 5000:5000 team-generator
+docker run -p 8080:8080 betting-service
+# ... etc
 ```
 
-## ☸️ Kubernetes Learning Objectives
+### ✅ Verify Setup
 
-This workshop demonstrates key Kubernetes concepts:
-
-- **🏗️ Microservices Architecture**: Service decomposition and communication
-- **📦 Containerization**: Docker best practices for different technology stacks
-- **🔄 Service Discovery**: How services find and communicate with each other
-- **⚖️ Load Balancing**: Distributing traffic across service instances
-- **📊 Health Checks**: Monitoring service health and readiness
-- **🔧 Configuration Management**: Environment-specific settings
-- **📈 Scaling**: Horizontal pod autoscaling based on demand
-- **🛡️ Security**: RBAC, network policies, and secret management
-
-## ⚙️ Kubernetes Deployment
-
-**Note**: Kubernetes deployment manifests are maintained on a separate branch to keep the main branch focused on application code.
-
-- **Deployment Branch**: `k8s-deployment`
-- **Manifests**: Each service includes namespace, deployment, and service configurations
-- **Access**: Switch to the `k8s-deployment` branch to find all Kubernetes YAML files
+Check that all services are running:
 
 ```bash
-# Switch to deployment branch to access Kubernetes manifests
+# Health check script
+curl -f http://localhost:5000/api/health || echo "❌ Team Generator down"
+curl -f http://localhost:8080/api/health || echo "❌ Betting Service down"  
+curl -f http://localhost:3000/api/health || echo "❌ Match Scheduler down"
+curl -f http://localhost:8080/api/health || echo "❌ Stats Aggregator down"
+curl -f http://localhost:8080/api/health || echo "❌ Notification Center down"
+curl -f http://localhost:3001 || echo "❌ Frontend down"
+
+echo "✅ All services running! Visit http://localhost:3001"
+```
+
+## ☸️ Kubernetes Deployment
+
+### 🎯 Learning Objectives
+
+This workshop demonstrates essential Kubernetes concepts through practical implementation:
+
+| Concept | Implementation | Learning Outcome |
+|---------|---------------|------------------|
+| **🏗️ Microservices** | 6 independent services | Service decomposition patterns |
+| **📦 Pods & Deployments** | Multi-replica deployments | Workload management |
+| **🔄 Services & Discovery** | Service-to-service communication | Network abstractions |
+| **⚖️ Load Balancing** | Traffic distribution | High availability patterns |
+| **📊 Health Checks** | Liveness & readiness probes | Self-healing systems |
+| **🔧 ConfigMaps & Secrets** | Environment configuration | Configuration management |
+| **📈 Scaling** | Horizontal Pod Autoscaler | Auto-scaling strategies |
+| **🛡️ Security** | RBAC, NetworkPolicies | Zero-trust networking |
+| **📋 Ingress** | External traffic routing | API gateway patterns |
+
+### 🚀 Quick Kubernetes Deploy
+
+> **📝 Note**: Kubernetes manifests are maintained on the `k8s-deployment` branch to keep the main branch focused on application code.
+
+```bash
+# 1. Switch to deployment branch
 git checkout k8s-deployment
 
-# Each service has a deploy/ directory with:
-# - 01-namespace.yaml
-# - 02-deployment.yaml  
-# - 03-service.yaml
+# 2. Deploy to your Kubernetes cluster
+kubectl apply -f k8s/
+
+# 3. Check deployment status
+kubectl get pods -n forte-workshop
+
+# 4. Access services via port-forward
+kubectl port-forward svc/frontend 3001:80 -n forte-workshop
 ```
+
+### 🏗️ Deployment Structure
+
+Each service includes complete Kubernetes manifests:
+
+```
+k8s/
+├── 00-namespace.yaml           # Namespace isolation
+├── 01-team-generator/
+│   ├── deployment.yaml         # Pod specification & scaling
+│   ├── service.yaml           # Internal service discovery
+│   └── configmap.yaml         # Environment configuration
+├── 02-betting-service/
+├── 03-match-scheduler/
+├── 04-stats-aggregator/
+├── 05-notification-center/
+├── 06-frontend/
+└── ingress.yaml               # External traffic routing
+```
+
+### 🌐 Production Considerations
+
+<details>
+<summary><strong>Recommended Kubernetes Setup</strong></summary>
+
+**Cluster Requirements:**
+- Kubernetes 1.28+
+- Minimum 4GB RAM, 2 CPU cores
+- Storage class for persistent volumes
+- Load balancer support (cloud or MetalLB)
+
+**Recommended Addons:**
+- **Ingress Controller**: NGINX or Traefik
+- **Monitoring**: Prometheus + Grafana
+- **Logging**: ELK Stack or Loki
+- **Service Mesh**: Istio (advanced)
+
+</details>
+
+## 📊 C4 Architecture Diagrams
+
+The complete architecture is documented using the **C4 Model** for clear visualization at different abstraction levels. This section provides rendered diagrams that work across all viewing platforms.
+
+> **💡 Viewing Options**:
+> - **GitHub**: Diagrams render automatically when viewing this repository
+> - **Local**: Use VS Code with PlantUML extension
+> - **Web**: Copy code to [PlantUML Server](http://www.plantuml.com/plantuml/uml/)
+> - **Detailed Docs**: [C4 Model Documentation](documentation/diagrams/c4/README.md)
+
+### 🌐 Level 1: System Context
+*Shows how the Forte Football Platform fits into the broader ecosystem*
+
+[![System Context Diagram](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/context.puml)](documentation/diagrams/c4/context.puml)
+
+<details>
+<summary>📋 View PlantUML Source Code</summary>
+
+```plantuml
+@startuml "Forte K8s Workshop - System Context"
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_TOP_DOWN()
+
+title Forte K8s Workshop - System Context Diagram
+
+Person(user, "Football Fan", "Wants to view matches, place bets, and receive notifications")
+Person(admin, "System Administrator", "Manages teams, schedules matches, and monitors system")
+
+System(forte_system, "Forte Football Platform", "Microservices-based football management platform with betting, statistics, and notifications")
+
+System_Ext(browser, "Web Browser", "User interface for accessing the platform")
+System_Ext(kubernetes, "Kubernetes Cluster", "Container orchestration platform hosting all microservices")
+
+Rel(user, forte_system, "Views matches, places bets, receives notifications", "HTTPS")
+Rel(admin, forte_system, "Manages teams and matches", "HTTPS")
+Rel(forte_system, browser, "Serves web interface", "HTTPS")
+Rel(forte_system, kubernetes, "Deployed on", "Container Runtime")
+
+SHOW_LEGEND()
+@enduml
+```
+</details>
+
+### 🏗️ Level 2: Container Diagram
+*Detailed microservices architecture showing container interactions*
+
+[![Container Diagram](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/container.puml)](documentation/diagrams/c4/container.puml)
+
+**Key Architectural Decisions:**
+- **🔄 No Direct Service Communication**: Services coordinate through shared IDs
+- **📡 API-First Design**: All interactions via REST APIs
+- **🏗️ Technology Diversity**: Each service uses different tech stack for learning
+- **📦 Container-First**: All services designed for Kubernetes deployment
+
+### ⚙️ Level 3: Component Diagrams
+*Internal structure of key services showing clean architecture patterns*
+
+| Service | Component Diagram | Architecture Pattern |
+|---------|------------------|---------------------|
+| **Frontend** | [![Frontend Components](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/frontend-components.puml)](documentation/diagrams/c4/frontend-components.puml) | React + TypeScript SPA |
+| **Team Generator** | [![Team Generator Components](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/team-generator-components.puml)](documentation/diagrams/c4/team-generator-components.puml) | Clean Architecture + DDD |
 
 ## 🧪 Testing
 
-### Integration Testing
+### 🔍 Integration Testing
+
+Test shared ID consistency across all services:
+
 ```bash
-# Test shared ID consistency across all services
+# Run the comprehensive integration test
 python3 tests/shared-id-consistency.py
+
+# Expected output:
+# ✅ Team Generator: All 6 teams accessible
+# ✅ Betting Service: Team IDs match
+# ✅ Match Scheduler: Team references valid
+# ✅ Stats Aggregator: Team data consistent
+# ✅ Notification Center: Team mapping correct
+# ✅ Frontend: All integrations working
 ```
 
-### Individual Service Testing
-Each service includes its own test suite - see individual README files for details.
+### 🧪 Individual Service Testing
 
-## 📚 Learning Resources
+Each service includes comprehensive test suites:
 
-- **Architecture**: C4 Model Diagrams (embedded above) & [detailed documentation](documentation/diagrams/c4/)
-- **Microservices**: Individual service documentation
-- **Kubernetes**: Workshop exercises (coming soon)
-- **Best Practices**: Code examples across multiple tech stacks
+<details>
+<summary><strong>Service-Specific Tests</strong></summary>
+
+```bash
+# Team Generator (.NET Core)
+cd "01 - TeamGenerator"
+dotnet test
+
+# Betting Service (Python)
+cd "02 - BettingService"
+pytest tests/
+
+# Match Scheduler (TypeScript)
+cd "03 - MatchScheduler"
+npm test
+
+# Stats Aggregator (Rust)
+cd "04 - StatsAggregator"
+cargo test
+
+# Notification Center (Go)
+cd "05 - NotificationCenter"
+go test ./...
+
+# Frontend (React)
+cd "06 - Frontend"
+npm run test
+```
+
+</details>
+
+### 🚀 Load Testing
+
+Test system under realistic load:
+
+```bash
+# Install k6 load testing tool
+# macOS: brew install k6
+# Linux: See https://k6.io/docs/getting-started/installation/
+
+# Run load tests
+k6 run tests/load-test.js
+```
+
+## 🛠️ Troubleshooting
+
+### 🔧 Common Issues
+
+<details>
+<summary><strong>🐳 Docker Issues</strong></summary>
+
+**Problem**: Docker build fails with "architecture not supported"
+```bash
+# Solution: Use multi-platform builds
+docker buildx create --use
+docker buildx build --platform linux/amd64,linux/arm64 -t myimage .
+```
+
+**Problem**: Container exits immediately
+```bash
+# Check logs
+docker logs <container-id>
+
+# Run interactively for debugging
+docker run -it --entrypoint /bin/sh <image-name>
+```
+
+</details>
+
+<details>
+<summary><strong>☸️ Kubernetes Issues</strong></summary>
+
+**Problem**: Pods stuck in Pending state
+```bash
+# Check node resources
+kubectl describe nodes
+
+# Check pod events
+kubectl describe pod <pod-name> -n forte-workshop
+```
+
+**Problem**: Service not accessible
+```bash
+# Check service endpoints
+kubectl get endpoints -n forte-workshop
+
+# Test internal connectivity
+kubectl run debug --image=busybox --rm -it -- nslookup <service-name>
+```
+
+</details>
+
+<details>
+<summary><strong>🌐 Network Issues</strong></summary>
+
+**Problem**: Services can't communicate
+```bash
+# Check service discovery
+kubectl get svc -n forte-workshop
+
+# Test connectivity between pods
+kubectl exec -it <pod-name> -- curl http://<service-name>:port/health
+```
+
+**Problem**: Frontend can't reach APIs
+```bash
+# Check CORS configuration
+# Verify API endpoints are accessible
+curl -i http://localhost:5000/api/health
+```
+
+</details>
+
+### 📋 Health Check Endpoints
+
+All services provide health check endpoints:
+
+| Service | Health Endpoint | Expected Response |
+|---------|----------------|-------------------|
+| Team Generator | `GET /api/health` | `{"status": "healthy"}` |
+| Betting Service | `GET /api/health` | `{"status": "ok"}` |
+| Match Scheduler | `GET /api/health` | `{"success": true}` |
+| Stats Aggregator | `GET /api/health` | `{"status": "healthy"}` |
+| Notification Center | `GET /api/health` | `{"status": "ok"}` |
+| Frontend | `GET /health` | `200 OK` |
 
 ## 🤝 Contributing
 
-1. **Explore the Architecture**: Review the C4 diagrams and service documentation
-2. **Run Locally**: Set up the development environment
-3. **Make Changes**: Follow the patterns established in each service
-4. **Test**: Ensure shared ID consistency and service functionality
-5. **Document**: Update relevant README files
+We welcome contributions to improve the Forte K8s Workshop! Here's how you can help:
+
+### 🚀 Getting Started
+
+1. **🍴 Fork the repository**
+   ```bash
+   gh repo fork Thorstensen/forte-k8s-workshop
+   ```
+
+2. **📥 Clone your fork**
+   ```bash
+   git clone https://github.com/YOUR-USERNAME/forte-k8s-workshop.git
+   cd forte-k8s-workshop
+   ```
+
+3. **🌟 Create a feature branch**
+   ```bash
+   git checkout -b feature/amazing-improvement
+   ```
+
+4. **🔍 Explore the architecture**
+   - Review [C4 diagrams](documentation/diagrams/c4/)
+   - Understand [shared ID strategy](shared-ids.md)
+   - Read service-specific READMEs
+
+### 🛠️ Development Workflow
+
+1. **🏃‍♂️ Set up development environment**
+   ```bash
+   # Choose your preferred method
+   # Option 1: Use pre-built Docker images (fastest)
+   # Option 2: Local development (best for changes)
+   # Option 3: Build custom images (best for CI/CD)
+   ```
+
+2. **✅ Make your changes**
+   - Follow existing patterns in each service
+   - Maintain shared ID consistency
+   - Update relevant documentation
+   - Add/update tests as needed
+
+3. **🧪 Test thoroughly**
+   ```bash
+   # Run integration tests
+   python3 tests/shared-id-consistency.py
+   
+   # Test affected services individually
+   # See service README files for specific test commands
+   ```
+
+4. **📝 Document your changes**
+   - Update service README files
+   - Update architecture diagrams if needed
+   - Add examples for new features
+
+### 🎯 Contribution Areas
+
+<details>
+<summary><strong>🔧 Code Improvements</strong></summary>
+
+- **Service Enhancements**: Add new features to existing services
+- **Performance Optimization**: Improve response times and resource usage
+- **Security Hardening**: Implement additional security measures
+- **Error Handling**: Improve error messages and recovery
+- **API Design**: Enhance REST API interfaces
+
+</details>
+
+<details>
+<summary><strong>📚 Documentation</strong></summary>
+
+- **Architecture Documentation**: Improve C4 diagrams and explanations
+- **Tutorial Content**: Create step-by-step guides
+- **Best Practices**: Document patterns and anti-patterns
+- **Troubleshooting**: Add common issues and solutions
+- **Examples**: Provide real-world usage scenarios
+
+</details>
+
+<details>
+<summary><strong>☸️ Kubernetes & DevOps</strong></summary>
+
+- **Helm Charts**: Create parameterized deployments
+- **Monitoring**: Add Prometheus metrics and Grafana dashboards
+- **Logging**: Implement structured logging and aggregation
+- **Security**: Add network policies and RBAC configurations
+- **CI/CD**: Improve GitHub Actions workflows
+
+</details>
+
+<details>
+<summary><strong>🧪 Testing & Quality</strong></summary>
+
+- **Unit Tests**: Improve test coverage for all services
+- **Integration Tests**: Add more comprehensive API tests
+- **Load Testing**: Create realistic performance tests
+- **Security Testing**: Add vulnerability scanning
+- **Code Quality**: Implement linting and formatting
+
+</details>
+
+### 📋 Pull Request Guidelines
+
+1. **📝 Clear Description**
+   - Explain what you changed and why
+   - Reference any related issues
+   - Include screenshots for UI changes
+
+2. **✅ Testing Checklist**
+   - [ ] Integration tests pass
+   - [ ] Individual service tests pass
+   - [ ] Manual testing completed
+   - [ ] Documentation updated
+
+3. **🔍 Code Quality**
+   - Follow existing code style
+   - Add appropriate comments
+   - Ensure clean git history
+
+### 🐛 Bug Reports
+
+Found a bug? Please open an issue with:
+
+- **Environment**: OS, Docker version, Kubernetes version
+- **Steps to Reproduce**: Detailed steps to recreate the issue
+- **Expected Behavior**: What you expected to happen
+- **Actual Behavior**: What actually happened
+- **Logs**: Relevant error messages or logs
+- **Screenshots**: If applicable
+
+### 💡 Feature Requests
+
+Have an idea? Open an issue with:
+
+- **Use Case**: Why this feature would be valuable
+- **Proposed Solution**: How you envision it working
+- **Alternatives**: Other solutions you've considered
+- **Implementation**: Technical approach (if you have ideas)
+
+## 📚 Learning Resources
+
+### 🎓 Recommended Learning Path
+
+<div align="center">
+
+| Phase | Topic | Resources | Duration |
+|-------|-------|-----------|----------|
+| **1** | **Container Basics** | [Docker Documentation](https://docs.docker.com/) | 1-2 weeks |
+| **2** | **Kubernetes Core** | [Kubernetes.io Tutorials](https://kubernetes.io/docs/tutorials/) | 2-3 weeks |
+| **3** | **Microservices** | [Microservices.io](https://microservices.io/) | 2-4 weeks |
+| **4** | **Observability** | [CNCF Landscape](https://landscape.cncf.io/) | 1-2 weeks |
+| **5** | **Advanced Topics** | Service Mesh, GitOps | Ongoing |
+
+</div>
+
+### 🔗 External Resources
+
+<details>
+<summary><strong>📖 Documentation & Tutorials</strong></summary>
+
+**Kubernetes:**
+- [Official Kubernetes Documentation](https://kubernetes.io/docs/)
+- [Kubernetes by Example](https://kubernetesbyexample.com/)
+- [Play with Kubernetes](https://labs.play-with-k8s.com/)
+
+**Docker & Containers:**
+- [Docker Getting Started](https://docs.docker.com/get-started/)
+- [Container Best Practices](https://cloud.google.com/architecture/best-practices-for-building-containers)
+
+**Microservices Architecture:**
+- [Building Microservices (O'Reilly)](https://www.oreilly.com/library/view/building-microservices/9781491950340/)
+- [Microservices Patterns](https://microservices.io/patterns/)
+- [API Design Guide](https://cloud.google.com/apis/design)
+
+</details>
+
+<details>
+<summary><strong>🛠️ Tools & Platforms</strong></summary>
+
+**Development:**
+- [Visual Studio Code](https://code.visualstudio.com/) with Kubernetes extension
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
+
+**Local Kubernetes:**
+- [Minikube](https://minikube.sigs.k8s.io/docs/)
+- [Kind](https://kind.sigs.k8s.io/)
+- [k3s](https://k3s.io/)
+
+**Cloud Providers:**
+- [Google Kubernetes Engine (GKE)](https://cloud.google.com/kubernetes-engine)
+- [Amazon Elastic Kubernetes Service (EKS)](https://aws.amazon.com/eks/)
+- [Azure Kubernetes Service (AKS)](https://azure.microsoft.com/services/kubernetes-service/)
+
+</details>
+
+<details>
+<summary><strong>🎥 Videos & Courses</strong></summary>
+
+**YouTube Channels:**
+- [TechWorld with Nana](https://www.youtube.com/c/TechWorldwithNana)
+- [That DevOps Guy](https://www.youtube.com/c/MarcelDempers)
+- [CNCF](https://www.youtube.com/c/CloudNativeComputingFoundation)
+
+**Online Courses:**
+- [Kubernetes for Developers (Linux Foundation)](https://training.linuxfoundation.org/training/kubernetes-for-developers/)
+- [Docker and Kubernetes: The Complete Guide](https://www.udemy.com/course/docker-and-kubernetes-the-complete-guide/)
+
+</details>
+
+### 🏗️ Architecture Deep Dives
+
+- **📊 C4 Model**: [Detailed Architecture Documentation](documentation/diagrams/c4/README.md)
+- **🆔 Shared Data Strategy**: [Shared IDs Documentation](shared-ids.md)
+- **🔄 Service Integration Patterns**: See individual service README files
+- **📈 Scaling Strategies**: [Kubernetes Deployment Guide](k8s-deployment)
+
+### 🧪 Hands-On Labs
+
+1. **🚀 Basic Deployment**: Deploy all services locally
+2. **☸️ Kubernetes Migration**: Move to Kubernetes cluster
+3. **📊 Monitoring Setup**: Add Prometheus and Grafana
+4. **🔒 Security Hardening**: Implement RBAC and network policies
+5. **📈 Auto-Scaling**: Configure HPA and VPA
+6. **🔄 CI/CD Pipeline**: Set up GitOps workflow
+
+---
+
+<div align="center">
 
 ## 📝 License
 
-This project is designed for educational purposes as part of the Forte K8s Workshop.
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
+
+**🎓 Educational Use**: This project is designed for educational purposes as part of the Forte K8s Workshop. Feel free to use, modify, and distribute for learning and teaching.
+
+---
+
+### 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=Thorstensen/forte-k8s-workshop&type=Date)](https://star-history.com/#Thorstensen/forte-k8s-workshop&Date)
+
+---
+
+**Made with ❤️ for the Kubernetes community**
+
+[⬆️ Back to Top](#-forte-k8s-workshop)
+
+</div>
