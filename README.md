@@ -1,7 +1,7 @@
 <div align="center">
 
 # ⚽ Forte K8s Workshop
-## Football Microservices Platform
+## Crossbar conspiracy
 
 [![Docker Build](https://github.com/Thorstensen/forte-k8s-workshop/actions/workflows/docker-build-push.yml/badge.svg)](https://github.com/Thorstensen/forte-k8s-workshop/actions/workflows/docker-build-push.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -22,8 +22,6 @@
 - [🚀 Microservices](#-microservices)
 - [🐳 Docker Images](#-docker-images)
 - [🚀 Quick Start](#-quick-start)
-- [☸️ Kubernetes Deployment](#%EF%B8%8F-kubernetes-deployment)
-- [📊 C4 Architecture Diagrams](#-c4-architecture-diagrams)
 - [🧪 Testing](#-testing)
 - [🛠️ Troubleshooting](#%EF%B8%8F-troubleshooting)
 - [🤝 Contributing](#-contributing)
@@ -362,26 +360,6 @@ docker run -p 3001:8080 ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest
 | **Stats Aggregator** | Rust | Axum | 8080 | 8080 | In-Memory | High Performance |
 | **Notification Center** | Go | Gorilla Mux | 8080 | 8080 | In-Memory | Concurrent Processing |
 
-## 🆔 Shared Data Strategy
-
-The platform maintains **data consistency** through shared entity IDs **without direct service communication** - a key microservices pattern:
-
-### 🏈 Team ID Mapping
-| Team Name | Shared ID | Description |
-|-----------|-----------|-------------|
-| Manchester United | `team-1` | Used across all services |
-| Liverpool | `team-2` | Consistent reference |
-| Chelsea | `team-3` | No direct coupling |
-| Arsenal | `team-4` | Event-driven sync |
-| Manchester City | `team-5` | Loose coupling |
-| Tottenham | `team-6` | Independent scaling |
-
-### ⚽ Match ID Format
-- **Pattern**: `match-{number}` (e.g., `match-1`, `match-2`)
-- **Usage**: Consistent across betting, statistics, and notifications
-- **Benefits**: No service dependencies, easy debugging, clear traceability
-
-📖 **Deep Dive**: [Shared IDs Documentation](shared-ids.md)
 
 ## 🚀 Quick Start
 
@@ -511,142 +489,9 @@ curl -f http://localhost:3001 || echo "❌ Frontend down"
 echo "✅ All services running! Visit http://localhost:3001"
 ```
 
-## ☸️ Kubernetes Deployment
 
-### 🎯 Learning Objectives
 
-This workshop demonstrates essential Kubernetes concepts through practical implementation:
 
-| Concept | Implementation | Learning Outcome |
-|---------|---------------|------------------|
-| **🏗️ Microservices** | 6 independent services | Service decomposition patterns |
-| **📦 Pods & Deployments** | Multi-replica deployments | Workload management |
-| **🔄 Services & Discovery** | Service-to-service communication | Network abstractions |
-| **⚖️ Load Balancing** | Traffic distribution | High availability patterns |
-| **📊 Health Checks** | Liveness & readiness probes | Self-healing systems |
-| **🔧 ConfigMaps & Secrets** | Environment configuration | Configuration management |
-| **📈 Scaling** | Horizontal Pod Autoscaler | Auto-scaling strategies |
-| **🛡️ Security** | RBAC, NetworkPolicies | Zero-trust networking |
-| **📋 Ingress** | External traffic routing | API gateway patterns |
-
-### 🚀 Quick Kubernetes Deploy
-
-> **📝 Note**: Kubernetes manifests are maintained on the `k8s-deployment` branch to keep the main branch focused on application code.
-
-```bash
-# 1. Switch to deployment branch
-git checkout k8s-deployment
-
-# 2. Deploy to your Kubernetes cluster
-kubectl apply -f k8s/
-
-# 3. Check deployment status
-kubectl get pods -n forte-workshop
-
-# 4. Access services via port-forward
-kubectl port-forward svc/frontend 3001:80 -n forte-workshop
-```
-
-### 🏗️ Deployment Structure
-
-Each service includes complete Kubernetes manifests:
-
-```
-k8s/
-├── 00-namespace.yaml           # Namespace isolation
-├── 01-team-generator/
-│   ├── deployment.yaml         # Pod specification & scaling
-│   ├── service.yaml           # Internal service discovery
-│   └── configmap.yaml         # Environment configuration
-├── 02-betting-service/
-├── 03-match-scheduler/
-├── 04-stats-aggregator/
-├── 05-notification-center/
-├── 06-frontend/
-└── ingress.yaml               # External traffic routing
-```
-
-### 🌐 Production Considerations
-
-<details>
-<summary><strong>Recommended Kubernetes Setup</strong></summary>
-
-**Cluster Requirements:**
-- Kubernetes 1.28+
-- Minimum 4GB RAM, 2 CPU cores
-- Storage class for persistent volumes
-- Load balancer support (cloud or MetalLB)
-
-**Recommended Addons:**
-- **Ingress Controller**: NGINX or Traefik
-- **Monitoring**: Prometheus + Grafana
-- **Logging**: ELK Stack or Loki
-- **Service Mesh**: Istio (advanced)
-
-</details>
-
-## 📊 C4 Architecture Diagrams
-
-The complete architecture is documented using the **C4 Model** for clear visualization at different abstraction levels. This section provides rendered diagrams that work across all viewing platforms.
-
-> **💡 Viewing Options**:
-> - **GitHub**: Diagrams render automatically when viewing this repository
-> - **Local**: Use VS Code with PlantUML extension
-> - **Web**: Copy code to [PlantUML Server](http://www.plantuml.com/plantuml/uml/)
-> - **Detailed Docs**: [C4 Model Documentation](documentation/diagrams/c4/README.md)
-
-### 🌐 Level 1: System Context
-*Shows how the Forte Football Platform fits into the broader ecosystem*
-
-[![System Context Diagram](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/context.puml)](documentation/diagrams/c4/context.puml)
-
-<details>
-<summary>📋 View PlantUML Source Code</summary>
-
-```plantuml
-@startuml "Forte K8s Workshop - System Context"
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
-
-LAYOUT_TOP_DOWN()
-
-title Forte K8s Workshop - System Context Diagram
-
-Person(user, "Football Fan", "Wants to view matches, place bets, and receive notifications")
-Person(admin, "System Administrator", "Manages teams, schedules matches, and monitors system")
-
-System(forte_system, "Forte Football Platform", "Microservices-based football management platform with betting, statistics, and notifications")
-
-System_Ext(browser, "Web Browser", "User interface for accessing the platform")
-System_Ext(kubernetes, "Kubernetes Cluster", "Container orchestration platform hosting all microservices")
-
-Rel(user, forte_system, "Views matches, places bets, receives notifications", "HTTPS")
-Rel(admin, forte_system, "Manages teams and matches", "HTTPS")
-Rel(forte_system, browser, "Serves web interface", "HTTPS")
-Rel(forte_system, kubernetes, "Deployed on", "Container Runtime")
-
-SHOW_LEGEND()
-@enduml
-```
-</details>
-
-### 🏗️ Level 2: Container Diagram
-*Detailed microservices architecture showing container interactions*
-
-[![Container Diagram](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/container.puml)](documentation/diagrams/c4/container.puml)
-
-**Key Architectural Decisions:**
-- **🔄 No Direct Service Communication**: Services coordinate through shared IDs
-- **📡 API-First Design**: All interactions via REST APIs
-- **🏗️ Technology Diversity**: Each service uses different tech stack for learning
-- **📦 Container-First**: All services designed for Kubernetes deployment
-
-### ⚙️ Level 3: Component Diagrams
-*Internal structure of key services showing clean architecture patterns*
-
-| Service | Component Diagram | Architecture Pattern |
-|---------|------------------|---------------------|
-| **Frontend** | [![Frontend Components](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/frontend-components.puml)](documentation/diagrams/c4/frontend-components.puml) | React + TypeScript SPA |
-| **Team Generator** | [![Team Generator Components](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/team-generator-components.puml)](documentation/diagrams/c4/team-generator-components.puml) | Clean Architecture + DDD |
 
 ## 🧪 Testing
 
@@ -1012,18 +857,13 @@ Have an idea? Open an issue with:
 ### 🏗️ Architecture Deep Dives
 
 - **📊 C4 Model**: [Detailed Architecture Documentation](documentation/diagrams/c4/README.md)
-- **🆔 Shared Data Strategy**: [Shared IDs Documentation](shared-ids.md)
 - **🔄 Service Integration Patterns**: See individual service README files
-- **📈 Scaling Strategies**: [Kubernetes Deployment Guide](k8s-deployment)
 
 ### 🧪 Hands-On Labs
 
 1. **🚀 Basic Deployment**: Deploy all services locally
-2. **☸️ Kubernetes Migration**: Move to Kubernetes cluster
-3. **📊 Monitoring Setup**: Add Prometheus and Grafana
-4. **🔒 Security Hardening**: Implement RBAC and network policies
-5. **📈 Auto-Scaling**: Configure HPA and VPA
-6. **🔄 CI/CD Pipeline**: Set up GitOps workflow
+2. **📊 Monitoring Setup**: Add Prometheus and Grafana
+3. **🔄 CI/CD Pipeline**: Set up GitOps workflow
 
 ---
 
