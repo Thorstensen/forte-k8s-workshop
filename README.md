@@ -46,17 +46,17 @@ The platform consists of **6 microservices** built with different technology sta
 <summary>📄 View PlantUML Source</summary>
 
 ```plantuml
-@startuml "Forte K8s Workshop - System Context"
+@startuml "Crossbar Conspiracy - System Context"
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
 LAYOUT_TOP_DOWN()
 
-title Forte K8s Workshop - System Context Diagram
+title Crossbar Conspiracy - System Context Diagram
 
 Person(user, "Football Fan", "Wants to view matches, place bets, and receive notifications")
 Person(admin, "System Administrator", "Manages teams, schedules matches, and monitors system")
 
-System(forte_system, "Forte Football Platform", "Microservices-based football management platform with betting, statistics, and notifications")
+System(forte_system, "Crossbar Conspiracy", "Microservices-based football management platform with betting, statistics, and notifications")
 
 System_Ext(browser, "Web Browser", "User interface for accessing the platform")
 System_Ext(kubernetes, "Kubernetes Cluster", "Container orchestration platform hosting all microservices")
@@ -80,12 +80,12 @@ SHOW_LEGEND()
 <summary>📄 View PlantUML Source</summary>
 
 ```plantuml
-@startuml "Forte K8s Workshop - Container Diagram"
+@startuml "Crossbar Conspiracy - Container Diagram"
 !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 LAYOUT_TOP_DOWN()
 
-title Forte K8s Workshop - Container Diagram (Microservices Architecture)
+title Crossbar Conspiracy - Container Diagram (Microservices Architecture)
 
 Person(user, "Football Fan", "Views matches, places bets, receives notifications")
 Person(admin, "Administrator", "Manages teams and schedules matches")
@@ -274,19 +274,6 @@ All services are containerized and automatically built using GitHub Actions. Pre
 | **Stats Aggregator** | `ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/stats-aggregator:latest` |
 | **Notification Center** | `ghcr.io/thorstensen/forte-k8s-workshop/notification-center` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/notification-center:latest` |
 | **Frontend** | `ghcr.io/thorstensen/forte-k8s-workshop/frontend` | ![Latest](https://img.shields.io/badge/latest-v1.0-blue) | `docker pull ghcr.io/thorstensen/forte-k8s-workshop/frontend:latest` |
-
-### 🔐 Authentication (for private repositories)
-
-If the repository is private, authenticate with GitHub Container Registry:
-
-```bash
-# Login to GHCR using a Personal Access Token
-echo $GITHUB_TOKEN | docker login ghcr.io -u USERNAME --password-stdin
-
-# Or use GitHub CLI (recommended)
-gh auth login
-echo $GITHUB_TOKEN | docker login ghcr.io -u $(gh api user --jq .login) --password-stdin
-```
 
 ### 🚀 Quick Pull All Images
 
@@ -632,12 +619,6 @@ All services provide health check endpoints:
 - **📊 C4 Model**: [Detailed Architecture Documentation](documentation/diagrams/c4/README.md)
 - **🔄 Service Integration Patterns**: See individual service README files
 
-### 🧪 Hands-On Labs
-
-1. **🚀 Basic Deployment**: Deploy all services locally
-2. **📊 Monitoring Setup**: Add Prometheus and Grafana
-3. **🔄 CI/CD Pipeline**: Set up GitOps workflow
-
 ---
 
 <div align="center">
@@ -649,14 +630,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 **🎓 Educational Use**: This project is designed for educational purposes as part of the Forte K8s Workshop. Feel free to use, modify, and distribute for learning and teaching.
 
 ---
-
-### 🌟 Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=Thorstensen/forte-k8s-workshop&type=Date)](https://star-history.com/#Thorstensen/forte-k8s-workshop&Date)
-
----
-
-**Made with ❤️ for the Kubernetes community**
 
 [⬆️ Back to Top](#-forte-k8s-workshop)
 
