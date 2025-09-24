@@ -5,14 +5,13 @@
 
 [![Docker Build](https://github.com/Thorstensen/forte-k8s-workshop/actions/workflows/docker-build-push.yml/badge.svg)](https://github.com/Thorstensen/forte-k8s-workshop/actions/workflows/docker-build-push.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Kubernetes](https://img.shields.io/badge/Kubernetes-v1.28-blue.svg)](https://kubernetes.io/)
 [![Docker](https://img.shields.io/badge/Docker-Container%20Ready-2496ED.svg)](https://www.docker.com/)
 
 **A comprehensive microservices ecosystem showcasing modern cloud-native development patterns**
 
 *Learn Kubernetes, Docker, and microservices architecture through a real-world football management platform with betting, statistics, and notifications.*
 
-[🚀 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🐳 Docker Images](#-docker-images) • [🏗️ Architecture](#%EF%B8%8F-architecture-overview) • [🤝 Contributing](#-contributing)
+[🚀 Quick Start](#-quick-start) • [📖 Documentation](#-documentation) • [🐳 Docker Images](#-docker-images) • [🏗️ Architecture](#%EF%B8%8F-architecture-overview)
 
 </div>
 
@@ -22,9 +21,7 @@
 - [🚀 Microservices](#-microservices)
 - [🐳 Docker Images](#-docker-images)
 - [🚀 Quick Start](#-quick-start)
-- [🧪 Testing](#-testing)
 - [🛠️ Troubleshooting](#%EF%B8%8F-troubleshooting)
-- [🤝 Contributing](#-contributing)
 - [📚 Learning Resources](#-learning-resources)
 - [📝 License](#-license)
 
@@ -493,73 +490,6 @@ echo "✅ All services running! Visit http://localhost:3001"
 
 
 
-## 🧪 Testing
-
-### 🔍 Integration Testing
-
-Test shared ID consistency across all services:
-
-```bash
-# Run the comprehensive integration test
-python3 tests/shared-id-consistency.py
-
-# Expected output:
-# ✅ Team Generator: All 6 teams accessible
-# ✅ Betting Service: Team IDs match
-# ✅ Match Scheduler: Team references valid
-# ✅ Stats Aggregator: Team data consistent
-# ✅ Notification Center: Team mapping correct
-# ✅ Frontend: All integrations working
-```
-
-### 🧪 Individual Service Testing
-
-Each service includes comprehensive test suites:
-
-<details>
-<summary><strong>Service-Specific Tests</strong></summary>
-
-```bash
-# Team Generator (.NET Core)
-cd "01 - TeamGenerator"
-dotnet test
-
-# Betting Service (Python)
-cd "02 - BettingService"
-pytest tests/
-
-# Match Scheduler (TypeScript)
-cd "03 - MatchScheduler"
-npm test
-
-# Stats Aggregator (Rust)
-cd "04 - StatsAggregator"
-cargo test
-
-# Notification Center (Go)
-cd "05 - NotificationCenter"
-go test ./...
-
-# Frontend (React)
-cd "06 - Frontend"
-npm run test
-```
-
-</details>
-
-### 🚀 Load Testing
-
-Test system under realistic load:
-
-```bash
-# Install k6 load testing tool
-# macOS: brew install k6
-# Linux: See https://k6.io/docs/getting-started/installation/
-
-# Run load tests
-k6 run tests/load-test.js
-```
-
 ## 🛠️ Troubleshooting
 
 ### 🔧 Common Issues
@@ -641,147 +571,6 @@ All services provide health check endpoints:
 | Stats Aggregator | `GET /api/health` | `{"status": "healthy"}` |
 | Notification Center | `GET /api/health` | `{"status": "ok"}` |
 | Frontend | `GET /health` | `200 OK` |
-
-## 🤝 Contributing
-
-We welcome contributions to improve the Forte K8s Workshop! Here's how you can help:
-
-### 🚀 Getting Started
-
-1. **🍴 Fork the repository**
-   ```bash
-   gh repo fork Thorstensen/forte-k8s-workshop
-   ```
-
-2. **📥 Clone your fork**
-   ```bash
-   git clone https://github.com/YOUR-USERNAME/forte-k8s-workshop.git
-   cd forte-k8s-workshop
-   ```
-
-3. **🌟 Create a feature branch**
-   ```bash
-   git checkout -b feature/amazing-improvement
-   ```
-
-4. **🔍 Explore the architecture**
-   - Review [C4 diagrams](documentation/diagrams/c4/)
-   - Understand [shared ID strategy](shared-ids.md)
-   - Read service-specific READMEs
-
-### 🛠️ Development Workflow
-
-1. **🏃‍♂️ Set up development environment**
-   ```bash
-   # Choose your preferred method
-   # Option 1: Use pre-built Docker images (fastest)
-   # Option 2: Local development (best for changes)
-   # Option 3: Build custom images (best for CI/CD)
-   ```
-
-2. **✅ Make your changes**
-   - Follow existing patterns in each service
-   - Maintain shared ID consistency
-   - Update relevant documentation
-   - Add/update tests as needed
-
-3. **🧪 Test thoroughly**
-   ```bash
-   # Run integration tests
-   python3 tests/shared-id-consistency.py
-   
-   # Test affected services individually
-   # See service README files for specific test commands
-   ```
-
-4. **📝 Document your changes**
-   - Update service README files
-   - Update architecture diagrams if needed
-   - Add examples for new features
-
-### 🎯 Contribution Areas
-
-<details>
-<summary><strong>🔧 Code Improvements</strong></summary>
-
-- **Service Enhancements**: Add new features to existing services
-- **Performance Optimization**: Improve response times and resource usage
-- **Security Hardening**: Implement additional security measures
-- **Error Handling**: Improve error messages and recovery
-- **API Design**: Enhance REST API interfaces
-
-</details>
-
-<details>
-<summary><strong>📚 Documentation</strong></summary>
-
-- **Architecture Documentation**: Improve C4 diagrams and explanations
-- **Tutorial Content**: Create step-by-step guides
-- **Best Practices**: Document patterns and anti-patterns
-- **Troubleshooting**: Add common issues and solutions
-- **Examples**: Provide real-world usage scenarios
-
-</details>
-
-<details>
-<summary><strong>☸️ Kubernetes & DevOps</strong></summary>
-
-- **Helm Charts**: Create parameterized deployments
-- **Monitoring**: Add Prometheus metrics and Grafana dashboards
-- **Logging**: Implement structured logging and aggregation
-- **Security**: Add network policies and RBAC configurations
-- **CI/CD**: Improve GitHub Actions workflows
-
-</details>
-
-<details>
-<summary><strong>🧪 Testing & Quality</strong></summary>
-
-- **Unit Tests**: Improve test coverage for all services
-- **Integration Tests**: Add more comprehensive API tests
-- **Load Testing**: Create realistic performance tests
-- **Security Testing**: Add vulnerability scanning
-- **Code Quality**: Implement linting and formatting
-
-</details>
-
-### 📋 Pull Request Guidelines
-
-1. **📝 Clear Description**
-   - Explain what you changed and why
-   - Reference any related issues
-   - Include screenshots for UI changes
-
-2. **✅ Testing Checklist**
-   - [ ] Integration tests pass
-   - [ ] Individual service tests pass
-   - [ ] Manual testing completed
-   - [ ] Documentation updated
-
-3. **🔍 Code Quality**
-   - Follow existing code style
-   - Add appropriate comments
-   - Ensure clean git history
-
-### 🐛 Bug Reports
-
-Found a bug? Please open an issue with:
-
-- **Environment**: OS, Docker version, Kubernetes version
-- **Steps to Reproduce**: Detailed steps to recreate the issue
-- **Expected Behavior**: What you expected to happen
-- **Actual Behavior**: What actually happened
-- **Logs**: Relevant error messages or logs
-- **Screenshots**: If applicable
-
-### 💡 Feature Requests
-
-Have an idea? Open an issue with:
-
-- **Use Case**: Why this feature would be valuable
-- **Proposed Solution**: How you envision it working
-- **Alternatives**: Other solutions you've considered
-- **Implementation**: Technical approach (if you have ideas)
 
 ## 📚 Learning Resources
 
