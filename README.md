@@ -27,23 +27,7 @@
 
 ## 🏗️ Architecture Overview
 
-The platform consists of **6 microservices** built with different technology stacks to showcase polyglot development and Kubernetes orchestration:
-
-```
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Frontend      │    │  Team Generator │    │ Match Scheduler │
-│ React TypeScript│◄──►│    C# .NET      │◄──►│  TypeScript     │
-│     (UI)        │    │   (Teams)       │    │   (Matches)     │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-         ▲                       ▲                       ▲
-         │              Shared IDs (no direct calls)    │
-         ▼                       ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│ Betting Service │    │ Stats Aggregator│    │Notification Ctr │
-│ Python FastAPI  │    │   Rust Axum     │    │   Go Gorilla    │
-│   (Betting)     │    │  (Statistics)   │    │ (Notifications) │
-└─────────────────┘    └─────────────────┘    └─────────────────┘
-```
+The platform consists of **6 microservices** built with different technology stacks to showcase polyglot development and Kubernetes orchestration.
 
 ### 📊 C4 Model Diagrams
 
@@ -54,7 +38,7 @@ The platform consists of **6 microservices** built with different technology sta
 > - **Detailed Documentation**: [C4 Model Details](documentation/diagrams/c4/README.md)
 
 #### 🌐 Level 1: System Context
-*How the Forte Football Platform fits into the broader ecosystem*
+*How the platform fits into the broader ecosystem*
 
 [![System Context](https://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/Thorstensen/forte-k8s-workshop/main/documentation/diagrams/c4/context.puml)](documentation/diagrams/c4/context.puml)
 
