@@ -87,7 +87,7 @@ export const notificationService = {
   // Health check
   healthCheck: async (): Promise<boolean> => {
     try {
-      const response = await notificationApi.get('/health');
+      const response = await notificationApi.get('/api/health');
       return response.status === 200;
     } catch (error) {
       console.error('Notification Center health check failed:', error);
