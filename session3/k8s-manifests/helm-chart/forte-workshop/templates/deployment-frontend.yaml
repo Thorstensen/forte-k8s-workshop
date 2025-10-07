@@ -1,0 +1,69 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.frontend.name }}
+    tier: frontend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.frontend.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.frontend.name }}
+        tier: frontend
+    spec:
+      containers:
+      - name: {{ .Values.frontend.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.frontend.image.repository "tag" .Values.frontend.image.tag "registry" .Values.frontend.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.frontend.service.targetPort }}
+          name: http
+        resources:
+          {{- toYaml .Values.frontend.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.frontend.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: {{ .Values.frontend.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+        volumeMounts:
+        - name: config
+          mountPath: /usr/share/nginx/html/config.js
+          subPath: config.js
+      volumes:
+      - name: config
+        configMap:
+          name: {{ .Values.frontend.name }}-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.frontend.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.frontend.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.frontend.service.type }}
+  ports:
+  - port: {{ .Values.frontend.service.port }}
+    targetPort: {{ .Values.frontend.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.frontend.name }}
+{{- end }}

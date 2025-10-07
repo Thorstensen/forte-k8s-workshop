@@ -9,6 +9,9 @@ import { swaggerSpec } from './swagger';
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy - needed for rate limiting behind ingress/load balancer
+app.set('trust proxy', 1);
+
 // Security middleware
 app.use(
   helmet({
@@ -27,15 +30,16 @@ app.use(
 app.use(
   cors({
     origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 
-// Rate limiting
+// Rate limiting - configurable via environment variables
+// Only applied to /api/matches routes (not health checks)
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per windowMs
+  windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10), // Default: 15 minutes
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100', 10), // Default: 100 requests
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.',
@@ -44,7 +48,15 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
-app.use(limiter);
+// Health check endpoint - NO rate limiting
+app.get('/api/health', (_req: Request, res: Response): void => {
+  res.json({
+    success: true,
+    message: 'Match Scheduler Service is healthy',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0',
+  });
+});
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
@@ -56,16 +68,6 @@ app.use((req: Request, _res: Response, next: NextFunction): void => {
   // eslint-disable-next-line no-console
   console.log(`[${timestamp}] ${req.method} ${req.path} - ${req.ip}`);
   next();
-});
-
-// Health check endpoint
-app.get('/api/health', (_req: Request, res: Response): void => {
-  res.json({
-    success: true,
-    message: 'Match Scheduler Service is healthy',
-    timestamp: new Date().toISOString(),
-    version: '1.0.0',
-  });
 });
 
 // Swagger UI setup
@@ -93,8 +95,8 @@ app.get('/api/openapi.json', (_req: Request, res: Response): void => {
   res.send(swaggerSpec);
 });
 
-// API routes
-app.use('/api/matches', matchesRouter);
+// API routes - apply rate limiting only to matches endpoints
+app.use('/api/matches', limiter, matchesRouter);
 
 // 404 handler
 app.use('*', (req: Request, res: Response): void => {
@@ -136,6 +138,8 @@ const server = app.listen(PORT, (): void => {
   );
   // eslint-disable-next-line no-console
   console.log(`❤️  Health check available at http://localhost:${PORT}/api/health`);
+  // eslint-disable-next-line no-console
+  console.log(`⏱️  Rate limit: ${process.env.RATE_LIMIT_MAX_REQUESTS || '100'} requests per ${parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000', 10) / 60000} minutes`);
 });
 
 // Graceful shutdown

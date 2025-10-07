@@ -5,7 +5,7 @@ export const notificationService = {
   // Get all notifications
   getAllNotifications: async (): Promise<Notification[]> => {
     try {
-      const response = await notificationApi.get<ApiResponse<Notification[]>>('/notifications');
+      const response = await notificationApi.get<ApiResponse<Notification[]>>('/api/notifications');
       
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -26,7 +26,7 @@ export const notificationService = {
   // Get notifications for a specific match
   getMatchNotifications: async (matchId: string): Promise<Notification[]> => {
     try {
-      const response = await notificationApi.get<ApiResponse<Notification[]>>(`/matches/${matchId}/notifications`);
+      const response = await notificationApi.get<ApiResponse<Notification[]>>(`/api/matches/${matchId}/notifications`);
       
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -47,7 +47,7 @@ export const notificationService = {
   // Get important notifications only
   getImportantNotifications: async (): Promise<Notification[]> => {
     try {
-      const response = await notificationApi.get<ApiResponse<Notification[]>>('/notifications/important');
+      const response = await notificationApi.get<ApiResponse<Notification[]>>('/api/notifications/important');
       
       if (response.data.success && response.data.data) {
         return response.data.data;
@@ -70,7 +70,7 @@ export const notificationService = {
     try {
       // This is a conceptual endpoint - the notification service might auto-generate
       // or we trigger it by calling the get notifications after match starts
-      const response = await notificationApi.post<ApiResponse<Notification[]>>(`/matches/${matchId}/start-notifications`);
+      const response = await notificationApi.post<ApiResponse<Notification[]>>(`/api/matches/${matchId}/start-notifications`);
       
       if (response.data.success && response.data.data) {
         return response.data.data;

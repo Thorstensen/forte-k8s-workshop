@@ -1,0 +1,61 @@
+{{- if .Values.teamGenerator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.teamGenerator.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.teamGenerator.name }}
+    tier: backend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.teamGenerator.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.teamGenerator.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.teamGenerator.name }}
+        tier: backend
+    spec:
+      containers:
+      - name: {{ .Values.teamGenerator.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.teamGenerator.image.repository "tag" .Values.teamGenerator.image.tag "registry" .Values.teamGenerator.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.teamGenerator.service.targetPort }}
+          name: http
+        resources:
+          {{- toYaml .Values.teamGenerator.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.teamGenerator.service.targetPort }}
+          initialDelaySeconds: 15
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.teamGenerator.service.targetPort }}
+          initialDelaySeconds: 10
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.teamGenerator.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.teamGenerator.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.teamGenerator.service.type }}
+  ports:
+  - port: {{ .Values.teamGenerator.service.port }}
+    targetPort: {{ .Values.teamGenerator.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.teamGenerator.name }}
+{{- end }}

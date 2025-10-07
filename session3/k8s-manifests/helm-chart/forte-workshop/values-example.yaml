@@ -1,0 +1,36 @@
+# Example values file for workshop participants
+# Copy this to my-values.yaml and customize for your environment
+
+namespace: workshop
+
+# Update these with your ingress hostnames
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    frontend: myname.127.0.0.1.nip.io
+    teamGenerator: team.myname.127.0.0.1.nip.io
+    bettingService: bet.myname.127.0.0.1.nip.io
+    matchScheduler: schedule.myname.127.0.0.1.nip.io
+    statsAggregator: stats.myname.127.0.0.1.nip.io
+    notificationCenter: notify.myname.127.0.0.1.nip.io
+    matchEventLogger: logger.myname.127.0.0.1.nip.io
+
+# Optional: Enable secret for Stats Aggregator
+statsAggregator:
+  secret:
+    enabled: true
+    externalApiKey: "my-secret-api-key"
+
+# Optional: Adjust resource limits for your cluster
+frontend:
+  resources:
+    requests:
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
+
+# Usage:
+# helm install forte-workshop ./forte-workshop -f my-values.yaml

@@ -1,0 +1,20 @@
+{{- if .Values.matchScheduler.enabled }}
+{{- $portSuffix := "" -}}
+{{- if .Values.ingress.hostPort -}}
+{{- $portSuffix = printf ":%s" .Values.ingress.hostPort -}}
+{{- end -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.matchScheduler.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.matchScheduler.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+data:
+  PORT: {{ .Values.matchScheduler.config.port | quote }}
+  NODE_ENV: {{ .Values.matchScheduler.config.nodeEnv | quote }}
+  ALLOWED_ORIGINS: "http://{{ .Values.ingress.hosts.frontend }}{{ $portSuffix }},http://localhost:3001"
+  RATE_LIMIT_WINDOW_MS: {{ .Values.matchScheduler.config.rateLimitWindowMs | quote }}
+  RATE_LIMIT_MAX_REQUESTS: {{ .Values.matchScheduler.config.rateLimitMaxRequests | quote }}
+{{- end }}

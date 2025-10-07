@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: match-event-logger
+  namespace: workshop
+  labels:
+    app: match-event-logger
+    tier: backend
+spec:
+  replicas: 1  # Only 1 replica since we use ReadWriteOnce PVC
+  selector:
+    matchLabels:
+      app: match-event-logger
+  template:
+    metadata:
+      labels:
+        app: match-event-logger
+        tier: backend
+    spec:
+      containers:
+      - name: logger
+        image: ghcr.io/thorstensen/forte-k8s-workshop/match-event-logger:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: LOG_DIR
+          value: "/var/log/match-events"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 30
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        volumeMounts:
+        - name: logs
+          mountPath: /var/log/match-events
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: match-logs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: match-event-logger
+  namespace: workshop
+  labels:
+    app: match-event-logger
+spec:
+  type: ClusterIP
+  ports:
+  - port: 80
+    targetPort: 8080
+    protocol: TCP
+    name: http
+  selector:
+    app: match-event-logger

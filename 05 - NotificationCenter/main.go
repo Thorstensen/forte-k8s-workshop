@@ -438,6 +438,23 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/api/docs", http.StatusMovedPermanently)
 }
 
+// CORS middleware
+func corsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+		// Handle preflight requests
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func main() {
 	r := mux.NewRouter()
 
@@ -466,6 +483,7 @@ func main() {
 	fmt.Println("🚀 NotificationCenter service starting on port 8080")
 	fmt.Println("📖 Swagger documentation available at: http://localhost:8080/api/docs")
 	fmt.Println("❤️  Health check available at: http://localhost:8080/api/health")
-	
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	// Wrap router with CORS middleware
+	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(r)))
 }

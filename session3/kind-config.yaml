@@ -1,0 +1,29 @@
+# kind cluster configuration for Forte K8s Workshop
+# This config enables ingress support by mapping ports 80 and 443
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: forte-workshop
+nodes:
+- role: control-plane
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+    nodeRegistration:
+      kubeletExtraArgs:
+        node-labels: "ingress-ready=true"
+  extraPortMappings:
+  # HTTP
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+  # HTTPS
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+# Allow local insecure registry at registry:5000
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry.mirrors."registry:5000"]
+    endpoint = ["http://registry:5000"]
+  [plugins."io.containerd.grpc.v1.cri".registry.configs."registry:5000".tls]
+    insecure_skip_verify = true
