@@ -1,0 +1,64 @@
+{{- if .Values.matchScheduler.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.matchScheduler.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.matchScheduler.name }}
+    tier: backend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.matchScheduler.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.matchScheduler.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.matchScheduler.name }}
+        tier: backend
+    spec:
+      containers:
+      - name: {{ .Values.matchScheduler.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.matchScheduler.image.repository "tag" .Values.matchScheduler.image.tag "registry" .Values.matchScheduler.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.matchScheduler.service.targetPort }}
+          name: http
+        envFrom:
+        - configMapRef:
+            name: {{ .Values.matchScheduler.name }}-config
+        resources:
+          {{- toYaml .Values.matchScheduler.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.matchScheduler.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.matchScheduler.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.matchScheduler.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.matchScheduler.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.matchScheduler.service.type }}
+  ports:
+  - port: {{ .Values.matchScheduler.service.port }}
+    targetPort: {{ .Values.matchScheduler.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.matchScheduler.name }}
+{{- end }}

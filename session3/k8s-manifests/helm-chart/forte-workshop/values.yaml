@@ -1,0 +1,205 @@
+# Default values for forte-workshop Helm chart
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# Global settings
+namespace: workshop
+
+# Image registry and pull policy
+image:
+  registry: ghcr.io/thorstensen/forte-k8s-workshop
+  pullPolicy: IfNotPresent
+  # pullSecrets: []
+
+# Ingress configuration
+# Update these URLs to match your ingress hostnames
+ingress:
+  enabled: true
+  className: nginx  # Use nginx for kind, traefik for k3s
+  # Port to access ingress from host (empty = no port suffix, 8080 for Windows)
+  # Leave empty for Linux/Mac (port 80), set to "8080" for Windows
+  hostPort: ""
+  annotations: {}
+    # traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    frontend: 127.0.0.1.nip.io
+    teamGenerator: team.127.0.0.1.nip.io
+    bettingService: bet.127.0.0.1.nip.io
+    matchScheduler: schedule.127.0.0.1.nip.io
+    statsAggregator: stats.127.0.0.1.nip.io
+    notificationCenter: notify.127.0.0.1.nip.io
+    matchEventLogger: logger.127.0.0.1.nip.io
+
+# Frontend service
+frontend:
+  enabled: true
+  name: frontend
+  replicaCount: 1
+  image:
+    repository: frontend
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  # Frontend API URLs - generated from ingress hosts
+  config:
+    teamGeneratorUrl: ""  # Auto-generated from ingress.hosts.teamGenerator
+    bettingServiceUrl: ""  # Auto-generated from ingress.hosts.bettingService
+    matchSchedulerUrl: ""  # Auto-generated from ingress.hosts.matchScheduler
+    statsAggregatorUrl: ""  # Auto-generated from ingress.hosts.statsAggregator
+    notificationCenterUrl: ""  # Auto-generated from ingress.hosts.notificationCenter
+
+# Team Generator service
+teamGenerator:
+  enabled: true
+  name: team-generator
+  replicaCount: 1
+  image:
+    repository: team-generator
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Betting Service
+bettingService:
+  enabled: true
+  name: betting-service
+  replicaCount: 1
+  image:
+    repository: betting-service
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Match Scheduler service
+matchScheduler:
+  enabled: true
+  name: match-scheduler
+  replicaCount: 1
+  image:
+    repository: match-scheduler
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  # ConfigMap values
+  config:
+    port: "3000"
+    nodeEnv: "production"
+    allowedOrigins: "http://127.0.0.1.nip.io,http://localhost:3001"
+    rateLimitWindowMs: "900000"  # 15 minutes in milliseconds
+    rateLimitMaxRequests: "100"
+
+# Stats Aggregator service
+statsAggregator:
+  enabled: true
+  name: stats-aggregator
+  replicaCount: 1
+  image:
+    repository: stats-aggregator
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  # Secret configuration (optional)
+  secret:
+    enabled: true
+    externalApiKey: "demo-api-key-12345"  # Will be base64 encoded
+
+# Notification Center service
+notificationCenter:
+  enabled: true
+  name: notification-center
+  replicaCount: 1
+  image:
+    repository: notification-center
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# Match Event Logger service
+matchEventLogger:
+  enabled: true
+  name: match-event-logger
+  replicaCount: 1  # Must be 1 due to ReadWriteOnce PVC
+  image:
+    repository: match-event-logger
+    tag: latest
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  # Persistent Volume configuration
+  persistence:
+    enabled: true
+    storageClass: ""  # Empty uses cluster default (standard for kind, local-path for k3s)
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mountPath: /var/log/match-events
+
+# Health probe defaults
+healthProbes:
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 30
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10

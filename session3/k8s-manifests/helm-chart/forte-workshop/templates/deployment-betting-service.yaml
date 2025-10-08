@@ -1,0 +1,61 @@
+{{- if .Values.bettingService.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.bettingService.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.bettingService.name }}
+    tier: backend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.bettingService.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.bettingService.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.bettingService.name }}
+        tier: backend
+    spec:
+      containers:
+      - name: {{ .Values.bettingService.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.bettingService.image.repository "tag" .Values.bettingService.image.tag "registry" .Values.bettingService.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.bettingService.service.targetPort }}
+          name: http
+        resources:
+          {{- toYaml .Values.bettingService.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.bettingService.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.bettingService.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.bettingService.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.bettingService.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.bettingService.service.type }}
+  ports:
+  - port: {{ .Values.bettingService.service.port }}
+    targetPort: {{ .Values.bettingService.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.bettingService.name }}
+{{- end }}

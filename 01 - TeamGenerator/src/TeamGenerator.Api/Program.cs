@@ -7,12 +7,25 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new() { Title = "TeamGenerator API", Version = "v1" }); });
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin()
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+
 // Add TeamGenerator services
 builder.Services.AddTeamGeneratorServices();
 
 var app = builder.Build();
 
 app.UseRouting();
+
+app.UseCors();
 
 app.UseHttpsRedirection();
 

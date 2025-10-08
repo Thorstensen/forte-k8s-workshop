@@ -1,0 +1,70 @@
+{{- if .Values.statsAggregator.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.statsAggregator.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.statsAggregator.name }}
+    tier: backend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.statsAggregator.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.statsAggregator.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.statsAggregator.name }}
+        tier: backend
+    spec:
+      containers:
+      - name: {{ .Values.statsAggregator.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.statsAggregator.image.repository "tag" .Values.statsAggregator.image.tag "registry" .Values.statsAggregator.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.statsAggregator.service.targetPort }}
+          name: http
+        {{- if .Values.statsAggregator.secret.enabled }}
+        env:
+        - name: EXTERNAL_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.statsAggregator.name }}-secret
+              key: EXTERNAL_API_KEY
+              optional: true
+        {{- end }}
+        resources:
+          {{- toYaml .Values.statsAggregator.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.statsAggregator.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.statsAggregator.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.statsAggregator.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.statsAggregator.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.statsAggregator.service.type }}
+  ports:
+  - port: {{ .Values.statsAggregator.service.port }}
+    targetPort: {{ .Values.statsAggregator.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.statsAggregator.name }}
+{{- end }}

@@ -1,0 +1,194 @@
+# Local testing values - DELETE AFTER TESTING
+# Uses registry:5000 (Docker network hostname) for updated services
+
+namespace: workshop
+
+# Ingress configuration - update if your hostnames are different
+ingress:
+  enabled: true
+  className: nginx
+  hostPort: ""  # Leave empty for Linux/Mac, set to "8080" for Windows
+  hosts:
+    frontend: 127.0.0.1.nip.io
+    teamGenerator: team.127.0.0.1.nip.io
+    bettingService: bet.127.0.0.1.nip.io
+    matchScheduler: schedule.127.0.0.1.nip.io
+    statsAggregator: stats.127.0.0.1.nip.io
+    notificationCenter: notify.127.0.0.1.nip.io
+    matchEventLogger: logger.127.0.0.1.nip.io
+
+# Frontend - using local registry (UPDATED)
+frontend:
+  enabled: true
+  name: frontend
+  replicaCount: 1
+  image:
+    repository: frontend
+    tag: test
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# Team Generator - using local registry (UPDATED)
+teamGenerator:
+  enabled: true
+  name: team-generator
+  replicaCount: 1
+  image:
+    repository: team-generator
+    tag: latest
+    registry: registry:5000
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Betting Service - using local registry (UPDATED)
+bettingService:
+  enabled: true
+  name: betting-service
+  replicaCount: 1
+  image:
+    repository: betting-service
+    tag: latest
+    registry: registry:5000
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Match Scheduler - using local registry (UPDATED)
+matchScheduler:
+  enabled: true
+  name: match-scheduler
+  replicaCount: 1
+  image:
+    repository: match-scheduler
+    tag: latest
+    registry: registry:5000
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 3000
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  config:
+    port: "3000"
+    nodeEnv: "production"
+    allowedOrigins: "http://127.0.0.1.nip.io,http://localhost:3001"
+    rateLimitWindowMs: "900000"
+    rateLimitMaxRequests: "100"
+    maxMatchesPerTeamPerWeek: "3"
+    minHoursBetweenMatches: "48"
+
+# Stats Aggregator - using GHCR (UNCHANGED)
+statsAggregator:
+  enabled: true
+  name: stats-aggregator
+  replicaCount: 1
+  image:
+    repository: stats-aggregator
+    tag: latest
+    registry: ghcr.io/thorstensen/forte-k8s-workshop
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "500m"
+  secret:
+    enabled: true
+    externalApiKey: "demo-api-key-12345"
+
+# Notification Center - using local registry (UPDATED)
+notificationCenter:
+  enabled: true
+  name: notification-center
+  replicaCount: 1
+  image:
+    repository: notification-center
+    tag: latest
+    registry: registry:5000
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+
+# Match Event Logger - using local registry (NEW SERVICE)
+matchEventLogger:
+  enabled: true
+  name: match-event-logger
+  replicaCount: 1
+  image:
+    repository: match-event-logger
+    tag: test
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 8080
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  persistence:
+    enabled: true
+    storageClass: ""
+    accessMode: ReadWriteOnce
+    size: 1Gi
+    mountPath: /var/log/match-events
+
+# Image pull policy - IfNotPresent works with registry:5000
+image:
+  registry: registry:5000  # Local registry connected to kind network
+  pullPolicy: IfNotPresent
+
+# Health probes
+healthProbes:
+  liveness:
+    initialDelaySeconds: 10
+    periodSeconds: 30
+  readiness:
+    initialDelaySeconds: 5
+    periodSeconds: 10

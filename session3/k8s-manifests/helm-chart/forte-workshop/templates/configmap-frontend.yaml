@@ -1,0 +1,13 @@
+{{- if .Values.frontend.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.frontend.name }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.frontend.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+data:
+  config.js: |
+    {{- include "forte-workshop.frontendConfig" . | nindent 4 }}
+{{- end }}

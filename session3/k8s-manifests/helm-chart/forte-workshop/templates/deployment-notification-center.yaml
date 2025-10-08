@@ -1,0 +1,61 @@
+{{- if .Values.notificationCenter.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.notificationCenter.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.notificationCenter.name }}
+    tier: backend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.notificationCenter.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.notificationCenter.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.notificationCenter.name }}
+        tier: backend
+    spec:
+      containers:
+      - name: {{ .Values.notificationCenter.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.notificationCenter.image.repository "tag" .Values.notificationCenter.image.tag "registry" .Values.notificationCenter.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.notificationCenter.service.targetPort }}
+          name: http
+        resources:
+          {{- toYaml .Values.notificationCenter.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.notificationCenter.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.notificationCenter.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.notificationCenter.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.notificationCenter.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.notificationCenter.service.type }}
+  ports:
+  - port: {{ .Values.notificationCenter.service.port }}
+    targetPort: {{ .Values.notificationCenter.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.notificationCenter.name }}
+{{- end }}

@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// Service base URLs - using localhost port forwarding for local development
+// Service base URLs - can be configured at runtime via window.ENV (from config.js)
+// Priority: window.ENV (ConfigMap) > build-time env vars > defaults
+// This allows ConfigMap to override URLs without rebuilding the Docker image
 const SERVICES = {
-  TEAM_GENERATOR: import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://localhost:6001',
-  BETTING_SERVICE: import.meta.env.VITE_BETTING_SERVICE_URL || 'http://localhost:6002',
-  MATCH_SCHEDULER: import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://localhost:6003',
-  STATS_AGGREGATOR: import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://localhost:6004',
-  NOTIFICATION_CENTER: import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://localhost:6005',
+  TEAM_GENERATOR: (window as any).ENV?.VITE_TEAM_GENERATOR_URL || import.meta.env.VITE_TEAM_GENERATOR_URL || 'http://localhost:6001',
+  BETTING_SERVICE: (window as any).ENV?.VITE_BETTING_SERVICE_URL || import.meta.env.VITE_BETTING_SERVICE_URL || 'http://localhost:6002',
+  MATCH_SCHEDULER: (window as any).ENV?.VITE_MATCH_SCHEDULER_URL || import.meta.env.VITE_MATCH_SCHEDULER_URL || 'http://localhost:6003',
+  STATS_AGGREGATOR: (window as any).ENV?.VITE_STATS_AGGREGATOR_URL || import.meta.env.VITE_STATS_AGGREGATOR_URL || 'http://localhost:6004',
+  NOTIFICATION_CENTER: (window as any).ENV?.VITE_NOTIFICATION_CENTER_URL || import.meta.env.VITE_NOTIFICATION_CENTER_URL || 'http://localhost:6005',
 };
 
 // Create axios instances for each service

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: workshop
+  labels:
+    app: frontend
+    component: config
+data:
+  # Runtime configuration for Frontend
+  # This overrides the default config.js in the Docker image
+  # Update these URLs to match your ingress hostnames
+  config.js: |
+    // Frontend API configuration
+    // Loaded at runtime - no Docker rebuild required!
+    window.ENV = {
+      VITE_TEAM_GENERATOR_URL: 'http://team.127.0.0.1.nip.io',
+      VITE_BETTING_SERVICE_URL: 'http://bet.127.0.0.1.nip.io',
+      VITE_MATCH_SCHEDULER_URL: 'http://schedule.127.0.0.1.nip.io',
+      VITE_STATS_AGGREGATOR_URL: 'http://stats.127.0.0.1.nip.io',
+      VITE_NOTIFICATION_CENTER_URL: 'http://notify.127.0.0.1.nip.io',
+    };

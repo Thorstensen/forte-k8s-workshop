@@ -1,0 +1,75 @@
+{{- if .Values.matchEventLogger.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.matchEventLogger.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.matchEventLogger.name }}
+    tier: backend
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.matchEventLogger.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.matchEventLogger.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.matchEventLogger.name }}
+        tier: backend
+    spec:
+      containers:
+      - name: {{ .Values.matchEventLogger.name }}
+        image: {{ include "forte-workshop.image" (dict "Values" .Values "repository" .Values.matchEventLogger.image.repository "tag" .Values.matchEventLogger.image.tag "registry" .Values.matchEventLogger.image.registry) }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.matchEventLogger.service.targetPort }}
+          name: http
+        env:
+        - name: LOG_DIR
+          value: {{ .Values.matchEventLogger.persistence.mountPath }}
+        resources:
+          {{- toYaml .Values.matchEventLogger.resources | nindent 10 }}
+        livenessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.matchEventLogger.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.liveness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.liveness.periodSeconds }}
+        readinessProbe:
+          httpGet:
+            path: /api/health
+            port: {{ .Values.matchEventLogger.service.targetPort }}
+          initialDelaySeconds: {{ .Values.healthProbes.readiness.initialDelaySeconds }}
+          periodSeconds: {{ .Values.healthProbes.readiness.periodSeconds }}
+        {{- if .Values.matchEventLogger.persistence.enabled }}
+        volumeMounts:
+        - name: logs
+          mountPath: {{ .Values.matchEventLogger.persistence.mountPath }}
+        {{- end }}
+      {{- if .Values.matchEventLogger.persistence.enabled }}
+      volumes:
+      - name: logs
+        persistentVolumeClaim:
+          claimName: {{ .Values.matchEventLogger.name }}-pvc
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.matchEventLogger.name }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.matchEventLogger.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.matchEventLogger.service.type }}
+  ports:
+  - port: {{ .Values.matchEventLogger.service.port }}
+    targetPort: {{ .Values.matchEventLogger.service.targetPort }}
+    protocol: TCP
+    name: http
+  selector:
+    app: {{ .Values.matchEventLogger.name }}
+{{- end }}

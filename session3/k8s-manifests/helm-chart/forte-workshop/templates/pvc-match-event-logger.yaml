@@ -1,0 +1,19 @@
+{{- if and .Values.matchEventLogger.enabled .Values.matchEventLogger.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.matchEventLogger.name }}-pvc
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ .Values.matchEventLogger.name }}
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - {{ .Values.matchEventLogger.persistence.accessMode }}
+  resources:
+    requests:
+      storage: {{ .Values.matchEventLogger.persistence.size }}
+  {{- if .Values.matchEventLogger.persistence.storageClass }}
+  storageClassName: {{ .Values.matchEventLogger.persistence.storageClass }}
+  {{- end }}
+{{- end }}

@@ -1,0 +1,102 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: forte-workshop-ingress
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "forte-workshop.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if .Values.ingress.className }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  rules:
+  {{- if .Values.frontend.enabled }}
+  - host: {{ .Values.ingress.hosts.frontend }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.frontend.name }}
+            port:
+              number: {{ .Values.frontend.service.port }}
+  {{- end }}
+  {{- if .Values.teamGenerator.enabled }}
+  - host: {{ .Values.ingress.hosts.teamGenerator }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.teamGenerator.name }}
+            port:
+              number: {{ .Values.teamGenerator.service.port }}
+  {{- end }}
+  {{- if .Values.bettingService.enabled }}
+  - host: {{ .Values.ingress.hosts.bettingService }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.bettingService.name }}
+            port:
+              number: {{ .Values.bettingService.service.port }}
+  {{- end }}
+  {{- if .Values.matchScheduler.enabled }}
+  - host: {{ .Values.ingress.hosts.matchScheduler }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.matchScheduler.name }}
+            port:
+              number: {{ .Values.matchScheduler.service.port }}
+  {{- end }}
+  {{- if .Values.statsAggregator.enabled }}
+  - host: {{ .Values.ingress.hosts.statsAggregator }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.statsAggregator.name }}
+            port:
+              number: {{ .Values.statsAggregator.service.port }}
+  {{- end }}
+  {{- if .Values.notificationCenter.enabled }}
+  - host: {{ .Values.ingress.hosts.notificationCenter }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.notificationCenter.name }}
+            port:
+              number: {{ .Values.notificationCenter.service.port }}
+  {{- end }}
+  {{- if .Values.matchEventLogger.enabled }}
+  - host: {{ .Values.ingress.hosts.matchEventLogger }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.matchEventLogger.name }}
+            port:
+              number: {{ .Values.matchEventLogger.service.port }}
+  {{- end }}
+{{- end }}

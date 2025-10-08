@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: match-scheduler-config
+  namespace: workshop
+  labels:
+    app: match-scheduler
+    component: config
+data:
+  # Match Scheduler Service Configuration
+  # These values can be tuned without rebuilding the image
+
+  # Server configuration
+  PORT: "3000"
+  NODE_ENV: "production"
+
+  # CORS configuration - comma-separated list of allowed origins
+  ALLOWED_ORIGINS: "http://127.0.0.1.nip.io,http://localhost:3001"
+
+  # Rate limiting configuration
+  RATE_LIMIT_WINDOW_MS: "900000"  # 15 minutes in milliseconds
+  RATE_LIMIT_MAX_REQUESTS: "100"  # Max requests per window
