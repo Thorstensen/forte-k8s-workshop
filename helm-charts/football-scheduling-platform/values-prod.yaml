@@ -1,0 +1,142 @@
+# Production environment values
+global:
+  imageTag: "v1.0.0"
+  imagePullPolicy: IfNotPresent
+
+# Team Generator - Production Settings
+team-generator:
+  replicaCount: 3
+  image:
+    tag: "v1.0.0"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Betting Service - Production Settings  
+betting-service:
+  replicaCount: 4
+  image:
+    tag: "v1.0.0"
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 15
+    targetCPUUtilizationPercentage: 60
+
+# Match Scheduler - Production Settings
+match-scheduler:
+  replicaCount: 3
+  image:
+    tag: "v1.0.0"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 8
+    targetCPUUtilizationPercentage: 70
+
+# Stats Aggregator - Production Settings
+stats-aggregator:
+  replicaCount: 3
+  image:
+    tag: "v1.0.0"
+  resources:
+    limits:
+      cpu: 800m
+      memory: 512Mi
+    requests:
+      cpu: 400m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 12
+    targetCPUUtilizationPercentage: 65
+
+# Notification Center - Production Settings
+notification-center:
+  replicaCount: 3
+  image:
+    tag: "v1.0.0"
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 250m
+      memory: 256Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+
+# Frontend - Production Settings
+frontend:
+  replicaCount: 5
+  image:
+    tag: "v1.0.0"
+  service:
+    type: ClusterIP
+  ingress:
+    enabled: true
+    className: nginx
+    annotations:
+      cert-manager.io/cluster-issuer: letsencrypt-prod
+      nginx.ingress.kubernetes.io/rate-limit: "100"
+    hosts:
+      - host: forte-football.com
+        paths:
+          - path: /
+            pathType: Prefix
+      - host: www.forte-football.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - secretName: forte-frontend-tls
+        hosts:
+          - forte-football.com
+          - www.forte-football.com
+  resources:
+    limits:
+      cpu: 300m
+      memory: 256Mi
+    requests:
+      cpu: 150m
+      memory: 128Mi
+  autoscaling:
+    enabled: true
+    minReplicas: 3
+    maxReplicas: 20
+    targetCPUUtilizationPercentage: 60
+
+# Production monitoring
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+  grafana:
+    enabled: true

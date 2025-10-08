@@ -1,0 +1,16 @@
+apiVersion: v2
+name: notification-center
+description: A Helm chart for notification-center microservice
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - microservice
+  - notification-center
+  - football
+  - forte
+home: https://github.com/Thorstensen/forte-k8s-workshop
+sources:
+  - https://github.com/Thorstensen/forte-k8s-workshop
+maintainers:
+  - name: Tobias Thorstensen
+    email: tobias.thorstensen@fortedigital.com

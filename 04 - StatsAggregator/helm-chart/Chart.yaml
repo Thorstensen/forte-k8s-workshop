@@ -1,0 +1,16 @@
+apiVersion: v2
+name: stats-aggregator
+description: A Helm chart for stats-aggregator microservice
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - microservice
+  - stats-aggregator
+  - football
+  - forte
+home: https://github.com/Thorstensen/forte-k8s-workshop
+sources:
+  - https://github.com/Thorstensen/forte-k8s-workshop
+maintainers:
+  - name: Tobias Thorstensen
+    email: tobias.thorstensen@fortedigital.com
